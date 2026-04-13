@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohamed Yasief — IT Administrator · Dubai</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Fraunces:ital,wght@0,300;0,400;1,300;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#04080f;--s1:#080f1a;--s2:#0c1525;--card:#0a1020;
+  --border:rgba(0,210,255,0.08);--blight:rgba(0,210,255,0.18);
+  --w:#eef2ff;--dim:rgba(238,242,255,0.42);--dim2:rgba(238,242,255,0.22);
+  --c1:#00d2ff;--c2:#7b2fff;--c3:#ff6b35;--c4:#00ff9d;--c5:#ff3e8a;
+}
+html{background:var(--bg);}
+body{font-family:'Outfit',sans-serif;color:var(--w);overflow:hidden;height:100vh;cursor:none;}
+::selection{background:rgba(0,210,255,0.25);}
+
+/* CURSOR */
+#cur{width:6px;height:6px;background:var(--c1);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
+#cur2{width:32px;height:32px;border:1.5px solid var(--c1);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;transition:width .3s,height .3s,opacity .3s,border-color .3s;}
+#cur3{width:60px;height:60px;border:1px solid rgba(0,210,255,.12);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9997;transition:width .5s,height .5s;}
+body.hov #cur2{width:48px;height:48px;opacity:.9;border-color:var(--c3);}
+body.hov #cur3{width:80px;height:80px;}
+
+/* TRACK */
+#track{display:flex;height:100vh;width:max-content;transition:transform 1s cubic-bezier(0.77,0,0.175,1);will-change:transform;}
+.panel{width:100vw;height:100vh;flex-shrink:0;position:relative;overflow:hidden;}
+
+/* PROGRESS */
+#prog{position:fixed;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--c2),var(--c1),var(--c4));z-index:300;transition:width .6s cubic-bezier(.77,0,.175,1);box-shadow:0 0 10px var(--c1);}
+
+/* DOTS */
+#dots{position:fixed;right:1.8rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:300;}
+.dot{width:4px;height:4px;border-radius:2px;background:rgba(238,242,255,.15);cursor:none;transition:background .3s,height .4s,box-shadow .3s;}
+.dot.active{height:24px;background:var(--c1);box-shadow:0 0 8px var(--c1);}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(4,8,15,.95),transparent);}
+.nav-logo{font-family:'Outfit',sans-serif;font-weight:900;font-size:1.1rem;letter-spacing:.1em;display:flex;align-items:center;gap:.5rem;}
+.nav-logo .br{color:var(--c1);}
+.nav-status{display:flex;align-items:center;gap:.6rem;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--c4);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,255,157,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(0,255,157,0)}}
+
+/* ═══ P0 HERO ═══ */
+#p0{background:var(--bg);}
+#heroCanvas{position:absolute;inset:0;z-index:0;}
+.h-ov{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(4,8,15,0),rgba(4,8,15,.75));}
+.h-scan{position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);pointer-events:none;}
+.hc{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:0 5rem;}
+.h-pre{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;color:var(--c1);display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;animation:sR 1s .3s both;}
+.h-pre::before{content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c1));}
+.blink{animation:blink .8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.h-name{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(4rem,9vw,9.5rem);line-height:.88;letter-spacing:-.04em;animation:sR 1s .5s both;}
+.glitch{position:relative;display:inline-block;color:var(--c1);}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.glitch::before{color:var(--c2);clip-path:polygon(0 0,100% 0,100% 45%,0 45%);animation:g1 4s infinite;}
+.glitch::after{color:var(--c3);clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);animation:g2 4s infinite;}
+@keyframes g1{0%,90%,100%{transform:none;opacity:0}92%{transform:translate(-2px,-1px);opacity:.8}94%{transform:translate(2px,1px);opacity:.8}96%{transform:none;opacity:0}}
+@keyframes g2{0%,90%,100%{transform:none;opacity:0}93%{transform:translate(2px,1px);opacity:.7}95%{transform:translate(-1px,-2px);opacity:.7}97%{transform:none;opacity:0}}
+.h-role{margin-top:2rem;font-size:clamp(1rem,1.8vw,1.4rem);color:var(--dim);font-weight:300;animation:sR 1s .7s both;}
+.h-role strong{color:var(--w);font-weight:600;}
+.h-role .sep{margin:0 .8rem;color:var(--c2);}
+.h-loc{margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--dim2);display:flex;align-items:center;gap:.5rem;animation:sR 1s .8s both;}
+.h-ctas{display:flex;gap:1rem;margin-top:3rem;animation:sR 1s 1s both;}
+.cta{padding:.85rem 2.2rem;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;cursor:none;transition:all .3s;font-family:'Outfit',sans-serif;position:relative;overflow:hidden;}
+.cta-fill{background:var(--c1);color:var(--bg);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);}
+.cta-fill:hover{background:var(--c4);color:var(--bg);}
+.cta-ghost{border:1px solid var(--blight);color:var(--w);}
+.cta-ghost:hover{border-color:var(--c1);color:var(--c1);background:rgba(0,210,255,.05);}
+.h-badges{position:absolute;right:5%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1rem;animation:fI 1.5s 1.2s both;z-index:2;}
+.badge{background:rgba(10,16,32,.85);border:1px solid var(--border);backdrop-filter:blur(10px);padding:.8rem 1.2rem;display:flex;align-items:center;gap:.8rem;font-size:.72rem;color:var(--dim);transition:transform .3s,border-color .3s;}
+.badge:hover{transform:translateX(-6px);border-color:var(--blight);color:var(--w);}
+.bi{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.bi1{background:rgba(0,210,255,.15);color:var(--c1);}
+.bi2{background:rgba(123,47,255,.15);color:var(--c2);}
+.bi3{background:rgba(255,107,53,.15);color:var(--c3);}
+.bi4{background:rgba(0,255,157,.15);color:var(--c4);}
+.bn{font-weight:600;color:var(--w);margin-bottom:1px;}
+.h-scroll{position:absolute;bottom:2.5rem;left:5rem;z-index:2;display:flex;align-items:center;gap:1rem;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--dim2);animation:fI 1s 1.5s both;}
+.sc-line{width:60px;height:1px;background:linear-gradient(90deg,var(--c1),transparent);animation:scP 2s ease-in-out infinite;}
+@keyframes scP{0%,100%{width:60px}50%{width:90px}}
+@keyframes sR{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes fI{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ═══ P1 ABOUT ═══ */
+#p1{background:var(--s1);display:grid;grid-template-columns:1fr 1fr;}
+.a-left{padding:5.5rem 3rem 3rem 4rem;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);position:relative;overflow:hidden;}
+.a-left::before{content:'YASIEF';position:absolute;bottom:-2rem;left:-1rem;font-family:'Outfit',sans-serif;font-weight:900;font-size:12rem;color:rgba(0,210,255,.02);line-height:1;pointer-events:none;}
+.sec-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--c1);display:flex;align-items:center;gap:.8rem;margin-bottom:1.8rem;}
+.sec-tag::before{content:'//';}
+.a-hl{font-family:'Fraunces',serif;font-size:clamp(2.5rem,4.5vw,4.5rem);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:1.5rem;}
+.a-hl em{color:var(--c1);font-style:normal;font-weight:700;font-family:'Outfit',sans-serif;}
+.a-body{font-size:.88rem;line-height:2;color:var(--dim);max-width:44ch;margin-bottom:1.5rem;}
+.terminal{background:#020508;border:1px solid rgba(0,210,255,.15);margin-top:2rem;border-radius:4px;overflow:hidden;}
+.t-bar{background:#0a1020;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem;}
+.td{width:8px;height:8px;border-radius:50%;}
+.td1{background:#ff5f57}.td2{background:#febc2e}.td3{background:#28c840}
+.t-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim2);margin-left:auto;}
+.t-body{padding:1.2rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:1.9;}
+.tl{display:flex;gap:.8rem;}
+.tp{color:var(--c2)}.tc{color:var(--c4)}.to{color:var(--dim);padding-left:1.5rem;}
+.to span{color:var(--c1);}
+.a-right{padding:5.5rem 4rem 3rem 3rem;display:flex;flex-direction:column;justify-content:center;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:2rem;}
+.stat-box{background:var(--card);padding:1.6rem;border:1px solid var(--border);transition:border-color .3s;}
+.stat-box:hover{border-color:var(--blight);}
+.sn{font-family:'Outfit',sans-serif;font-weight:900;font-size:2.8rem;line-height:1;color:var(--c1);}
+.sn.o{color:var(--c3)}.sn.v{color:var(--c2)}.sn.g{color:var(--c4);}
+.sl{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-top:.3rem;}
+.sbar{height:2px;background:var(--border);margin-top:1rem;border-radius:2px;overflow:hidden;}
+.sf{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.sf-c{background:linear-gradient(90deg,var(--c1),var(--c2));}
+.sf-o{background:linear-gradient(90deg,var(--c3),var(--c5));}
+.cb-list{display:flex;flex-direction:column;gap:.8rem;}
+.cb{display:flex;align-items:center;gap:1rem;padding:.9rem;background:var(--card);border:1px solid var(--border);transition:border-color .3s,transform .3s;}
+.cb:hover{border-color:var(--blight);transform:translateX(4px);}
+.cb-ic{width:34px;height:34px;background:rgba(0,210,255,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--c1);flex-shrink:0;}
+.cb-lbl{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);}
+.cb-val{font-size:.82rem;color:var(--w);font-weight:500;}
+.cb-val a{color:var(--c1);text-decoration:none;}
+
+/* ═══ P2 EXPERIENCE ═══ */
+#p2{background:var(--bg);display:flex;flex-direction:column;}
+.ex-hd{padding:5rem 4rem 2.5rem;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ex-hd-t{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(2.5rem,5vw,5rem);letter-spacing:-.04em;line-height:.9;}
+.ex-hd-t span{-webkit-text-stroke:1px rgba(0,210,255,.3);color:transparent;}
+.ex-hd-s{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--dim2);letter-spacing:.2em;}
+.ex-bd{flex:1;display:grid;grid-template-columns:300px 1fr;overflow:hidden;}
+.ex-nav{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;padding:1.5rem 0;}
+.ex-nav::-webkit-scrollbar{display:none;}
+.ex-tab{padding:1.4rem 2rem;cursor:none;border-left:2px solid transparent;transition:all .3s;display:flex;flex-direction:column;gap:.3rem;}
+.ex-tab.active{border-left-color:var(--c1);background:rgba(0,210,255,.04);}
+.ex-tab:hover:not(.active){background:rgba(0,210,255,.02);border-left-color:rgba(0,210,255,.3);}
+.et-badge{display:inline-flex;align-items:center;gap:.5rem;font-size:.55rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.3rem;}
+.et-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.da{background:var(--c4);box-shadow:0 0 6px var(--c4);}.dp{background:var(--dim2);}
+.et-co{font-weight:700;font-size:.9rem;color:var(--w);transition:color .3s;}
+.ex-tab.active .et-co{color:var(--c1);}
+.et-rl{font-size:.75rem;color:var(--dim);font-weight:400;}
+.et-pr{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim2);margin-top:.2rem;}
+.ex-cn{overflow-y:auto;padding:2rem 3rem;}
+.ex-cn::-webkit-scrollbar{width:2px;}
+.ex-cn::-webkit-scrollbar-thumb{background:var(--c1);}
+.ex-pane{display:none;animation:pF .4s ease both;}
+.ex-pane.show{display:block;}
+@keyframes pF{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.ep-top{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border);}
+.ep-logo{width:64px;height:64px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:900;font-size:1.1rem;flex-shrink:0;}
+.ll{background:rgba(0,210,255,.08);color:var(--c1);}
+.lm{background:rgba(255,107,53,.08);color:var(--c3);}
+.ep-co{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.5rem;line-height:1;margin-bottom:.4rem;}
+.ep-rl{font-size:.9rem;color:var(--c1);font-weight:500;margin-bottom:.3rem;}
+.lm-rl{color:var(--c3)!important;}
+.ep-meta{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.ep-chip{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim2);display:flex;align-items:center;gap:.4rem;}
+.ep-chip::before{content:'◈';font-size:.5rem;}
+.cur-tag{margin-left:auto;flex-shrink:0;background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.25);padding:.35rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--c4);display:flex;align-items:center;gap:.4rem;animation:cP 3s ease-in-out infinite;}
+@keyframes cP{0%,100%{box-shadow:0 0 0 0 rgba(0,255,157,.2)}50%{box-shadow:0 0 0 6px rgba(0,255,157,0)}}
+.ep-desc{font-size:.84rem;line-height:1.9;color:var(--dim);margin-bottom:2rem;max-width:65ch;}
+.resp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-bottom:2rem;}
+.resp-item{background:var(--card);border:1px solid var(--border);padding:1.2rem;display:flex;gap:.8rem;align-items:flex-start;transition:border-color .3s,transform .3s;cursor:none;}
+.resp-item:hover{border-color:var(--blight);transform:translateY(-2px);}
+.resp-ic{width:32px;height:32px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;color:var(--c1);}
+.resp-txt{font-size:.77rem;color:var(--dim);line-height:1.6;}
+.resp-txt strong{display:block;color:var(--w);font-size:.82rem;margin-bottom:.2rem;}
+.tech-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;}
+.tech-tag{padding:.3rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;border:1px solid var(--border);color:var(--dim);transition:border-color .3s,color .3s;}
+.tech-tag:hover{border-color:var(--c1);color:var(--c1);}
+
+/* ═══ P3 IT DASHBOARD ═══ */
+#p3{background:var(--s2);}
+.dw{width:100%;height:100%;padding:5rem 3rem 2rem;display:flex;flex-direction:column;}
+.d-hd{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;flex-shrink:0;}
+.d-title{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(2rem,4vw,4rem);letter-spacing:-.03em;line-height:.9;}
+.d-title span{color:var(--c4);}
+.d-live{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--c4);display:flex;align-items:center;gap:.5rem;letter-spacing:.2em;}
+.d-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--c4);animation:pulse 1.5s infinite;}
+.dgrid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:1px;overflow:hidden;}
+.dt{background:var(--card);border:1px solid var(--border);padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s;}
+.dt:hover{border-color:var(--blight);}
+.dt-lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dim2);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;}
+.srv-list{display:flex;flex-direction:column;gap:.5rem;}
+.srv-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem;background:rgba(0,0,0,.3);border-radius:2px;}
+.srv-nm{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--dim);}
+.srv-st{display:flex;align-items:center;gap:.4rem;font-size:.6rem;}
+.ok{color:var(--c4)}.wn{color:var(--c3);}
+.sdot{width:5px;height:5px;border-radius:50%;}
+.sd-ok{background:var(--c4);box-shadow:0 0 5px var(--c4);}.sd-wn{background:var(--c3);}
+.srv-bar{flex:1;height:2px;background:rgba(0,0,0,.5);border-radius:2px;margin:0 .5rem;overflow:hidden;}
+.srv-fill{height:100%;border-radius:2px;}
+.sfg{background:var(--c4);}.sfc{background:var(--c1);}.sfo{background:var(--c3);}
+.big-met{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 2rem);}
+.bm-n{font-family:'Outfit',sans-serif;font-weight:900;font-size:3.5rem;line-height:1;}
+.bm-n.c1{color:var(--c1);}.bm-n.c4{color:var(--c4);}
+.bm-u{font-size:1rem;font-weight:400;margin-left:.2rem;}
+.bm-l{font-size:.65rem;color:var(--dim2);letter-spacing:.15em;margin-top:.5rem;}
+.bm-tr{font-family:'JetBrains Mono',monospace;font-size:.65rem;margin-top:.4rem;color:var(--c4);}
+.ncw{position:relative;flex:1;height:calc(100% - 2rem);}
+#netCanvas{width:100%;height:100%;}
+.cw{display:flex;gap:1rem;align-items:center;justify-content:center;height:calc(100% - 2rem);}
+.ci{text-align:center;}
+.csvg{width:60px;height:60px;}
+.ctr{fill:none;stroke:rgba(0,210,255,.08);stroke-width:4;}
+.cfill{fill:none;stroke-width:4;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1.5s cubic-bezier(.7,0,.3,1);}
+.cfc{stroke:var(--c1);}.cfo{stroke:var(--c3);}.cfg{stroke:var(--c4);}
+.cpct{font-family:'Outfit',sans-serif;font-weight:800;font-size:.75rem;}
+.clbl{font-size:.55rem;letter-spacing:.1em;color:var(--dim2);margin-top:.3rem;}
+.log-w{font-family:'JetBrains Mono',monospace;font-size:.62rem;line-height:1.8;overflow:hidden;height:calc(100% - 2rem);}
+.log-ln{display:flex;gap:.6rem;}
+.lt{color:var(--dim2);}.lok{color:var(--c4);}.lwn{color:var(--c3);}.linf{color:var(--c1);}.lerr{color:var(--c5);}
+.lmsg{color:var(--dim);}
+.erp-tile{grid-column:span 2;}
+.erp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;height:calc(100% - 2rem);}
+.erp-item{background:rgba(0,0,0,.3);padding:.8rem;border-left:2px solid var(--border);transition:border-color .3s;}
+.erp-item:hover{border-left-color:var(--c1);}
+.erp-nm{font-size:.72rem;font-weight:600;color:var(--w);margin-bottom:.4rem;}
+.erp-lv{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--dim2);margin-bottom:.5rem;}
+.erp-bar{height:2px;background:rgba(0,210,255,.1);border-radius:2px;overflow:hidden;}
+.erp-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--c2),var(--c1));transition:width 1.4s ease;}
+
+/* ═══ P4 SKILLS ═══ */
+#p4{background:var(--s1);display:flex;flex-direction:column;}
+.sk-hd{padding:5rem 4rem 2rem;flex-shrink:0;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--border);}
+.sk-ht{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(2.5rem,5vw,5rem);letter-spacing:-.04em;line-height:.9;}
+.sk-ht em{font-style:normal;-webkit-text-stroke:1px rgba(123,47,255,.4);color:transparent;}
+.sk-bd{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;overflow:hidden;}
+.sk-col{border-right:1px solid var(--border);overflow-y:auto;padding:1.5rem 2rem;}
+.sk-col::-webkit-scrollbar{display:none;}
+.sk-col:last-child{border-right:none;}
+.sk-ct{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--c2);margin-bottom:1.5rem;padding-bottom:.8rem;border-bottom:1px solid var(--border);}
+.sk-item{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.03);cursor:none;}
+.sk-top{display:flex;justify-content:space-between;align-items:center;}
+.sk-nm{font-size:.82rem;font-weight:500;color:var(--w);transition:color .3s;}
+.sk-item:hover .sk-nm{color:var(--c1);}
+.sk-pc{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--c1);}
+.sk-bar{height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+.skf{height:100%;border-radius:2px;width:0;transition:width 1.2s cubic-bezier(.7,0,.3,1);}
+.skf-c{background:linear-gradient(90deg,var(--c2),var(--c1));}.skf-o{background:linear-gradient(90deg,var(--c3),var(--c5));}.skf-g{background:linear-gradient(90deg,var(--c4),var(--c1));}
+.sk-tags2{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.3rem;}
+.sk-tg{font-size:.55rem;letter-spacing:.1em;padding:.15rem .5rem;border:1px solid rgba(255,255,255,.06);color:var(--dim2);border-radius:2px;}
+.soft-s{padding:2rem;}
+.soft-t{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--c4);margin-bottom:1.2rem;}
+.soft-grid{display:flex;flex-wrap:wrap;gap:.6rem;}
+.sp{padding:.55rem 1.1rem;border:1px solid var(--border);font-size:.72rem;color:var(--dim);transition:all .3s;cursor:none;}
+.sp:hover{border-color:var(--c4);color:var(--c4);background:rgba(0,255,157,.04);}
+
+/* ═══ P5 PROJECTS ═══ */
+#p5{background:var(--bg);display:flex;flex-direction:column;}
+.pj-hd{padding:5rem 4rem 2rem;flex-shrink:0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;}
+.pj-ht{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(2.5rem,5vw,5rem);letter-spacing:-.04em;}
+.pj-ht span{color:var(--c3);}
+.pj-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;}
+.pj-c{border-right:1px solid var(--border);padding:2rem 1.8rem;display:flex;flex-direction:column;cursor:none;position:relative;overflow:hidden;transition:background .4s;}
+.pj-c:last-child{border-right:none;}
+.pj-c::before{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:linear-gradient(to top,rgba(0,210,255,.04),transparent);transition:height .5s;}
+.pj-c:hover::before{height:100%;}
+.pc-n{font-family:'Outfit',sans-serif;font-weight:900;font-size:4rem;color:rgba(0,210,255,.06);line-height:1;margin-bottom:1rem;transition:color .4s;}
+.pj-c:hover .pc-n{color:rgba(0,210,255,.12);}
+.pc-cat{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--c3);margin-bottom:.8rem;}
+.pc-nm{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.3rem;line-height:1.15;margin-bottom:1rem;}
+.pc-ds{font-size:.78rem;color:var(--dim);line-height:1.8;flex:1;}
+.pc-imp{margin-top:1.5rem;padding:1rem;background:rgba(0,0,0,.4);border-left:2px solid var(--c3);}
+.pc-il{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;color:var(--c3);margin-bottom:.3rem;}
+.pc-iv{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem;color:var(--w);}
+.pc-tgs{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;}
+.pc-tg{font-size:.58rem;padding:.2rem .6rem;border:1px solid var(--border);color:var(--dim2);letter-spacing:.05em;}
+
+/* ═══ P6 ACHIEVEMENTS ═══ */
+#p6{background:var(--s2);display:grid;grid-template-columns:1fr 1.4fr;}
+.ac-l{padding:5rem 3rem 3rem 4rem;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);}
+.ac-big{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(3.5rem,7vw,7rem);line-height:.85;letter-spacing:-.05em;}
+.ac-big em{font-family:'Fraunces',serif;font-style:italic;font-weight:300;display:block;color:var(--c3);}
+.ac-sub{margin-top:2rem;font-size:.85rem;color:var(--dim);line-height:1.9;max-width:36ch;}
+.ac-cta{margin-top:3rem;display:inline-flex;align-items:center;gap:1rem;padding:.9rem 2rem;border:1px solid var(--blight);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--c1);text-decoration:none;cursor:none;transition:background .3s;}
+.ac-cta:hover{background:rgba(0,210,255,.05);}
+.ac-r{padding:5rem 4rem 3rem 3rem;display:flex;flex-direction:column;justify-content:center;gap:1px;}
+.ac-item{background:var(--card);border:1px solid var(--border);padding:1.6rem;display:flex;gap:1.5rem;align-items:flex-start;transition:border-color .3s,transform .4s;position:relative;overflow:hidden;}
+.ac-item:hover{border-color:var(--blight);transform:translateX(6px);}
+.ac-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--c1),var(--c2));transform:scaleY(0);transition:transform .4s;transform-origin:top;}
+.ac-item:hover::before{transform:scaleY(1);}
+.ac-num{font-family:'Outfit',sans-serif;font-weight:900;font-size:3rem;line-height:1;flex-shrink:0;min-width:90px;}
+.anc{color:var(--c1);}.ano{color:var(--c3);}.ang{color:var(--c4);}.anp{color:var(--c2);}
+.ac-txt strong{font-size:.9rem;color:var(--w);display:block;margin-bottom:.4rem;}
+.ac-txt p{font-size:.78rem;color:var(--dim);line-height:1.7;}
+
+/* ═══ P7 CONTACT ═══ */
+#p7{background:var(--bg);display:flex;align-items:center;justify-content:center;}
+#ctCanvas{position:absolute;inset:0;z-index:0;}
+.ct-c{position:relative;z-index:2;text-align:center;padding:6rem 4rem;}
+.ct-pre{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.4em;color:var(--c1);margin-bottom:2rem;display:flex;align-items:center;justify-content:center;gap:1rem;}
+.ct-pre::before,.ct-pre::after{content:'';width:30px;height:1px;background:var(--c1);}
+.ct-big{font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(4rem,12vw,12rem);line-height:.85;letter-spacing:-.05em;}
+.ct-big .ci2{font-family:'Fraunces',serif;font-style:italic;font-weight:300;color:var(--c1);display:block;}
+.ct-acts{display:flex;gap:1rem;justify-content:center;margin-top:3.5rem;flex-wrap:wrap;}
+.cpill{padding:.9rem 2.5rem;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;cursor:none;transition:all .3s;font-weight:600;display:flex;align-items:center;gap:.7rem;}
+.cp1{background:linear-gradient(135deg,var(--c1),var(--c2));color:var(--bg);}
+.cp1:hover{opacity:.9;transform:translateY(-2px);}
+.cp2{border:1px solid var(--blight);color:var(--w);}
+.cp2:hover{border-color:var(--c1);color:var(--c1);}
+.cp3{border:1px solid rgba(255,107,53,.3);color:var(--c3);}
+.cp3:hover{border-color:var(--c3);background:rgba(255,107,53,.05);}
+.ct-note{margin-top:2.5rem;font-size:.72rem;color:var(--dim2);letter-spacing:.1em;}
+.ft{position:absolute;bottom:2rem;left:0;right:0;display:flex;justify-content:space-between;padding:0 4rem;z-index:2;}
+.ft-c{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);}
+
+/* REVEALS */
+.pr{opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease;}
+.panel.active .pr{opacity:1;transform:none;}
+.pr-d1{transition-delay:.1s;}.pr-d2{transition-delay:.2s;}.pr-d3{transition-delay:.3s;}.pr-d4{transition-delay:.4s;}
+
+@media(max-width:768px){
+  body{overflow:auto;}
+  #track{flex-direction:column;width:100%;height:auto;transform:none!important;}
+  .panel{width:100%;height:auto;min-height:100vh;}
+  #dots,.nav-status{display:none;}
+  #p1,#p6{grid-template-columns:1fr;}
+  .ex-bd,.sk-bd,.pj-grid{grid-template-columns:1fr;}
+  .dgrid{grid-template-columns:1fr 1fr;}
+  .resp-grid{grid-template-columns:1fr;}
+  .h-badges{display:none;}
+  .hc{padding:0 2rem;}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cur2"></div><div id="cur3"></div>
+<div id="prog"></div>
+<nav id="nav">
+  <div class="nav-logo"><span class="br">[</span>M.YASIEF<span class="br">]</span></div>
+  <div class="nav-status"><div class="nav-dot"></div>Available · Dubai, UAE</div>
+</nav>
+<div id="dots">
+  <div class="dot active" data-i="0"></div>
+  <div class="dot" data-i="1"></div>
+  <div class="dot" data-i="2"></div>
+  <div class="dot" data-i="3"></div>
+  <div class="dot" data-i="4"></div>
+  <div class="dot" data-i="5"></div>
+  <div class="dot" data-i="6"></div>
+  <div class="dot" data-i="7"></div>
+</div>
+
+<div id="track">
+
+<!-- P0 HERO -->
+<div class="panel" id="p0">
+  <canvas id="heroCanvas"></canvas>
+  <div class="h-ov"></div><div class="h-scan"></div>
+  <div class="hc">
+    <div class="h-pre">// IT Administrator · Dubai, UAE <span class="blink">▋</span></div>
+    <h1 class="h-name">Mohamed<br><span class="glitch" data-text="Yasief">Yasief</span></h1>
+    <div class="h-role"><strong>IT Administrator</strong><span class="sep">·</span><strong>ERP Specialist</strong><span class="sep">·</span>Digital Marketing</div>
+    <div class="h-loc">◉ LaundryBox Dubai &nbsp;·&nbsp; May 2025 – Present</div>
+    <div class="h-ctas">
+      <a href="mailto:mohamedyasief@gmail.com" class="cta cta-fill">✉ Get In Touch</a>
+      <a href="https://linkedin.com/in/yasief" target="_blank" class="cta cta-ghost">LinkedIn →</a>
+      <a href="https://abibin1997.github.io/yasief1portfolio/Mohamed_Yasief_IT_Administrator_Resume.pdf" class="cta cta-ghost">Resume ↓</a>
+    </div>
+  </div>
+  <div class="h-badges">
+    <div class="badge"><div class="bi bi1">⚙</div><div><div class="bn">ERP Systems</div>Odoo · Zoho · QuickBill</div></div>
+    <div class="badge"><div class="bi bi2">🔒</div><div><div class="bn">IT Security</div>Endpoint · Firewall · DR</div></div>
+    <div class="badge"><div class="bi bi3">☁</div><div><div class="bn">Cloud & DevOps</div>AWS · Git · cPanel</div></div>
+    <div class="badge"><div class="bi bi4">📊</div><div><div class="bn">Digital Marketing</div>CRM · Campaigns</div></div>
+    <div class="badge"><div class="bi bi1">🌐</div><div><div class="bn">Web Management</div>Hostinger · Django</div></div>
+  </div>
+  <div class="h-scroll"><div class="sc-line"></div>Scroll to explore</div>
+</div>
+
+<!-- P1 ABOUT -->
+<div class="panel" id="p1">
+  <div class="a-left">
+    <div class="sec-tag pr pr-d1">About Me</div>
+    <h2 class="a-hl pr pr-d2">Results-driven,<br>always <em>evolving</em></h2>
+    <p class="a-body pr pr-d3">IT Administrator with deep expertise in ERP systems, IT infrastructure, and digital marketing. I bridge the gap between technology and business — optimising processes, securing systems, and empowering teams.</p>
+    <div class="terminal pr pr-d4">
+      <div class="t-bar"><span class="td td1"></span><span class="td td2"></span><span class="td td3"></span><span class="t-title">yasief@dubai:~</span></div>
+      <div class="t-body" id="termBody"></div>
+    </div>
+  </div>
+  <div class="a-right">
+    <div class="stat-row pr pr-d2">
+      <div class="stat-box"><div class="sn" id="cnt1">0</div><div class="sl">Years Experience</div><div class="sbar"><div class="sf sf-c" data-w="80"></div></div></div>
+      <div class="stat-box"><div class="sn o" id="cnt2">0</div><div class="sl">Brands Managed</div><div class="sbar"><div class="sf sf-o" data-w="60"></div></div></div>
+      <div class="stat-box"><div class="sn v" id="cnt3">0<span style="font-size:1.5rem">%</span></div><div class="sl">CRM Lead Growth</div><div class="sbar"><div class="sf sf-c" data-w="20"></div></div></div>
+      <div class="stat-box"><div class="sn g" id="cnt4">0<span style="font-size:1.5rem">%</span></div><div class="sl">Engagement Increase</div><div class="sbar"><div class="sf sf-o" data-w="35"></div></div></div>
+    </div>
+    <div class="cb-list pr pr-d3">
+      <div class="cb"><div class="cb-ic">@</div><div><div class="cb-lbl">Email</div><div class="cb-val"><a href="mailto:mohamedyasief@gmail.com">mohamedyasief@gmail.com</a></div></div></div>
+      <div class="cb"><div class="cb-ic">☏</div><div><div class="cb-lbl">UAE Mobile</div><div class="cb-val">+971 50 359 3856</div></div></div>
+      <div class="cb"><div class="cb-ic">in</div><div><div class="cb-lbl">LinkedIn</div><div class="cb-val"><a href="https://linkedin.com/in/yasief" target="_blank">linkedin.com/in/yasief</a></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- P2 EXPERIENCE -->
+<div class="panel" id="p2">
+  <div class="ex-hd pr">
+    <div class="ex-hd-t">Work<br><span>Experience</span></div>
+    <div class="ex-hd-s">// 02 of 07 · Professional History</div>
+  </div>
+  <div class="ex-bd">
+    <div class="ex-nav">
+      <div class="ex-tab active" data-pane="lb">
+        <div class="et-badge"><div class="et-dot da"></div><span style="color:var(--c4);letter-spacing:.2em;font-size:.55rem;font-family:'JetBrains Mono',monospace">CURRENT</span></div>
+        <div class="et-co">LaundryBox Dubai</div>
+        <div class="et-rl">IT Administrator</div>
+        <div class="et-pr">May 2025 → Present</div>
+      </div>
+      <div class="ex-tab" data-pane="mh">
+        <div class="et-badge"><div class="et-dot dp"></div><span style="color:var(--dim2);letter-spacing:.2em;font-size:.55rem;font-family:'JetBrains Mono',monospace">PREVIOUS</span></div>
+        <div class="et-co">The Muffin House Group</div>
+        <div class="et-rl">IT Administrator</div>
+        <div class="et-pr">Feb 2021 → Mar 2025</div>
+      </div>
+    </div>
+    <div class="ex-cn">
+      <div class="ex-pane show" id="pane-lb">
+        <div class="ep-top">
+          <div class="ep-logo ll">LB</div>
+          <div class="ep-info">
+            <div class="ep-co">LaundryBox Dubai</div>
+            <div class="ep-rl">IT Administrator</div>
+            <div class="ep-meta">
+              <div class="ep-chip">Dubai, UAE</div>
+              <div class="ep-chip">May 2025 – Present</div>
+              <div class="ep-chip">Smart Tech · IoT · Laundry Services</div>
+            </div>
+          </div>
+          <div class="cur-tag"><span style="width:5px;height:5px;border-radius:50%;background:var(--c4);animation:pulse 1.5s infinite;display:inline-block"></span>Live Role</div>
+        </div>
+        <p class="ep-desc">LaundryBox is Dubai's pioneering smart laundry platform — combining custom high-tech lockers, a proprietary IoT system, and a 24/7 facility enabling residents to do laundry anytime without leaving their building. I keep this connected ecosystem running flawlessly around the clock.</p>
+        <div class="resp-grid">
+          <div class="resp-item"><div class="resp-ic">🔌</div><div class="resp-txt"><strong>Infrastructure Management</strong>Managing all IT infrastructure for smart locker network deployed across Dubai residential buildings</div></div>
+          <div class="resp-item"><div class="resp-ic">🛡</div><div class="resp-txt"><strong>IoT Security</strong>Implementing security protocols across connected locker hardware and cloud-backend systems</div></div>
+          <div class="resp-item"><div class="resp-ic">⚡</div><div class="resp-txt"><strong>24/7 System Uptime</strong>Ensuring zero-downtime operation of the proprietary locker management software platform</div></div>
+          <div class="resp-item"><div class="resp-ic">📱</div><div class="resp-txt"><strong>App & Backend Support</strong>Supporting mobile app integrations, payment systems, and customer-facing digital touchpoints</div></div>
+          <div class="resp-item"><div class="resp-ic">🔧</div><div class="resp-txt"><strong>Hardware Maintenance</strong>Coordinating locker hardware diagnostics, firmware updates, and preventive maintenance</div></div>
+          <div class="resp-item"><div class="resp-ic">📊</div><div class="resp-txt"><strong>Tech-Led Process Improvement</strong>Partnering with ops and engineering on data-driven improvements to service delivery efficiency</div></div>
+        </div>
+        <div class="tech-row"><div class="tech-tag">IoT Systems</div><div class="tech-tag">AWS</div><div class="tech-tag">Network Admin</div><div class="tech-tag">Cybersecurity</div><div class="tech-tag">Mobile App Support</div><div class="tech-tag">Git</div><div class="tech-tag">cPanel</div><div class="tech-tag">Hostinger</div></div>
+      </div>
+      <div class="ex-pane" id="pane-mh">
+        <div class="ep-top">
+          <div class="ep-logo lm">MH</div>
+          <div class="ep-info">
+            <div class="ep-co">The Muffin House · Yumm Bites · MFoods</div>
+            <div class="ep-rl lm-rl">IT Administrator</div>
+            <div class="ep-meta">
+              <div class="ep-chip">Kerala & Bangalore, India</div>
+              <div class="ep-chip">Feb 2021 – Mar 2025</div>
+              <div class="ep-chip">Food & Beverage · Multi-Location</div>
+            </div>
+          </div>
+        </div>
+        <p class="ep-desc">Managed end-to-end IT operations across three brands and multiple locations — from server infrastructure and network reliability to ERP deployment, digital marketing campaigns, and vendor management. A high-impact role demanding both technical depth and strategic leadership.</p>
+        <div class="resp-grid">
+          <div class="resp-item"><div class="resp-ic">🖥</div><div class="resp-txt"><strong>Multi-Site Infrastructure</strong>Managed servers, networks, and hardware across multiple restaurant locations ensuring high performance and uptime</div></div>
+          <div class="resp-item"><div class="resp-ic">🔗</div><div class="resp-txt"><strong>ERP Integration</strong>Led Odoo, QuickBill & Zoho ERP rollout across business units — data migration, training, go-live support</div></div>
+          <div class="resp-item"><div class="resp-ic">🛡</div><div class="resp-txt"><strong>Security Protocols</strong>Implemented endpoint protection, firewall policies and data encryption across all systems</div></div>
+          <div class="resp-item"><div class="resp-ic">📈</div><div class="resp-txt"><strong>Digital Marketing</strong>Designed campaigns increasing online engagement by 35% and CRM lead conversion by 20%</div></div>
+          <div class="resp-item"><div class="resp-ic">💾</div><div class="resp-txt"><strong>Backup & Disaster Recovery</strong>Built comprehensive data backup strategies and DR plans for business continuity</div></div>
+          <div class="resp-item"><div class="resp-ic">👥</div><div class="resp-txt"><strong>Training & Vendor Mgmt</strong>Trained staff on new systems; coordinated IT vendors and procurement within budget</div></div>
+        </div>
+        <div class="tech-row"><div class="tech-tag">Odoo ERP</div><div class="tech-tag">QuickBill</div><div class="tech-tag">Zoho</div><div class="tech-tag">SQL Server</div><div class="tech-tag">Tally</div><div class="tech-tag">Reelo CRM</div><div class="tech-tag">Adobe Suite</div><div class="tech-tag">Python</div><div class="tech-tag">GitHub</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P3 IT DASHBOARD -->
+<div class="panel" id="p3">
+  <div class="dw">
+    <div class="d-hd">
+      <div class="d-title pr">IT Admin<br><span>Dashboard</span></div>
+      <div class="d-live pr">System Live · All Monitored</div>
+    </div>
+    <div class="dgrid">
+      <div class="dt pr pr-d1">
+        <div class="dt-lbl">🖥 Server Status</div>
+        <div class="srv-list">
+          <div class="srv-row"><span class="srv-nm">PROD-01</span><div class="srv-bar"><div class="srv-fill sfg" style="width:94%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">94%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">DB-SERVER</span><div class="srv-bar"><div class="srv-fill sfc" style="width:87%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">87%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">BACKUP-SRV</span><div class="srv-bar"><div class="srv-fill sfg" style="width:100%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">100%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">LOCKER-IOT</span><div class="srv-bar"><div class="srv-fill sfo" style="width:72%"></div></div><span class="srv-st"><div class="sdot sd-wn"></div><span class="wn">72%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">APP-API</span><div class="srv-bar"><div class="srv-fill sfg" style="width:99%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">99%</span></span></div>
+        </div>
+      </div>
+      <div class="dt pr pr-d2">
+        <div class="dt-lbl">🌐 Network Topology</div>
+        <div class="ncw"><canvas id="netCanvas"></canvas></div>
+      </div>
+      <div class="dt pr pr-d2">
+        <div class="dt-lbl">⬆ System Uptime</div>
+        <div class="big-met">
+          <div class="bm-n c4"><span id="uptimeCount">0</span><span class="bm-u">%</span></div>
+          <div class="bm-l">Monthly Average</div>
+          <div class="bm-tr">↑ +0.3% vs last month</div>
+        </div>
+      </div>
+      <div class="dt pr pr-d3">
+        <div class="dt-lbl">✓ Tickets Resolved</div>
+        <div class="big-met">
+          <div class="bm-n c1"><span id="incCount">0</span></div>
+          <div class="bm-l">Total Tickets Closed</div>
+          <div class="bm-tr">↑ 98% first-response rate</div>
+        </div>
+      </div>
+      <div class="dt erp-tile pr pr-d1">
+        <div class="dt-lbl">⚙ ERP & Software Expertise</div>
+        <div class="erp-grid">
+          <div class="erp-item"><div class="erp-nm">Odoo ERP</div><div class="erp-lv">Expert · 4+ yrs</div><div class="erp-bar"><div class="erp-fill" data-w="95"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">Zoho Suite</div><div class="erp-lv">Advanced · 3 yrs</div><div class="erp-bar"><div class="erp-fill" data-w="82"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">QuickBill</div><div class="erp-lv">Advanced</div><div class="erp-bar"><div class="erp-fill" data-w="80"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">SQL Server</div><div class="erp-lv">Proficient</div><div class="erp-bar"><div class="erp-fill" data-w="88"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">Tally</div><div class="erp-lv">Proficient</div><div class="erp-bar"><div class="erp-fill" data-w="75"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">Reelo CRM</div><div class="erp-lv">Advanced</div><div class="erp-bar"><div class="erp-fill" data-w="78"></div></div></div>
+        </div>
+      </div>
+      <div class="dt pr pr-d2">
+        <div class="dt-lbl">◎ Core Competency</div>
+        <div class="cw">
+          <div class="ci">
+            <svg class="csvg" viewBox="0 0 60 60"><circle class="ctr" cx="30" cy="30" r="24"/><circle class="cfill cfc" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8" data-offset="22.6" id="ring1"/></svg>
+            <div class="cpct" style="color:var(--c1)">85%</div><div class="clbl">Networks</div>
+          </div>
+          <div class="ci">
+            <svg class="csvg" viewBox="0 0 60 60"><circle class="ctr" cx="30" cy="30" r="24"/><circle class="cfill cfo" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8" data-offset="12.1" id="ring2"/></svg>
+            <div class="cpct" style="color:var(--c3)">92%</div><div class="clbl">ERP</div>
+          </div>
+          <div class="ci">
+            <svg class="csvg" viewBox="0 0 60 60"><circle class="ctr" cx="30" cy="30" r="24"/><circle class="cfill cfg" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8" data-offset="30.2" id="ring3"/></svg>
+            <div class="cpct" style="color:var(--c4)">80%</div><div class="clbl">Security</div>
+          </div>
+        </div>
+      </div>
+      <div class="dt pr pr-d3">
+        <div class="dt-lbl">📋 Activity Log</div>
+        <div class="log-w" id="logWrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P4 SKILLS -->
+<div class="panel" id="p4">
+  <div class="sk-hd pr">
+    <div class="sk-ht">Technical<br><em>Skills</em></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim2);letter-spacing:.2em">// 04 of 07</div>
+  </div>
+  <div class="sk-bd">
+    <div class="sk-col">
+      <div class="sk-ct">Technical Stack</div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">SQL Server & SSMS</span><span class="sk-pc">92%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="92"></div></div><div class="sk-tags2"><span class="sk-tg">Database</span><span class="sk-tg">Queries</span></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Python</span><span class="sk-pc">75%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="75"></div></div><div class="sk-tags2"><span class="sk-tg">Scripting</span><span class="sk-tg">Automation</span></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Django & Web Dev</span><span class="sk-pc">70%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="70"></div></div><div class="sk-tags2"><span class="sk-tg">HTML</span><span class="sk-tg">CSS</span></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">JavaScript</span><span class="sk-pc">60%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="60"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">AWS Cloud</span><span class="sk-pc">58%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="58"></div></div><div class="sk-tags2"><span class="sk-tg">EC2</span><span class="sk-tg">S3</span></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Git & GitHub</span><span class="sk-pc">82%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="82"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Network Administration</span><span class="sk-pc">88%</span></div><div class="sk-bar"><div class="skf skf-c" data-w="88"></div></div><div class="sk-tags2"><span class="sk-tg">TCP/IP</span><span class="sk-tg">VPN</span><span class="sk-tg">DNS</span></div></div>
+    </div>
+    <div class="sk-col">
+      <div class="sk-ct">Software & Platforms</div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Odoo ERP</span><span class="sk-pc">95%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="95"></div></div><div class="sk-tags2"><span class="sk-tg">Integration</span><span class="sk-tg">Migration</span></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Zoho Suite</span><span class="sk-pc">82%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="82"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Hostinger / cPanel</span><span class="sk-pc">90%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="90"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Adobe Photoshop</span><span class="sk-pc">78%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="78"></div></div><div class="sk-tags2"><span class="sk-tg">Design</span><span class="sk-tg">Branding</span></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Adobe Illustrator</span><span class="sk-pc">70%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="70"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">After Effects / Premiere</span><span class="sk-pc">65%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="65"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Tally / PagarBook</span><span class="sk-pc">78%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="78"></div></div></div>
+      <div class="sk-item"><div class="sk-top"><span class="sk-nm">Reelo CRM</span><span class="sk-pc">80%</span></div><div class="sk-bar"><div class="skf skf-o" data-w="80"></div></div></div>
+    </div>
+    <div class="sk-col">
+      <div class="sk-ct">Soft Skills</div>
+      <div class="soft-grid">
+        <div class="sp">Communication</div><div class="sp">Problem Solving</div><div class="sp">Leadership</div>
+        <div class="sp">Team Collaboration</div><div class="sp">Time Management</div><div class="sp">Adaptability</div>
+        <div class="sp">Attention to Detail</div><div class="sp">Cross-Functional</div><div class="sp">Data Analytics</div>
+        <div class="sp">CRM Strategy</div><div class="sp">IT Mentoring</div><div class="sp">Vendor Mgmt</div>
+      </div>
+      <div style="margin-top:2rem">
+        <div class="sk-ct" style="color:var(--c2);margin-top:.5rem">Languages</div>
+        <div class="soft-grid" style="margin-top:.8rem">
+          <div class="sp" style="border-color:rgba(123,47,255,.3);color:var(--c2)">English · Fluent</div>
+          <div class="sp" style="border-color:rgba(123,47,255,.3);color:var(--c2)">Arabic · Basic</div>
+          <div class="sp" style="border-color:rgba(123,47,255,.3);color:var(--c2)">Tamil · Native</div>
+          <div class="sp" style="border-color:rgba(123,47,255,.3);color:var(--c2)">Malayalam · Fluent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P5 PROJECTS -->
+<div class="panel" id="p5">
+  <div class="pj-hd pr">
+    <div class="pj-ht">Key<br><span>Projects</span></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim2);letter-spacing:.2em">// 05 of 07</div>
+  </div>
+  <div class="pj-grid">
+    <div class="pj-c pr pr-d1">
+      <div class="pc-n">01</div><div class="pc-cat">Infrastructure</div>
+      <div class="pc-nm">Enterprise Infrastructure Upgrade</div>
+      <div class="pc-ds">Spearheaded a comprehensive overhaul of IT infrastructure across multiple locations — re-architecting network topology, upgrading server hardware, and integrating cloud services to improve scalability and reduce cost of ownership.</div>
+      <div class="pc-imp"><div class="pc-il">Outcome</div><div class="pc-iv">15% efficiency gain</div></div>
+      <div class="pc-tgs"><div class="pc-tg">AWS</div><div class="pc-tg">Networking</div><div class="pc-tg">Server Admin</div></div>
+    </div>
+    <div class="pj-c pr pr-d2">
+      <div class="pc-n">02</div><div class="pc-cat">Security</div>
+      <div class="pc-nm">Cybersecurity Enhancement Program</div>
+      <div class="pc-ds">Deployed a layered security framework — implementing endpoint protection, firewall rules, VPN configuration, and encryption policies. Conducted staff awareness training and established incident response procedures.</div>
+      <div class="pc-imp"><div class="pc-il">Outcome</div><div class="pc-iv">Zero critical breaches</div></div>
+      <div class="pc-tgs"><div class="pc-tg">Firewall</div><div class="pc-tg">VPN</div><div class="pc-tg">Encryption</div></div>
+    </div>
+    <div class="pj-c pr pr-d3">
+      <div class="pc-n">03</div><div class="pc-cat">ERP</div>
+      <div class="pc-nm">End-to-End ERP Integration</div>
+      <div class="pc-ds">Led the full lifecycle Odoo ERP rollout across multiple brands — scoping requirements, managing data migration, building custom modules, training 50+ employees, and post-go-live hypercare. Delivered ahead of schedule.</div>
+      <div class="pc-imp"><div class="pc-il">Outcome</div><div class="pc-iv">3 brands unified</div></div>
+      <div class="pc-tgs"><div class="pc-tg">Odoo</div><div class="pc-tg">SQL</div><div class="pc-tg">Migration</div></div>
+    </div>
+    <div class="pj-c pr pr-d4">
+      <div class="pc-n">04</div><div class="pc-cat">Marketing & CRM</div>
+      <div class="pc-nm">CRM & Digital Marketing Overhaul</div>
+      <div class="pc-ds">Implemented Reelo CRM for structured lead tracking and designed a suite of digital campaigns across social and email channels. Built analytics dashboards to measure ROI and continuously optimise campaign performance.</div>
+      <div class="pc-imp"><div class="pc-il">Outcome</div><div class="pc-iv">+20% conv · +35% reach</div></div>
+      <div class="pc-tgs"><div class="pc-tg">Reelo CRM</div><div class="pc-tg">Adobe</div><div class="pc-tg">Analytics</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- P6 ACHIEVEMENTS -->
+<div class="panel" id="p6">
+  <div class="ac-l pr">
+    <div class="sec-tag" style="margin-bottom:1.5rem">// Results</div>
+    <div class="ac-big">Real<br>results,<br><em>measured.</em></div>
+    <p class="ac-sub">Every number below is a real, documented business outcome — delivered through technical precision, cross-team leadership, and a relentless focus on measurable impact.</p>
+    <a href="mailto:mohamedyasief@gmail.com" class="ac-cta">Discuss a Project →</a>
+  </div>
+  <div class="ac-r pr pr-d2">
+    <div class="ac-item"><div class="ac-num anc"><span class="cn" data-n="20">0</span>%</div><div class="ac-txt"><strong>CRM Lead Conversion Uplift</strong><p>Implemented a structured CRM system that improved lead tracking workflows and directly increased conversion rates by 20% across sales teams.</p></div></div>
+    <div class="ac-item"><div class="ac-num ano"><span class="cn" data-n="35">0</span>%</div><div class="ac-txt"><strong>Online Engagement Increase</strong><p>Designed and executed targeted digital marketing campaigns that grew audience engagement by 35% across social and email platforms.</p></div></div>
+    <div class="ac-item"><div class="ac-num ang"><span class="cn" data-n="15">0</span>%</div><div class="ac-txt"><strong>IT Process Efficiency Gain</strong><p>Streamlined core IT operations, workflows, and vendor management, yielding a 15% improvement in departmental efficiency.</p></div></div>
+    <div class="ac-item"><div class="ac-num anp"><span class="cn" data-n="99">0</span>%</div><div class="ac-txt"><strong>System Uptime Maintained</strong><p>Consistently maintained 99%+ uptime across all managed infrastructure including ERP systems, networks, and IoT locker fleets.</p></div></div>
+  </div>
+</div>
+
+<!-- P7 CONTACT -->
+<div class="panel" id="p7">
+  <canvas id="ctCanvas"></canvas>
+  <div class="ct-c pr">
+    <div class="ct-pre">Open to Opportunities</div>
+    <div class="ct-big">Let's<br><span class="ci2">connect</span></div>
+    <div class="ct-acts">
+      <a href="mailto:mohamedyasief@gmail.com" class="cpill cp1">✉ mohamedyasief@gmail.com</a>
+      <a href="https://linkedin.com/in/yasief" target="_blank" class="cpill cp2">in LinkedIn</a>
+      <a href="tel:+971503593856" class="cpill cp3">☏ +971 50 359 3856</a>
+    </div>
+    <div class="ct-note">Based in Dubai, UAE · Available for full-time roles & projects</div>
+  </div>
+  <div class="ft"><div class="ft-c">© 2025 Mohamed Yasief</div><div class="ft-c">Dubai, UAE</div></div>
+</div>
+
+</div><!-- /track -->
+
+<script>
+/* CURSOR */
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2'),cur3=document.getElementById('cur3');
+let mx=0,my=0,rx=0,ry=0,r3x=0,r3y=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){
+  cur.style.transform=`translate(${mx-3}px,${my-3}px)`;
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cur2.style.transform=`translate(${rx-16}px,${ry-16}px)`;
+  r3x+=(mx-r3x)*.06;r3y+=(my-r3y)*.06;
+  cur3.style.transform=`translate(${r3x-30}px,${r3y-30}px)`;
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.ex-tab,.pj-c,.ac-item,.resp-item,.dt,.sp,.dot,.cta,.cpill,.cb').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+/* NAV */
+const track=document.getElementById('track');
+const dots=document.querySelectorAll('.dot');
+const prog=document.getElementById('prog');
+const panels=document.querySelectorAll('.panel');
+let cur_p=0,scrolling=false,wt=null;
+const N=panels.length;
+function goTo(i){
+  if(i<0||i>=N)return;
+  cur_p=i;
+  track.style.transform=`translateX(-${i*100}vw)`;
+  dots.forEach((d,j)=>d.classList.toggle('active',j===i));
+  prog.style.width=((i/(N-1))*100)+'%';
+  panels.forEach((p,j)=>p.classList.toggle('active',j===i));
+  if(i===1)triggerAbout();
+  if(i===3)triggerDash();
+  if(i===4)triggerSkills();
+  if(i===6)triggerAch();
+}
+panels[0].classList.add('active');
+prog.style.width='0%';
+window.addEventListener('wheel',e=>{
+  e.preventDefault();
+  if(scrolling)return;
+  scrolling=true;
+  const d=Math.abs(e.deltaY)>Math.abs(e.deltaX)?e.deltaY:e.deltaX;
+  if(d>30)goTo(cur_p+1);else if(d<-30)goTo(cur_p-1);
+  clearTimeout(wt);wt=setTimeout(()=>scrolling=false,1000);
+},{passive:false});
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(cur_p+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur_p-1);
+});
+dots.forEach(d=>d.addEventListener('click',()=>goTo(+d.dataset.i)));
+let tx=0;
+window.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+window.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(dx<-50)goTo(cur_p+1);if(dx>50)goTo(cur_p-1);},{passive:true});
+
+/* HERO CANVAS */
+(function(){
+  const c=document.getElementById('heroCanvas');
+  const ctx=c.getContext('2d');
+  let W,H;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const nodes=[];
+  for(let i=0;i<90;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,pulse:Math.random()*Math.PI*2,bright:Math.random()>.88});
+  const parts=[];
+  for(let i=0;i<40;i++) parts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.8,vy:(Math.random()-.5)*.8,a:Math.random()*.4+.1,r:Math.random()*1.5+.5,col:Math.random()>.7?'0,255,157':Math.random()>.5?'123,47,255':'0,210,255'});
+  let mouseX=W/2,mouseY=H/2;
+  document.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(0,210,255,0.025)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    for(let a=0;a<nodes.length;a++){
+      const n=nodes[a];
+      for(let b=a+1;b<nodes.length;b++){
+        const m=nodes[b],dx=n.x-m.x,dy=n.y-m.y,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<140){ctx.strokeStyle=`rgba(0,210,255,${(1-dist/140)*.13})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.stroke();}
+      }
+    }
+    nodes.forEach(n=>{
+      const dx=n.x-mouseX,dy=n.y-mouseY,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<200){ctx.strokeStyle=`rgba(0,210,255,${(1-dist/200)*.28})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(mouseX,mouseY);ctx.stroke();}
+    });
+    nodes.forEach(n=>{
+      n.pulse+=.03;
+      const gl=n.bright?(Math.sin(n.pulse)*.5+.5):.3;
+      ctx.fillStyle=n.bright?`rgba(0,255,157,${gl})`:`rgba(0,210,255,${gl*.5+.2})`;
+      if(n.bright){ctx.shadowBlur=8;ctx.shadowColor='rgba(0,255,157,0.5)';}
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
+    });
+    parts.forEach(p=>{
+      ctx.fillStyle=`rgba(${p.col},${p.a})`;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* CONTACT CANVAS */
+(function(){
+  const c=document.getElementById('ctCanvas');
+  const ctx=c.getContext('2d');
+  let W,H;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  resize();window.addEventListener('resize',resize);
+  const pts=[];
+  for(let i=0;i<50;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1+.3});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach((p,i)=>{
+      pts.slice(i+1).forEach(q=>{
+        const d=Math.hypot(p.x-q.x,p.y-q.y);
+        if(d<160){ctx.strokeStyle=`rgba(0,210,255,${(1-d/160)*.07})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}
+      });
+      ctx.fillStyle='rgba(0,210,255,0.25)';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* NETWORK TOPOLOGY CANVAS */
+(function(){
+  const c=document.getElementById('netCanvas');
+  const ctx=c.getContext('2d');
+  let W,H;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  resize();
+  const devs=[{label:'IoT',col:'#00ff9d'},{label:'DB',col:'#7b2fff'},{label:'APP',col:'#00d2ff'},{label:'BKUP',col:'#ff6b35'},{label:'SEC',col:'#ff3e8a'},{label:'WEB',col:'#00d2ff'}];
+  let pkts=[];
+  setInterval(()=>{const d=devs[Math.floor(Math.random()*devs.length)];pkts.push({to:d,t:0,col:d.col});},600);
+  function draw(){
+    if(!W){resize();return;}
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2,R=Math.min(W,H)*.36;
+    devs.forEach((d,i)=>{const a=(i/devs.length)*Math.PI*2-Math.PI/2;d.x=cx+Math.cos(a)*R;d.y=cy+Math.sin(a)*R;});
+    devs.forEach(d=>{
+      ctx.strokeStyle='rgba(0,210,255,0.08)';ctx.lineWidth=1;ctx.setLineDash([4,6]);
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(d.x,d.y);ctx.stroke();ctx.setLineDash([]);
+    });
+    pkts.forEach(p=>{
+      p.t+=.015;
+      const x=cx+(p.to.x-cx)*p.t,y=cy+(p.to.y-cy)*p.t;
+      ctx.fillStyle=p.col;ctx.shadowBlur=6;ctx.shadowColor=p.col;
+      ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    });
+    pkts=pkts.filter(p=>p.t<1);
+    ctx.fillStyle='rgba(0,210,255,0.1)';ctx.strokeStyle='rgba(0,210,255,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#00d2ff';ctx.font='bold 8px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('CORE',cx,cy);
+    devs.forEach(d=>{
+      ctx.fillStyle=d.col+'22';ctx.strokeStyle=d.col+'88';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(d.x,d.y,12,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle=d.col;ctx.font='bold 7px JetBrains Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(d.label,d.x,d.y);
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* TERMINAL */
+const tLines=[
+  {t:'cmd',txt:'whoami'},{t:'out',txt:'<span>Mohamed Yasief</span> — IT Administrator'},
+  {t:'cmd',txt:'cat location.txt'},{t:'out',txt:'Dubai, United Arab Emirates 🇦🇪'},
+  {t:'cmd',txt:'cat current_role.txt'},{t:'out',txt:'IT Administrator @ <span>LaundryBox Dubai</span>'},
+  {t:'cmd',txt:'ls skills/'},{t:'out',txt:'ERP  Networks  Security  Cloud  DevOps  Marketing'},
+  {t:'cmd',txt:'./status.sh'},{t:'out',txt:'✓ Available for new opportunities'},
+];
+let tIdx=0,chIdx=0,typing=false;
+function typeNext(){
+  if(tIdx>=tLines.length)return;
+  const tb=document.getElementById('termBody');
+  const line=tLines[tIdx];
+  if(!typing){
+    const div=document.createElement('div');div.className='tl';
+    if(line.t==='cmd')div.innerHTML=`<span class="tp">yasief@dubai:~$</span><span class="tc" id="tl${tIdx}"> </span>`;
+    else div.innerHTML=`<span class="to" id="tl${tIdx}"></span>`;
+    tb.appendChild(div);typing=true;chIdx=0;
+  }
+  const el=document.getElementById('tl'+tIdx);
+  if(chIdx<=line.txt.length){
+    el.innerHTML=(line.t==='cmd'?' ':'')+line.txt.substring(0,chIdx);
+    chIdx++;setTimeout(typeNext,line.t==='cmd'?55:22);
+  } else {typing=false;tIdx++;setTimeout(typeNext,line.t==='cmd'?220:700);}
+}
+
+/* ACTIVITY LOG */
+const logs=[
+  {cl:'lok',m:'[SUCCESS] ERP sync completed — 0 errors'},{cl:'linf',m:'[INFO] Backup job initiated on BKUP-01'},
+  {cl:'lok',m:'[SUCCESS] Firewall rules updated'},{cl:'lwn',m:'[WARN] IoT node 07 high latency'},
+  {cl:'linf',m:'[INFO] New device enrolled — MOBILE-42'},{cl:'lok',m:'[SUCCESS] SSL certificates renewed'},
+  {cl:'lerr',m:'[ALERT] Unauthorized access attempt blocked'},{cl:'lok',m:'[SUCCESS] Threat neutralized'},
+  {cl:'linf',m:'[INFO] Network health check passed'},{cl:'lok',m:'[SUCCESS] Database optimisation complete'},
+  {cl:'linf',m:'[INFO] User account provisioned — STAFF-19'},{cl:'lwn',m:'[WARN] Disk usage 78% on PROD-01'},
+];
+let logIdx=0;
+function addLog(){
+  const w=document.getElementById('logWrap');if(!w)return;
+  const m=logs[logIdx%logs.length];
+  const now=new Date();
+  const ts=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
+  const div=document.createElement('div');div.className='log-ln';
+  div.innerHTML=`<span class="lt">${ts}</span><span class="${m.cl} lmsg">${m.m}</span>`;
+  w.appendChild(div);w.scrollTop=w.scrollHeight;
+  if(w.children.length>12)w.removeChild(w.children[0]);
+  logIdx++;
+}
+setInterval(addLog,1800);
+for(let i=0;i<6;i++)addLog();
+
+/* TRIGGERS */
+let aboutDone=false,dashDone=false,skillsDone=false,achDone=false;
+function triggerAbout(){
+  if(aboutDone)return;aboutDone=true;
+  function cu(id,end,suf=''){
+    let n=0;const el=document.getElementById(id);if(!el)return;
+    const iv=setInterval(()=>{n=Math.min(n+end/40,end);el.innerHTML=Math.round(n)+(suf?`<span style="font-size:1.5rem">${suf}</span>`:'');if(n>=end)clearInterval(iv);},40);
+  }
+  cu('cnt1',4,'+');cu('cnt2',3,'');cu('cnt3',20,'%');cu('cnt4',35,'%');
+  document.querySelectorAll('.sf').forEach(b=>{b.style.width=(b.dataset.w||50)+'%';});
+  setTimeout(typeNext,400);
+}
+function triggerDash(){
+  if(dashDone)return;dashDone=true;
+  let u=0;const uel=document.getElementById('uptimeCount');
+  const iv=setInterval(()=>{u=Math.min(u+2.5,99.7);if(uel)uel.textContent=u.toFixed(1);if(u>=99.7)clearInterval(iv);},30);
+  let inc=0;const iel=document.getElementById('incCount');
+  const iv2=setInterval(()=>{inc=Math.min(inc+7,347);if(iel)iel.textContent=inc;if(inc>=347)clearInterval(iv2);},20);
+  setTimeout(()=>{
+    document.querySelectorAll('.cfill').forEach(r=>{r.style.strokeDashoffset=r.dataset.offset;});
+  },300);
+  document.querySelectorAll('.erp-fill').forEach(b=>{b.style.width=(b.dataset.w||70)+'%';});
+}
+function triggerSkills(){
+  if(skillsDone)return;skillsDone=true;
+  document.querySelectorAll('.skf').forEach(b=>{b.style.width=(b.dataset.w||60)+'%';});
+}
+function triggerAch(){
+  if(achDone)return;achDone=true;
+  document.querySelectorAll('.cn').forEach(el=>{
+    const end=+el.dataset.n;let n=0;
+    const iv=setInterval(()=>{n=Math.min(n+Math.ceil(end/30),end);el.textContent=n;if(n>=end)clearInterval(iv);},40);
+  });
+}
+
+/* EXPERIENCE TABS */
+document.querySelectorAll('.ex-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.ex-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const pane=tab.dataset.pane;
+    document.querySelectorAll('.ex-pane').forEach(p=>p.classList.remove('show'));
+    const t=document.getElementById('pane-'+pane);if(t)t.classList.add('show');
+  });
+});
+</script>
+</body>
+</html>

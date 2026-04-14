@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mohamed Yasief — IT Administrator · Dubai</title>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Fraunces:ital,wght@0,300;0,400;1,300;1,700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -13,7 +23,7 @@
   --w:#eef2ff;--dim:rgba(238,242,255,0.42);--dim2:rgba(238,242,255,0.22);
   --c1:#00d2ff;--c2:#7b2fff;--c3:#ff6b35;--c4:#00ff9d;--c5:#ff3e8a;
 }
-html{background:var(--bg);}
+html{background:var(--bg); overflow-x: hidden;}
 body{font-family:'Outfit',sans-serif;color:var(--w);overflow:hidden;height:100vh;cursor:none;}
 ::selection{background:rgba(0,210,255,0.25);}
 
@@ -47,10 +57,20 @@ body.hov #cur3{width:80px;height:80px;}
 /* ═══ P0 HERO ═══ */
 #p0{background:var(--bg);}
 #heroCanvas{position:absolute;inset:0;z-index:0;}
-.h-ov{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(4,8,15,0),rgba(4,8,15,.75));}
+.h-ov{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(4,8,15,0),rgba(4,8,15,.75)); pointer-events:none;}
 .h-scan{position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);pointer-events:none;}
 .hc{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:0 5rem;}
-.h-pre{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;color:var(--c1);display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;animation:sR 1s .3s both;}
+.h-pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .25em;
+    color: var(--c1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    animation: sR 1s .3s both;
+}
 .h-pre::before{content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c1));}
 .blink{animation:blink .8s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
@@ -313,16 +333,95 @@ body.hov #cur3{width:80px;height:80px;}
 .pr-d1{transition-delay:.1s;}.pr-d2{transition-delay:.2s;}.pr-d3{transition-delay:.3s;}.pr-d4{transition-delay:.4s;}
 
 @media(max-width:768px){
-  body{overflow:auto;}
+  /* General Mobile Setup */
+  body{overflow-y:auto; overflow-x:hidden; cursor: auto; height: auto;}
+  #cur, #cur2, #cur3, #dots, .nav-status, .h-badges, .h-scroll, #prog {display: none;}
+
+  /* Layout & Scrolling */
   #track{flex-direction:column;width:100%;height:auto;transform:none!important;}
-  .panel{width:100%;height:auto;min-height:100vh;}
-  #dots,.nav-status{display:none;}
-  #p1,#p6{grid-template-columns:1fr;}
-  .ex-bd,.sk-bd,.pj-grid{grid-template-columns:1fr;}
-  .dgrid{grid-template-columns:1fr 1fr;}
-  .resp-grid{grid-template-columns:1fr;}
-  .h-badges{display:none;}
-  .hc{padding:0 2rem;}
+  .panel{
+    width:100%;
+    height:auto;
+    min-height: 0; /* FIX: Remove 100vh to prevent gaps */
+    padding: 4rem 1.5rem; /* Consistent vertical padding */
+    overflow: visible; /* Allow content to flow */
+  }
+  #p0 {
+    min-height: 100vh; /* Keep hero full-height */
+    padding: 0; /* Reset padding for hero */
+  }
+  .panel:last-child {padding-bottom: 1.5rem;}
+
+  /* Navigation */
+  #nav {padding: 1rem 1.5rem;}
+  .nav-logo {font-size: 1rem;}
+
+  /* Hero Section */
+  .hc{
+    padding: 8rem 1.5rem 4rem;
+    justify-content: center;
+    position: static;
+    inset: auto;
+  }
+  .h-pre { top: 0; position: static; margin-bottom: 1.5rem; font-size: .65rem;}
+  .h-name {font-size: clamp(3rem, 10vw, 4.5rem);}
+  .h-role {font-size: clamp(1rem, 4vw, 1.2rem);}
+  .h-ctas {flex-direction: column; gap: .8rem; align-items: flex-start; width: 100%;}
+  .cta {width: 100%; text-align: center;}
+
+  /* About Section */
+  #p1, #p6 {grid-template-columns:1fr;}
+  .a-left, .a-right, .ac-l, .ac-r {padding: 3rem 1.5rem; border: none;}
+  .a-left::before {font-size: 8rem; bottom: 0; left: -0.5rem;}
+  .terminal {margin-top: 1.5rem;}
+  .stat-row {
+    grid-template-columns: 1fr; /* FIX: Stack stat boxes vertically */
+  }
+
+  /* Experience Section */
+  .ex-hd {padding: 4rem 1.5rem 2rem;}
+  .ex-bd {grid-template-columns:1fr;}
+  .ex-nav {border-right: none; padding: 1.5rem 0;}
+  .ex-cn {padding: 2rem 1.5rem;}
+  .ep-top {flex-direction: column; align-items: flex-start; gap: 1rem;}
+  .cur-tag {margin-left: 0; margin-top: 0.5rem;}
+  .resp-grid {
+    grid-template-columns: 1fr; /* FIX: Stack responsive grid items */
+  }
+
+  /* Dashboard Section */
+  .dw {padding: 4rem 1.5rem 2rem;}
+  .d-title {font-size: clamp(2rem, 8vw, 3rem);}
+  .dgrid{grid-template-columns:1fr; gap: 1px;}
+  .erp-tile {grid-column: auto;}
+  .erp-grid {grid-template-columns: 1fr;}
+  .log-w .lmsg {
+    white-space: pre-wrap; /* FIX: Wrap text in activity log */
+    word-break: break-all;
+  }
+
+  /* Skills Section */
+  .sk-hd {padding: 4rem 1.5rem 2rem;}
+  .sk-bd {grid-template-columns:1fr;}
+  .sk-col {border-right: none; padding: 1.5rem;}
+  .sk-col:first-child {padding-top: 0;}
+
+  /* Projects Section */
+  .pj-hd {padding: 4rem 1.5rem 2rem;}
+  .pj-grid {grid-template-columns:1fr;}
+  .pj-c {border-right: none; padding: 1.5rem;}
+
+  /* Achievements Section */
+  #p6 {grid-template-columns:1fr;}
+  .ac-l, .ac-r {padding: 3rem 1.5rem; border: none;}
+  .ac-big {font-size: clamp(3rem, 10vw, 5rem);}
+
+  /* Contact Section */
+  .ct-c {padding: 4rem 1.5rem;}
+  .ct-big {font-size: clamp(3.5rem, 12vw, 6rem);}
+  .ct-acts {flex-direction: column; gap: .8rem;}
+  .cpill {width: 100%; justify-content: center;}
+  .ft {padding: 0 1.5rem; bottom: 1rem; position: relative;}
 }
 </style>
 </head>
@@ -346,13 +445,17 @@ body.hov #cur3{width:80px;height:80px;}
 
 <div id="track">
 
-<!-- P0 HERO -->
 <div class="panel" id="p0">
-  <canvas id="heroCanvas"></canvas>
+  <canvas id="bgCanvas" style="position:absolute; inset:0; z-index:0;"></canvas>
+
+  <canvas id="heroCanvas" style="position:absolute; inset:0; z-index:1; pointer-events:none; mix-blend-mode: screen;"></canvas>
+
   <div class="h-ov"></div><div class="h-scan"></div>
   <div class="hc">
     <div class="h-pre">// IT Administrator · Dubai, UAE <span class="blink">▋</span></div>
-    <h1 class="h-name">Mohamed<br><span class="glitch" data-text="Yasief">Yasief</span></h1>
+
+    <h1 class="h-name" style="visibility: hidden; pointer-events: none;">Mohamed<br><span class="glitch" data-text="Yasief">Yasief</span></h1>
+
     <div class="h-role"><strong>IT Administrator</strong><span class="sep">·</span><strong>ERP Specialist</strong><span class="sep">·</span>Digital Marketing</div>
     <div class="h-loc">◉ LaundryBox Dubai &nbsp;·&nbsp; May 2025 – Present</div>
     <div class="h-ctas">
@@ -371,7 +474,6 @@ body.hov #cur3{width:80px;height:80px;}
   <div class="h-scroll"><div class="sc-line"></div>Scroll to explore</div>
 </div>
 
-<!-- P1 ABOUT -->
 <div class="panel" id="p1">
   <div class="a-left">
     <div class="sec-tag pr pr-d1">About Me</div>
@@ -397,7 +499,6 @@ body.hov #cur3{width:80px;height:80px;}
   </div>
 </div>
 
-<!-- P2 EXPERIENCE -->
 <div class="panel" id="p2">
   <div class="ex-hd pr">
     <div class="ex-hd-t">Work<br><span>Experience</span></div>
@@ -472,7 +573,6 @@ body.hov #cur3{width:80px;height:80px;}
   </div>
 </div>
 
-<!-- P3 IT DASHBOARD -->
 <div class="panel" id="p3">
   <div class="dw">
     <div class="d-hd">
@@ -546,7 +646,6 @@ body.hov #cur3{width:80px;height:80px;}
   </div>
 </div>
 
-<!-- P4 SKILLS -->
 <div class="panel" id="p4">
   <div class="sk-hd pr">
     <div class="sk-ht">Technical<br><em>Skills</em></div>
@@ -595,7 +694,6 @@ body.hov #cur3{width:80px;height:80px;}
   </div>
 </div>
 
-<!-- P5 PROJECTS -->
 <div class="panel" id="p5">
   <div class="pj-hd pr">
     <div class="pj-ht">Key<br><span>Projects</span></div>
@@ -633,7 +731,6 @@ body.hov #cur3{width:80px;height:80px;}
   </div>
 </div>
 
-<!-- P6 ACHIEVEMENTS -->
 <div class="panel" id="p6">
   <div class="ac-l pr">
     <div class="sec-tag" style="margin-bottom:1.5rem">// Results</div>
@@ -649,7 +746,6 @@ body.hov #cur3{width:80px;height:80px;}
   </div>
 </div>
 
-<!-- P7 CONTACT -->
 <div class="panel" id="p7">
   <canvas id="ctCanvas"></canvas>
   <div class="ct-c pr">
@@ -665,9 +761,7 @@ body.hov #cur3{width:80px;height:80px;}
   <div class="ft"><div class="ft-c">© 2025 Mohamed Yasief</div><div class="ft-c">Dubai, UAE</div></div>
 </div>
 
-</div><!-- /track -->
-
-<script>
+</div><script>
 /* CURSOR */
 const cur=document.getElementById('cur'),cur2=document.getElementById('cur2'),cur3=document.getElementById('cur3');
 let mx=0,my=0,rx=0,ry=0,r3x=0,r3y=0;
@@ -722,55 +816,6 @@ dots.forEach(d=>d.addEventListener('click',()=>goTo(+d.dataset.i)));
 let tx=0;
 window.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
 window.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(dx<-50)goTo(cur_p+1);if(dx>50)goTo(cur_p-1);},{passive:true});
-
-/* HERO CANVAS */
-(function(){
-  const c=document.getElementById('heroCanvas');
-  const ctx=c.getContext('2d');
-  let W,H;
-  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
-  resize();window.addEventListener('resize',resize);
-  const nodes=[];
-  for(let i=0;i<90;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,pulse:Math.random()*Math.PI*2,bright:Math.random()>.88});
-  const parts=[];
-  for(let i=0;i<40;i++) parts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.8,vy:(Math.random()-.5)*.8,a:Math.random()*.4+.1,r:Math.random()*1.5+.5,col:Math.random()>.7?'0,255,157':Math.random()>.5?'123,47,255':'0,210,255'});
-  let mouseX=W/2,mouseY=H/2;
-  document.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;});
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(0,210,255,0.025)';ctx.lineWidth=1;
-    for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    for(let a=0;a<nodes.length;a++){
-      const n=nodes[a];
-      for(let b=a+1;b<nodes.length;b++){
-        const m=nodes[b],dx=n.x-m.x,dy=n.y-m.y,dist=Math.sqrt(dx*dx+dy*dy);
-        if(dist<140){ctx.strokeStyle=`rgba(0,210,255,${(1-dist/140)*.13})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.stroke();}
-      }
-    }
-    nodes.forEach(n=>{
-      const dx=n.x-mouseX,dy=n.y-mouseY,dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<200){ctx.strokeStyle=`rgba(0,210,255,${(1-dist/200)*.28})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(mouseX,mouseY);ctx.stroke();}
-    });
-    nodes.forEach(n=>{
-      n.pulse+=.03;
-      const gl=n.bright?(Math.sin(n.pulse)*.5+.5):.3;
-      ctx.fillStyle=n.bright?`rgba(0,255,157,${gl})`:`rgba(0,210,255,${gl*.5+.2})`;
-      if(n.bright){ctx.shadowBlur=8;ctx.shadowColor='rgba(0,255,157,0.5)';}
-      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
-      ctx.shadowBlur=0;
-      n.x+=n.vx;n.y+=n.vy;
-      if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
-    });
-    parts.forEach(p=>{
-      ctx.fillStyle=`rgba(${p.col},${p.a})`;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
 
 /* CONTACT CANVAS */
 (function(){
@@ -933,6 +978,408 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
     const t=document.getElementById('pane-'+pane);if(t)t.classList.add('show');
   });
 });
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    // Advanced Simplex 3D & Curl Noise Shader
+    const snoiseGLSL = `
+        vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+        vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+        float snoise(vec3 v){
+            const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+            const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+            vec3 i  = floor(v + dot(v, C.yyy) );
+            vec3 x0 = v - i + dot(i, C.xxx) ;
+            vec3 g = step(x0.yzx, x0.xyz);
+            vec3 l = 1.0 - g;
+            vec3 i1 = min( g.xyz, l.zxy );
+            vec3 i2 = max( g.xyz, l.zxy );
+            vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+            vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+            vec3 x3 = x0 - 1.0 + 3.0 * C.xxx;
+            i = mod(i, 289.0 );
+            vec4 p = permute( permute( permute(
+                        i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+                    + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+                    + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+            float n_ = 1.0/7.0;
+            vec3  ns = n_ * D.wyz - D.xzx;
+            vec4 j = p - 49.0 * floor(p * ns.z *ns.z);
+            vec4 x_ = floor(j * ns.z);
+            vec4 y_ = floor(j - 7.0 * x_ );
+            vec4 x = x_ *ns.x + ns.yyyy;
+            vec4 y = y_ *ns.x + ns.yyyy;
+            vec4 h = 1.0 - abs(x) - abs(y);
+            vec4 b0 = vec4( x.xy, y.xy );
+            vec4 b1 = vec4( x.zw, y.zw );
+            vec4 s0 = floor(b0)*2.0 + 1.0;
+            vec4 s1 = floor(b1)*2.0 + 1.0;
+            vec4 sh = -step(h, vec4(0.0));
+            vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+            vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+            vec3 p0 = vec3(a0.xy,h.x);
+            vec3 p1 = vec3(a0.zw,h.y);
+            vec3 p2 = vec3(a1.xy,h.z);
+            vec3 p3 = vec3(a1.zw,h.w);
+            vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+            p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+            vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+            m = m * m;
+            return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
+        }
+
+        vec3 curlNoise(vec3 p) {
+            const float e = .1;
+            vec3 dx = vec3(e, 0.0, 0.0);
+            vec3 dy = vec3(0.0, e, 0.0);
+            vec3 dz = vec3(0.0, 0.0, e);
+            vec3 p_x0 = vec3(snoise(p - dx), snoise(p - dx + 7.23), snoise(p - dx + 13.45));
+            vec3 p_x1 = vec3(snoise(p + dx), snoise(p + dx + 7.23), snoise(p + dx + 13.45));
+            vec3 p_y0 = vec3(snoise(p - dy), snoise(p - dy + 7.23), snoise(p - dy + 13.45));
+            vec3 p_y1 = vec3(snoise(p + dy), snoise(p + dy + 7.23), snoise(p + dy + 13.45));
+            vec3 p_z0 = vec3(snoise(p - dz), snoise(p - dz + 7.23), snoise(p - dz + 13.45));
+            vec3 p_z1 = vec3(snoise(p + dz), snoise(p + dz + 7.23), snoise(p + dz + 13.45));
+            float x = p_y1.z - p_y0.z - p_z1.y + p_z0.y;
+            float y = p_z1.x - p_z0.x - p_x1.z + p_x0.z;
+            float z = p_x1.y - p_x0.y - p_y1.x + p_y0.x;
+            return normalize(vec3(x, y, z) / (2.0 * e));
+        }
+    `;
+
+    const computeVelocityShader = `
+        ${snoiseGLSL}
+        uniform float uTime;
+        uniform vec2 uMouse;
+        uniform sampler2D tOrigins;
+
+        void main() {
+            vec2 uv = gl_FragCoord.xy / resolution.xy;
+            vec3 pos = texture2D(texturePosition, uv).xyz;
+            vec3 vel = texture2D(textureVelocity, uv).xyz;
+            vec3 org = texture2D(tOrigins, uv).xyz;
+
+            // Elastic return force
+            vec3 dir = org - pos;
+            vel += dir * 0.04;
+
+            // Fluid Swirl Interaction
+            float dist = distance(pos.xy, uMouse);
+            if(dist < 2.5) {
+                float force = (2.5 - dist) * 0.5;
+                vec3 curl = curlNoise(pos * 0.8 + uTime * 0.2);
+                vel += curl * force * 0.08;
+            }
+
+            vel *= 0.86; // Friction
+            gl_FragColor = vec4(vel, 1.0);
+        }
+    `;
+
+    const computePositionShader = `
+        void main() {
+            vec2 uv = gl_FragCoord.xy / resolution.xy;
+            vec3 pos = texture2D(texturePosition, uv).xyz;
+            vec3 vel = texture2D(textureVelocity, uv).xyz;
+            pos += vel;
+            gl_FragColor = vec4(pos, 1.0);
+        }
+    `;
+
+    const particleVertexShader = `
+        uniform sampler2D texturePosition;
+        uniform sampler2D textureVelocity;
+        attribute vec2 reference;
+        varying float vVelocityMap;
+
+        void main() {
+            vec3 pos = texture2D(texturePosition, reference).xyz;
+            vec3 vel = texture2D(textureVelocity, reference).xyz;
+
+            vVelocityMap = length(vel);
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+
+            gl_PointSize = (2.0 + vVelocityMap * 5.0) * (10.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `;
+
+    const particleFragmentShader = `
+        varying float vVelocityMap;
+        void main() {
+            vec2 circCoord = 2.0 * gl_PointCoord - 1.0;
+            if (dot(circCoord, circCoord) > 1.0) discard;
+
+            // Sync with Yasief's UI Colors: --c1 (Cyan) and --c2 (Purple)
+            vec3 baseColor = vec3(0.0, 0.82, 1.0);
+            vec3 fastColor = vec3(0.48, 0.18, 1.0);
+            vec3 finalColor = mix(baseColor, fastColor, vVelocityMap * 2.0);
+
+            float alpha = clamp(vVelocityMap * 10.0 + 0.7, 0.0, 1.0);
+            gl_FragColor = vec4(finalColor, alpha);
+        }
+    `;
+
+    // Engine Setup
+    const WIDTH = 128; // 16,384 particles
+    const PARTICLES = WIDTH * WIDTH;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#04080f'); // Matches var(--bg)
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 12;
+
+    const canvasEl = document.getElementById('heroCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: false, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Bloom Post-Processing
+    const renderScene = new RenderPass(scene, camera);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass.threshold = 0.1;
+    bloomPass.strength = 1.8;
+    bloomPass.radius = 0.5;
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(renderScene);
+    composer.addPass(bloomPass);
+
+    // Generate Text Coordinates
+    const textCanvas = document.createElement('canvas');
+    textCanvas.width = 512;
+    textCanvas.height = 512;
+    const ctx = textCanvas.getContext('2d', { willReadFrequently: true });
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#fff';
+    ctx.font = '400 75px Outfit, sans-serif'; // Made font slightly thicker/larger internally
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+
+    // Shifted closer to the left edge of the hidden canvas
+    ctx.fillText('MOHAMED', 20, 200);
+    ctx.fillText('YASIEF', 20, 280);
+
+    const imgData = ctx.getImageData(0, 0, 512, 512).data;
+
+    // GPGPU Initializer
+    const gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, renderer);
+    const dtPosition = gpuCompute.createTexture();
+    const dtVelocity = gpuCompute.createTexture();
+    const dtOrigins = gpuCompute.createTexture();
+
+    const posArray = dtPosition.image.data;
+    const velArray = dtVelocity.image.data;
+    const orgArray = dtOrigins.image.data;
+
+    let pIdx = 0;
+    let isMobile = window.innerWidth < 768;
+
+    for(let i = 0; i < 512 * 512; i++) {
+        if(imgData[i * 4] > 128 && pIdx < PARTICLES) {
+            let px = i % 512;
+            let py = Math.floor(i / 512);
+
+            let nx = px / 512;
+            let ny = py / 512;
+
+
+      // Dynamic scaling based on the actual viewport width
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // This calculates a scale that shrinks on smaller screens
+      let scale = vw / (isMobile ? 38 : 58);
+      // Offset X automatically shifts left based on how wide the text is
+      let offsetX = -(scale * 0.48);
+      // Offset Y keeps it vertically centered
+      let offsetY = isMobile ? (vh / 300) : 1.5;
+
+            let x = nx * scale + offsetX;
+            let y = -ny * scale + (scale / 2) + offsetY;
+
+            // Small jitter for fluid aesthetic
+            x += (Math.random() - 0.5) * 0.05;
+            y += (Math.random() - 0.5) * 0.05;
+
+            posArray[pIdx * 4] = orgArray[pIdx * 4] = x;
+            posArray[pIdx * 4 + 1] = orgArray[pIdx * 4 + 1] = y;
+            posArray[pIdx * 4 + 2] = orgArray[pIdx * 4 + 2] = (Math.random() - 0.5) * 0.5;
+            posArray[pIdx * 4 + 3] = orgArray[pIdx * 4 + 3] = 1.0;
+
+            velArray[pIdx * 4] = velArray[pIdx * 4 + 1] = velArray[pIdx * 4 + 2] = 0;
+            velArray[pIdx * 4 + 3] = 1.0;
+
+            pIdx++;
+        }
+    }
+
+    // Hide extra particles out of sight
+    for(let i = pIdx; i < PARTICLES; i++) {
+        posArray[i * 4] = orgArray[i * 4] = 9999;
+    }
+
+    const velocityVariable = gpuCompute.addVariable("textureVelocity", computeVelocityShader, dtVelocity);
+    const positionVariable = gpuCompute.addVariable("texturePosition", computePositionShader, dtPosition);
+
+    gpuCompute.setVariableDependencies(velocityVariable, [positionVariable, velocityVariable]);
+    gpuCompute.setVariableDependencies(positionVariable, [positionVariable, velocityVariable]);
+
+    velocityVariable.material.uniforms.uTime = { value: 0.0 };
+    velocityVariable.material.uniforms.uMouse = { value: new THREE.Vector2(-100, -100) };
+    velocityVariable.material.uniforms.tOrigins = { value: dtOrigins };
+
+    gpuCompute.init();
+
+    // Render Mesh
+    const geometry = new THREE.BufferGeometry();
+    const references = new Float32Array(PARTICLES * 2);
+
+    for (let i = 0; i < PARTICLES; i++) {
+        references[i * 2] = (i % WIDTH) / WIDTH;
+        references[i * 2 + 1] = Math.floor(i / WIDTH) / WIDTH;
+    }
+
+    geometry.setAttribute('reference', new THREE.BufferAttribute(references, 2));
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(PARTICLES * 3), 3));
+
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            texturePosition: { value: null },
+            textureVelocity: { value: null }
+        },
+        vertexShader: particleVertexShader,
+        fragmentShader: particleFragmentShader,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+
+  const particleMesh = new THREE.Points(geometry, material);
+
+// Moves and scales the text based on device
+if (isMobile) {
+    particleMesh.position.y = 0.2;
+    particleMesh.position.x = 0.5;
+    particleMesh.scale.set(0.6, 0.6, 0.6); // Scales down for mobile
+} else {
+    // 👇 DESKTOP FIXES 👇
+    particleMesh.scale.set(0.5, 0.5, 0.5); // THIS SHRINKS THE SIZE BY 50%
+    particleMesh.position.y = 1.0;         // Moves it UP to avoid the text below
+    particleMesh.position.x = -3.5;        // Moves it LEFT to align with your lines
+}
+
+scene.add(particleMesh);
+
+    // Interaction & Resizing
+    const mouse = new THREE.Vector2(-100, -100);
+    const targetMouse = new THREE.Vector2(-100, -100);
+    const clock = new THREE.Clock();
+
+window.addEventListener('mousemove', (e) => {
+        const aspect = window.innerWidth / window.innerHeight;
+        const frustumHeight = 2.0 * 12.0 * Math.tan(THREE.MathUtils.degToRad(60 * 0.5));
+        const frustumWidth = frustumHeight * aspect;
+
+        // 1. Get raw world coordinates
+        let worldX = (e.clientX / window.innerWidth) * 2 - 1;
+        let worldY = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        worldX *= (frustumWidth / 2);
+        worldY *= (frustumHeight / 2);
+
+        // 2. Convert to Mesh Local Space (Fixes the offset interaction!)
+        targetMouse.x = (worldX - particleMesh.position.x) / particleMesh.scale.x;
+        targetMouse.y = (worldY - particleMesh.position.y) / particleMesh.scale.y;
+    });
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Main Render Loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        const elapsedTime = clock.getElapsedTime();
+        mouse.lerp(targetMouse, 0.1); // Smooth cursor drag
+
+        velocityVariable.material.uniforms.uTime.value = elapsedTime;
+        velocityVariable.material.uniforms.uMouse.value.copy(mouse);
+
+        gpuCompute.compute();
+
+        material.uniforms.texturePosition.value = gpuCompute.getCurrentRenderTarget(positionVariable).texture;
+        material.uniforms.textureVelocity.value = gpuCompute.getCurrentRenderTarget(velocityVariable).texture;
+
+        composer.render();
+    }
+
+    animate();
+    /* HERO NETWORK BACKGROUND CANVAS */
+(function(){
+  // Pointing to the new background canvas
+  const c = document.getElementById('bgCanvas');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  let W,H;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+
+  const nodes=[];
+  for(let i=0;i<90;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,pulse:Math.random()*Math.PI*2,bright:Math.random()>.88});
+  const parts=[];
+  for(let i=0;i<40;i++) parts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.8,vy:(Math.random()-.5)*.8,a:Math.random()*.4+.1,r:Math.random()*1.5+.5,col:Math.random()>.7?'0,255,157':Math.random()>.5?'123,47,255':'0,210,255'});
+
+  let mouseX=W/2,mouseY=H/2;
+  document.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;});
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(0,210,255,0.025)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+    for(let a=0;a<nodes.length;a++){
+      const n=nodes[a];
+      for(let b=a+1;b<nodes.length;b++){
+        const m=nodes[b],dx=n.x-m.x,dy=n.y-m.y,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<140){ctx.strokeStyle=`rgba(0,210,255,${(1-dist/140)*.13})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.stroke();}
+      }
+    }
+    nodes.forEach(n=>{
+      const dx=n.x-mouseX,dy=n.y-mouseY,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<200){ctx.strokeStyle=`rgba(0,210,255,${(1-dist/200)*.28})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(mouseX,mouseY);ctx.stroke();}
+    });
+    nodes.forEach(n=>{
+      n.pulse+=.03;
+      const gl=n.bright?(Math.sin(n.pulse)*.5+.5):.3;
+      ctx.fillStyle=n.bright?`rgba(0,255,157,${gl})`:`rgba(0,210,255,${gl*.5+.2})`;
+      if(n.bright){ctx.shadowBlur=8;ctx.shadowColor='rgba(0,255,157,0.5)';}
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
+    });
+    parts.forEach(p=>{
+      ctx.fillStyle=`rgba(${p.col},${p.a})`;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>

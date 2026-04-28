@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohamed Yasief — IT Administrator · Dubai</title>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Fraunces:ital,wght@0,300;0,400;1,300;1,700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="noise"></div>
+<div id="cur"></div><div id="cur2"></div><div id="cur3"></div>
+<div id="prog"></div>
+<nav id="nav">
+  <div class="nav-logo"><span class="br">[</span>M.YASIEF<span class="br">]</span></div>
+  <div class="nav-status"><div class="nav-dot"></div>Available · Dubai, UAE</div>
+  <div id="cmd-hint" onclick="window.openCmdPalette&&window.openCmdPalette()"><span class="ck">Ctrl</span><span class="ck">K</span>&nbsp;Command</div>
+</nav>
+<div id="dots">
+  <div class="dot active" data-i="0"></div>
+  <div class="dot" data-i="1"></div>
+  <div class="dot" data-i="2"></div>
+  <div class="dot" data-i="3"></div>
+  <div class="dot" data-i="4"></div>
+  <div class="dot" data-i="5"></div>
+  <div class="dot" data-i="6"></div>
+  <div class="dot" data-i="7"></div>
+  <div class="dot" data-i="8"></div>
+</div>
+
+<div id="track">
+
+<div class="panel" id="p0">
+  <canvas id="bgCanvas" style="position:absolute; inset:0; z-index:0;"></canvas>
+
+  <canvas id="heroCanvas" style="position:absolute; inset:0; z-index:1; pointer-events:none; mix-blend-mode: screen;"></canvas>
+
+  <div class="h-ov"></div><div class="h-scan"></div>
+  <div class="h-badges">
+    <div class="badge"><div class="bi bi1">⚙</div><div><div class="bn">ERP Systems</div>Odoo · Zoho · QuickBill</div></div>
+    <div class="badge"><div class="bi bi2">🔒</div><div><div class="bn">IT Security</div>Endpoint · Firewall · DR</div></div>
+    <div class="badge"><div class="bi bi3">☁</div><div><div class="bn">Cloud & DevOps</div>AWS · Git · cPanel</div></div>
+    <div class="badge"><div class="bi bi4">📊</div><div><div class="bn">Digital Marketing</div>CRM · Campaigns</div></div>
+    <div class="badge"><div class="bi bi1">🌐</div><div><div class="bn">Web Management</div>Hostinger · Django</div></div>
+  </div>
+  <div class="h-scroll"><div class="sc-line"></div>Scroll to explore</div>
+  <div class="h-ticker">
+    <div class="h-ticker-inner">
+      <div class="h-ticker-item"><span class="tk-key">UPTIME</span><span class="tk-sep">·</span><span class="tk-val">99.7%</span></div>
+      <div class="h-ticker-item"><span class="tk-key">TICKETS CLOSED</span><span class="tk-sep">·</span><span class="tk-val">347</span></div>
+      <div class="h-ticker-item"><span class="tk-key">ERP SYSTEMS</span><span class="tk-sep">·</span><span class="tk-val">3 DEPLOYED</span></div>
+      <div class="h-ticker-item"><span class="tk-key">SECURITY INCIDENTS</span><span class="tk-sep">·</span><span class="tk-val">0</span></div>
+      <div class="h-ticker-item"><span class="tk-key">RESPONSE TIME</span><span class="tk-sep">·</span><span class="tk-val">&lt;2H</span></div>
+      <div class="h-ticker-item"><span class="tk-key">SITES MANAGED</span><span class="tk-sep">·</span><span class="tk-val">8+</span></div>
+      <div class="h-ticker-item"><span class="tk-key">LOCATION</span><span class="tk-sep">·</span><span class="tk-val">DUBAI, UAE</span></div>
+      <div class="h-ticker-item"><span class="tk-key">STATUS</span><span class="tk-sep">·</span><span class="tk-live">● OPEN TO WORK</span></div>
+      <div class="h-ticker-item"><span class="tk-key">UPTIME</span><span class="tk-sep">·</span><span class="tk-val">99.7%</span></div>
+      <div class="h-ticker-item"><span class="tk-key">TICKETS CLOSED</span><span class="tk-sep">·</span><span class="tk-val">347</span></div>
+      <div class="h-ticker-item"><span class="tk-key">ERP SYSTEMS</span><span class="tk-sep">·</span><span class="tk-val">3 DEPLOYED</span></div>
+      <div class="h-ticker-item"><span class="tk-key">SECURITY INCIDENTS</span><span class="tk-sep">·</span><span class="tk-val">0</span></div>
+      <div class="h-ticker-item"><span class="tk-key">RESPONSE TIME</span><span class="tk-sep">·</span><span class="tk-val">&lt;2H</span></div>
+      <div class="h-ticker-item"><span class="tk-key">SITES MANAGED</span><span class="tk-sep">·</span><span class="tk-val">8+</span></div>
+      <div class="h-ticker-item"><span class="tk-key">LOCATION</span><span class="tk-sep">·</span><span class="tk-val">DUBAI, UAE</span></div>
+      <div class="h-ticker-item"><span class="tk-key">STATUS</span><span class="tk-sep">·</span><span class="tk-live">● OPEN TO WORK</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p-threejs">
+    <!-- Loading Screen -->
+    <div id="loader">
+      <div class="loader-text">INITIALIZING NEURAL MATRIX</div>
+      <div class="loader-bar"></div>
+      <div class="loader-text" style="font-size: 0.7em; opacity: 0.6;">LOADING PARTICLE SYSTEM...</div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div id="canvas-container">
+      <canvas id="webgl-canvas"></canvas>
+    </div>
+
+    <div class="game-overlay pr pr-d4">
+        <div class="game-container-nt" style="background: var(--card); border: 1px solid var(--border);">
+            <!-- Game Header -->
+            <div class="game-header" style="padding: 1rem 1.5rem;">
+                <h1 class="game-title-nt" style="font-size: 1rem;">REFLEX TEST</h1>
+                <div class="stats" style="gap: 1.5rem;">
+                    <div class="stat-nt">
+                        <div class="stat-label-nt" style="font-size: 0.5rem;">Score</div>
+                        <div class="stat-value-nt" id="score" style="font-size: 1.2rem;">0</div>
+                    </div>
+                    <div class="stat-nt">
+                        <div class="stat-label-nt" style="font-size: 0.5rem;">Time</div>
+                        <div class="stat-value-nt" id="timer" style="font-size: 1.2rem;">60</div>
+                    </div>
+                    <div class="stat-nt">
+                        <div class="stat-label-nt" style="font-size: 0.5rem;">Combo</div>
+                        <div class="stat-value-nt" id="combo" style="font-size: 1.2rem;">0x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="game-area" id="gameArea"></div>
+            <div class="start-screen" id="startScreen">
+                <h1 class="start-title" style="font-size: 2rem;">Reflex Test</h1>
+                <p class="start-subtitle" style="font-size: 0.8rem;">Click the targets.</p>
+                <button class="btn-nt" id="startBtn" style="font-size: 0.9rem; padding: 0.8rem 2rem;">Start</button>
+            </div>
+            <div class="game-over-screen hidden" id="gameOverScreen">
+                <h2 class="start-subtitle">Complete</h2>
+                <div class="final-score" id="finalScore" style="font-size: 3rem;">0</div>
+                <div class="high-score" id="highScore"></div>
+                <button class="btn-nt" id="restartBtn" style="font-size: 0.9rem; padding: 0.8rem 2rem;">Again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel" id="p1">
+  <div class="a-left">
+    <div class="sec-tag pr pr-d1">About Me</div>
+    <h2 class="a-hl pr pr-d2">Results-driven,<br>always <em>evolving</em></h2>
+    <p class="a-body pr pr-d3">IT Administrator with deep expertise in ERP systems, IT infrastructure, and digital marketing. I bridge the gap between technology and business — optimising processes, securing systems, and empowering teams.</p>
+    <div class="terminal pr pr-d4">
+      <div class="t-bar"><span class="td td1"></span><span class="td td2"></span><span class="td td3"></span><span class="t-title">yasief@dubai:~</span></div>
+      <div class="t-body" id="termBody"></div>
+    </div>
+  </div>
+  <div class="a-right">
+    <div class="stat-row pr pr-d2">
+      <div class="stat-box"><div class="sn" id="cnt1">0</div><div class="sl">Years Experience</div><div class="sbar"><div class="sf sf-c" data-w="80"></div></div></div>
+      <div class="stat-box"><div class="sn o" id="cnt2">0</div><div class="sl">Brands Managed</div><div class="sbar"><div class="sf sf-o" data-w="60"></div></div></div>
+      <div class="stat-box"><div class="sn v" id="cnt3">0<span style="font-size:1.5rem">%</span></div><div class="sl">CRM Lead Growth</div><div class="sbar"><div class="sf sf-c" data-w="20"></div></div></div>
+      <div class="stat-box"><div class="sn g" id="cnt4">0<span style="font-size:1.5rem">%</span></div><div class="sl">Engagement Increase</div><div class="sbar"><div class="sf sf-o" data-w="35"></div></div></div>
+    </div>
+    <div class="cb-list pr pr-d3">
+      <div class="cb"><div class="cb-ic">@</div><div><div class="cb-lbl">Email</div><div class="cb-val"><a href="mailto:mohamedyasief@gmail.com">mohamedyasief@gmail.com</a></div></div></div>
+      <div class="cb"><div class="cb-ic">☏</div><div><div class="cb-lbl">UAE Mobile</div><div class="cb-val">+971 50 359 3856</div></div></div>
+      <div class="cb"><div class="cb-ic">in</div><div><div class="cb-lbl">LinkedIn</div><div class="cb-val"><a href="https://linkedin.com/in/yasief" target="_blank">linkedin.com/in/yasief</a></div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p2">
+  <div class="ex-hd pr">
+    <div class="ex-hd-t" data-scramble="WORK EXPERIENCE">Work<br><span>Experience</span></div>
+    <div class="ex-hd-s">// 02 of 07 · Professional History</div>
+  </div>
+  <div class="ex-bd">
+    <div class="ex-nav">
+      <div class="ex-tab active" data-pane="lb">
+        <div class="et-badge"><div class="et-dot da"></div><span style="color:var(--c4);letter-spacing:.2em;font-size:.55rem;font-family:'JetBrains Mono',monospace">CURRENT</span></div>
+        <div class="et-co">LaundryBox Dubai</div>
+        <div class="et-rl">IT Administrator</div>
+        <div class="et-pr">May 2025 → Present</div>
+      </div>
+      <div class="ex-tab" data-pane="mh">
+        <div class="et-badge"><div class="et-dot dp"></div><span style="color:var(--dim2);letter-spacing:.2em;font-size:.55rem;font-family:'JetBrains Mono',monospace">PREVIOUS</span></div>
+        <div class="et-co">The Muffin House Group</div>
+        <div class="et-rl">IT Administrator</div>
+        <div class="et-pr">Feb 2021 → Mar 2025</div>
+      </div>
+    </div>
+    <div class="ex-cn">
+      <div class="ex-pane show" id="pane-lb">
+        <div class="ep-top">
+          <div class="ep-logo ll">LB</div>
+          <div class="ep-info">
+            <div class="ep-co">LaundryBox Dubai</div>
+            <div class="ep-rl">IT Administrator</div>
+            <div class="ep-meta">
+              <div class="ep-chip">Dubai, UAE</div>
+              <div class="ep-chip">May 2025 – Present</div>
+              <div class="ep-chip">Smart Tech · IoT · Laundry Services</div>
+            </div>
+          </div>
+          <div class="cur-tag"><span style="width:5px;height:5px;border-radius:50%;background:var(--c4);animation:pulse 1.5s infinite;display:inline-block"></span>Live Role</div>
+        </div>
+        <p class="ep-desc">LaundryBox is Dubai's pioneering smart laundry platform — combining custom high-tech lockers, a proprietary IoT system, and a 24/7 facility enabling residents to do laundry anytime without leaving their building. I keep this connected ecosystem running flawlessly around the clock.</p>
+        <div class="resp-grid">
+          <div class="resp-item"><div class="resp-ic">🔌</div><div class="resp-txt"><strong>Infrastructure Management</strong>Managing all IT infrastructure for smart locker network deployed across Dubai residential buildings</div></div>
+          <div class="resp-item"><div class="resp-ic">🛡</div><div class="resp-txt"><strong>IoT Security</strong>Implementing security protocols across connected locker hardware and cloud-backend systems</div></div>
+          <div class="resp-item"><div class="resp-ic">⚡</div><div class="resp-txt"><strong>24/7 System Uptime</strong>Ensuring zero-downtime operation of the proprietary locker management software platform</div></div>
+          <div class="resp-item"><div class="resp-ic">📱</div><div class="resp-txt"><strong>App & Backend Support</strong>Supporting mobile app integrations, payment systems, and customer-facing digital touchpoints</div></div>
+          <div class="resp-item"><div class="resp-ic">🔧</div><div class="resp-txt"><strong>Hardware Maintenance</strong>Coordinating locker hardware diagnostics, firmware updates, and preventive maintenance</div></div>
+          <div class="resp-item"><div class="resp-ic">📊</div><div class="resp-txt"><strong>Tech-Led Process Improvement</strong>Partnering with ops and engineering on data-driven improvements to service delivery efficiency</div></div>
+        </div>
+        <div class="tech-row"><div class="tech-tag">IoT Systems</div><div class="tech-tag">AWS</div><div class="tech-tag">Network Admin</div><div class="tech-tag">Cybersecurity</div><div class="tech-tag">Mobile App Support</div><div class="tech-tag">Git</div><div class="tech-tag">cPanel</div><div class="tech-tag">Hostinger</div></div>
+      </div>
+      <div class="ex-pane" id="pane-mh">
+        <div class="ep-top">
+          <div class="ep-logo lm">MH</div>
+          <div class="ep-info">
+            <div class="ep-co">The Muffin House · Yumm Bites · MFoods</div>
+            <div class="ep-rl lm-rl">IT Administrator</div>
+            <div class="ep-meta">
+              <div class="ep-chip">Kerala & Bangalore, India</div>
+              <div class="ep-chip">Feb 2021 – Mar 2025</div>
+              <div class="ep-chip">Food & Beverage · Multi-Location</div>
+            </div>
+          </div>
+        </div>
+        <p class="ep-desc">Managed end-to-end IT operations across three brands and multiple locations — from server infrastructure and network reliability to ERP deployment, digital marketing campaigns, and vendor management. A high-impact role demanding both technical depth and strategic leadership.</p>
+        <div class="resp-grid">
+          <div class="resp-item"><div class="resp-ic">🖥</div><div class="resp-txt"><strong>Multi-Site Infrastructure</strong>Managed servers, networks, and hardware across multiple restaurant locations ensuring high performance and uptime</div></div>
+          <div class="resp-item"><div class="resp-ic">🔗</div><div class="resp-txt"><strong>ERP Integration</strong>Led Odoo, QuickBill & Zoho ERP rollout across business units — data migration, training, go-live support</div></div>
+          <div class="resp-item"><div class="resp-ic">🛡</div><div class="resp-txt"><strong>Security Protocols</strong>Implemented endpoint protection, firewall policies and data encryption across all systems</div></div>
+          <div class="resp-item"><div class="resp-ic">📈</div><div class="resp-txt"><strong>Digital Marketing</strong>Designed campaigns increasing online engagement by 35% and CRM lead conversion by 20%</div></div>
+          <div class="resp-item"><div class="resp-ic">💾</div><div class="resp-txt"><strong>Backup & Disaster Recovery</strong>Built comprehensive data backup strategies and DR plans for business continuity</div></div>
+          <div class="resp-item"><div class="resp-ic">👥</div><div class="resp-txt"><strong>Training & Vendor Mgmt</strong>Trained staff on new systems; coordinated IT vendors and procurement within budget</div></div>
+        </div>
+        <div class="tech-row"><div class="tech-tag">Odoo ERP</div><div class="tech-tag">QuickBill</div><div class="tech-tag">Zoho</div><div class="tech-tag">SQL Server</div><div class="tech-tag">Tally</div><div class="tech-tag">Reelo CRM</div><div class="tech-tag">Adobe Suite</div><div class="tech-tag">Python</div><div class="tech-tag">GitHub</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p3">
+  <div class="dw">
+    <div class="d-hd">
+      <div class="d-title pr" data-scramble="IT ADMIN DASHBOARD">IT Admin<br><span>Dashboard</span></div>
+      <div class="d-live pr">System Live · All Monitored</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim2);letter-spacing:.2em">// 03 of 07</div>
+    </div>
+    <div class="dgrid">
+      <div class="dt pr pr-d1">
+        <div class="dt-lbl">🖥 Server Status</div>
+        <div class="srv-list">
+          <div class="srv-row"><span class="srv-nm">PROD-01</span><div class="srv-bar"><div class="srv-fill sfg" style="width:94%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">94%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">DB-SERVER</span><div class="srv-bar"><div class="srv-fill sfc" style="width:87%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">87%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">BACKUP-SRV</span><div class="srv-bar"><div class="srv-fill sfg" style="width:100%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">100%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">LOCKER-IOT</span><div class="srv-bar"><div class="srv-fill sfo" style="width:72%"></div></div><span class="srv-st"><div class="sdot sd-wn"></div><span class="wn">72%</span></span></div>
+          <div class="srv-row"><span class="srv-nm">APP-API</span><div class="srv-bar"><div class="srv-fill sfg" style="width:99%"></div></div><span class="srv-st"><div class="sdot sd-ok"></div><span class="ok">99%</span></span></div>
+        </div>
+      </div>
+      <div class="dt pr pr-d2">
+        <div class="dt-lbl">🌐 Network Topology</div>
+        <div class="ncw"><canvas id="netCanvas"></canvas></div>
+      </div>
+      <div class="dt pr pr-d2">
+        <div class="dt-lbl">⬆ System Uptime</div>
+        <div class="big-met">
+          <div class="bm-n c4"><span id="uptimeCount">0</span><span class="bm-u">%</span></div>
+          <div class="bm-l">Monthly Average</div>
+          <div class="bm-tr">↑ +0.3% vs last month</div>
+        </div>
+      </div>
+      <div class="dt pr pr-d3">
+        <div class="dt-lbl">✓ Tickets Resolved</div>
+        <div class="big-met">
+          <div class="bm-n c1"><span id="incCount">0</span></div>
+          <div class="bm-l">Total Tickets Closed</div>
+          <div class="bm-tr">↑ 98% first-response rate</div>
+        </div>
+      </div>
+      <div class="dt erp-tile pr pr-d1">
+        <div class="dt-lbl">⚙ ERP & Software Expertise</div>
+        <div class="erp-grid">
+          <div class="erp-item"><div class="erp-nm">Odoo ERP</div><div class="erp-lv">Expert · 4+ yrs</div><div class="erp-bar"><div class="erp-fill" data-w="95"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">Zoho Suite</div><div class="erp-lv">Advanced · 3 yrs</div><div class="erp-bar"><div class="erp-fill" data-w="82"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">QuickBill</div><div class="erp-lv">Advanced</div><div class="erp-bar"><div class="erp-fill" data-w="80"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">SQL Server</div><div class="erp-lv">Proficient</div><div class="erp-bar"><div class="erp-fill" data-w="88"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">Tally</div><div class="erp-lv">Proficient</div><div class="erp-bar"><div class="erp-fill" data-w="75"></div></div></div>
+          <div class="erp-item"><div class="erp-nm">Reelo CRM</div><div class="erp-lv">Advanced</div><div class="erp-bar"><div class="erp-fill" data-w="78"></div></div></div>
+        </div>
+      </div>
+      <div class="dt pr pr-d2">
+        <div class="dt-lbl">◎ Core Competency</div>
+        <div class="cw">
+          <div class="ci">
+            <svg class="csvg" viewBox="0 0 60 60"><circle class="ctr" cx="30" cy="30" r="24"/><circle class="cfill cfc" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8" data-offset="22.6" id="ring1"/></svg>
+            <div class="cpct" style="color:var(--c1)">85%</div><div class="clbl">Networks</div>
+          </div>
+          <div class="ci">
+            <svg class="csvg" viewBox="0 0 60 60"><circle class="ctr" cx="30" cy="30" r="24"/><circle class="cfill cfo" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8" data-offset="12.1" id="ring2"/></svg>
+            <div class="cpct" style="color:var(--c3)">92%</div><div class="clbl">ERP</div>
+          </div>
+          <div class="ci">
+            <svg class="csvg" viewBox="0 0 60 60"><circle class="ctr" cx="30" cy="30" r="24"/><circle class="cfill cfg" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8" data-offset="30.2" id="ring3"/></svg>
+            <div class="cpct" style="color:var(--c4)">80%</div><div class="clbl">Security</div>
+          </div>
+        </div>
+      </div>
+      <div class="dt pr pr-d3">
+        <div class="dt-lbl">📋 Activity Log</div>
+        <div class="log-w" id="logWrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p4">
+  <div class="sk-hd pr">
+    <div class="sk-ht" data-scramble="TECHNICAL SKILLS">Technical<br><em>Skills</em></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim2);letter-spacing:.2em">// 04 of 07</div>
+  </div>
+  <div class="hex-area">
+    <div class="hex-col">
+      <div class="hex-col-title hct-c">Technical Stack</div>
+      <div class="hex-wrap">
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">92</span><span class="hex-nm">SQL Server</span></div></div>
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">88</span><span class="hex-nm">Networking</span></div></div>
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">82</span><span class="hex-nm">Git</span></div></div>
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">75</span><span class="hex-nm">Python</span></div></div>
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">70</span><span class="hex-nm">Django</span></div></div>
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">60</span><span class="hex-nm">JavaScript</span></div></div>
+        <div class="hex-cell hx-c"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">58</span><span class="hex-nm">AWS Cloud</span></div></div>
+      </div>
+    </div>
+    <div class="hex-col">
+      <div class="hex-col-title hct-o">Software & Platforms</div>
+      <div class="hex-wrap">
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">95</span><span class="hex-nm">Odoo ERP</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">90</span><span class="hex-nm">cPanel</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">82</span><span class="hex-nm">Zoho Suite</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">80</span><span class="hex-nm">Reelo CRM</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">78</span><span class="hex-nm">Photoshop</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">78</span><span class="hex-nm">Tally</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">70</span><span class="hex-nm">Illustrator</span></div></div>
+        <div class="hex-cell hx-o"><div class="hex-bg"></div><div class="hex-fg"><span class="hex-pct">65</span><span class="hex-nm">AE / Pr</span></div></div>
+      </div>
+    </div>
+    <div class="hex-col">
+      <div class="hex-col-title hct-p">Soft Skills</div>
+      <div class="soft-hex-section">
+        <div class="sft-tags">
+          <span class="sft-tag">Communication</span><span class="sft-tag">Problem Solving</span>
+          <span class="sft-tag">Leadership</span><span class="sft-tag">Team Collaboration</span>
+          <span class="sft-tag">Time Management</span><span class="sft-tag">Adaptability</span>
+          <span class="sft-tag">Attention to Detail</span><span class="sft-tag">Cross-Functional</span>
+          <span class="sft-tag">Data Analytics</span><span class="sft-tag">CRM Strategy</span>
+          <span class="sft-tag">IT Mentoring</span><span class="sft-tag">Vendor Mgmt</span>
+        </div>
+        <div style="margin-top:1.2rem">
+          <div class="hex-col-title hct-g" style="margin-bottom:.7rem">Languages</div>
+          <div class="lang-chips">
+            <span class="lang-chip">English · Fluent</span>
+            <span class="lang-chip">Tamil · Native</span>
+            <span class="lang-chip">Malayalam · Fluent</span>
+            <span class="lang-chip">Arabic · Basic</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p5">
+  <div class="pj-hd pr">
+    <div class="pj-ht" data-scramble="KEY PROJECTS">Key<br><span>Projects</span></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim2);letter-spacing:.2em">// 05 of 07</div>
+  </div>
+  <div class="pj-grid">
+    <div class="pj-c pr pr-d1">
+      <div class="pc-n">01</div>
+      <div class="pc-outcome"><span class="pc-oc-label">Outcome</span><span class="pc-oc-val">15% efficiency gain</span></div>
+      <div class="pc-cat">Infrastructure</div>
+      <div class="pc-nm">Enterprise Infrastructure Upgrade</div>
+      <div class="pc-ds">Spearheaded a comprehensive overhaul of IT infrastructure across multiple locations — re-architecting network topology, upgrading server hardware, and integrating cloud services to improve scalability and reduce cost of ownership.</div>
+      <div class="pc-tgs"><div class="pc-tg">AWS</div><div class="pc-tg">Networking</div><div class="pc-tg">Server Admin</div></div>
+    </div>
+    <div class="pj-c pr pr-d2">
+      <div class="pc-n">02</div>
+      <div class="pc-outcome"><span class="pc-oc-label">Outcome</span><span class="pc-oc-val">Zero critical breaches</span></div>
+      <div class="pc-cat">Security</div>
+      <div class="pc-nm">Cybersecurity Enhancement Program</div>
+      <div class="pc-ds">Deployed a layered security framework — implementing endpoint protection, firewall rules, VPN configuration, and encryption policies. Conducted staff awareness training and established incident response procedures.</div>
+      <div class="pc-tgs"><div class="pc-tg">Firewall</div><div class="pc-tg">VPN</div><div class="pc-tg">Encryption</div></div>
+    </div>
+    <div class="pj-c pr pr-d3">
+      <div class="pc-n">03</div>
+      <div class="pc-outcome"><span class="pc-oc-label">Outcome</span><span class="pc-oc-val">3 brands unified</span></div>
+      <div class="pc-cat">ERP</div>
+      <div class="pc-nm">End-to-End ERP Integration</div>
+      <div class="pc-ds">Led the full lifecycle Odoo ERP rollout across multiple brands — scoping requirements, managing data migration, building custom modules, training 50+ employees, and post-go-live hypercare. Delivered ahead of schedule.</div>
+      <div class="pc-tgs"><div class="pc-tg">Odoo</div><div class="pc-tg">SQL</div><div class="pc-tg">Migration</div></div>
+    </div>
+    <div class="pj-c pr pr-d4">
+      <div class="pc-n">04</div>
+      <div class="pc-outcome"><span class="pc-oc-label">Outcome</span><span class="pc-oc-val">+20% conv · +35% reach</span></div>
+      <div class="pc-cat">Marketing & CRM</div>
+      <div class="pc-nm">CRM & Digital Marketing Overhaul</div>
+      <div class="pc-ds">Implemented Reelo CRM for structured lead tracking and designed a suite of digital campaigns across social and email channels. Built analytics dashboards to measure ROI and continuously optimise campaign performance.</div>
+      <div class="pc-tgs"><div class="pc-tg">Reelo CRM</div><div class="pc-tg">Adobe</div><div class="pc-tg">Analytics</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p6">
+  <div class="ac-l pr">
+    <div class="sec-tag" style="margin-bottom:1.5rem">// Results</div>
+    <div class="ac-big" data-scramble="REAL RESULTS MEASURED">Real<br>results,<br><em>measured.</em></div>
+    <p class="ac-sub">Every number below is a real, documented business outcome — delivered through technical precision, cross-team leadership, and a relentless focus on measurable impact.</p>
+    <a href="mailto:mohamedyasief@gmail.com" class="ac-cta">Discuss a Project →</a>
+  </div>
+  <div class="ac-r pr pr-d2">
+    <div class="ac-item"><div class="ac-num anc"><span class="cn" data-n="20">0</span>%</div><div class="ac-txt"><strong>CRM Lead Conversion Uplift</strong><p>Implemented a structured CRM system that improved lead tracking workflows and directly increased conversion rates by 20% across sales teams.</p></div></div>
+    <div class="ac-item"><div class="ac-num ano"><span class="cn" data-n="35">0</span>%</div><div class="ac-txt"><strong>Online Engagement Increase</strong><p>Designed and executed targeted digital marketing campaigns that grew audience engagement by 35% across social and email platforms.</p></div></div>
+    <div class="ac-item"><div class="ac-num ang"><span class="cn" data-n="15">0</span>%</div><div class="ac-txt"><strong>IT Process Efficiency Gain</strong><p>Streamlined core IT operations, workflows, and vendor management, yielding a 15% improvement in departmental efficiency.</p></div></div>
+    <div class="ac-item"><div class="ac-num anp"><span class="cn" data-n="99">0</span>%</div><div class="ac-txt"><strong>System Uptime Maintained</strong><p>Consistently maintained 99%+ uptime across all managed infrastructure including ERP systems, networks, and IoT locker fleets.</p></div></div>
+  </div>
+</div>
+
+<div class="panel" id="p7">
+  <canvas id="ctCanvas"></canvas>
+  <div class="ct-c pr">
+    <div class="ct-pre">Open to Opportunities</div>
+    <div class="ct-big" data-scramble="LETS CONNECT">Let's<br><span class="ci2">connect</span></div>
+    <div class="ct-acts">
+      <a href="mailto:mohamedyasief@gmail.com" class="cpill cp1">✉ mohamedyasief@gmail.com</a>
+      <a href="https://linkedin.com/in/yasief" target="_blank" class="cpill cp2">in LinkedIn</a>
+      <a href="tel:+971503593856" class="cpill cp3">☏ +971 50 359 3856</a>
+    </div>
+    <div class="ct-note">Based in Dubai, UAE · Available for full-time roles & projects</div>
+  </div>
+  <div class="ft"><div class="ft-c">© 2025 Mohamed Yasief</div><div class="ft-c">Dubai, UAE</div></div>
+</div>
+
+</div>
+
+<div id="cmd-backdrop">
+  <div id="cmd-box">
+    <div id="cmd-input-row">
+      <span class="cmd-search-ic">⌕</span>
+      <input id="cmd-input" placeholder="Navigate or search…" autocomplete="off" spellcheck="false">
+      <span class="cmd-esc">ESC</span>
+    </div>
+    <div id="cmd-list"></div>
+    <div id="cmd-footer">
+      <span><span class="ck">↑↓</span> navigate</span>
+      <span><span class="ck">↵</span> select</span>
+      <span><span class="ck">ESC</span> close</span>
+      <span><span class="ck">Ctrl K</span> toggle</span>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script type="module" src="animation.js"></script>
+</body>
+</html>

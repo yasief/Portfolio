@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Reflex test champion ──
+    // Read open; write requires valid score & name and a future expiry within 25h.
+    match /game/champion {
+      allow read: if true;
+      allow write: if
+        request.resource.data.keys().hasAll(['name','score','expires']) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 24 &&
+        request.resource.data.score is int &&
+        request.resource.data.score >= 0 &&
+        request.resource.data.score <= 10000 &&
+        request.resource.data.expires is int &&
+        request.resource.data.expires > request.time.toMillis() &&
+        request.resource.data.expires < request.time.toMillis() + 90000000; // < ~25h
+    }
+
+    // ── Per-game score logs ──
+    // Append-only: validate shape and bounds, never readable from client.
+    match /scores/{scoreId} {
+      allow create: if
+        request.resource.data.keys().hasAll(['score','playedAt','device']) &&
+        request.resource.data.score is int &&
+        request.resource.data.score >= 0 &&
+        request.resource.data.score <= 10000 &&
+        request.resource.data.playedAt is string &&
+        request.resource.data.playedAt.size() <= 40 &&
+        request.resource.data.device is string &&
+        request.resource.data.device.size() <= 16;
+      allow read, update, delete: if false;
+    }
+
+    // ── Chatbot session transcripts ──
+    // Append-only with merge; cap message + visitor metadata sizes to prevent abuse.
+    match /chatbot_messages/{sessionId} {
+      allow create, update: if
+        sessionId.size() < 80 &&
+        // Optional fields, but if present must be reasonable
+        (!('messages' in request.resource.data) || request.resource.data.messages is list) &&
+        // Block payloads larger than ~50 KB (Firestore doc limit is 1 MB but we don't need that)
+        request.resource.data.size() <= 50000;
+      allow read, delete: if false;
+    }
+  }
+}

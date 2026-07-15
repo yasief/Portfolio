@@ -535,7 +535,13 @@ export function initThreeJSAnimation() {
         }
     }
 
-    init().catch(() => { /* silent — animation is decorative, don't break the page */ });
+    init().catch(() => {
+        // WebGL or the image is unavailable — hide the loader so the panel (and the
+        // reflex game beneath it) is usable instead of hanging on "LOADING PARTICLE
+        // SYSTEM…" forever. The portrait is decorative; the game still works.
+        const loader = document.getElementById('loader');
+        if (loader) { loader.classList.add('hidden'); setTimeout(() => { loader.style.display = 'none'; }, 600); }
+    });
 }
 
 window.initThreeJSAnimation = initThreeJSAnimation;

@@ -6,9 +6,20 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 const canvasEl = document.getElementById('heroCanvas');
 
+// Feature-detect WebGL up front. If the browser can't create a context — hardware
+// acceleration disabled, GPU blocklisted, or a sandboxed/headless environment — skip
+// the particle system instead of throwing an uncaught error. The hero heading is real
+// DOM text, so nothing essential is lost.
+function heroWebGLAvailable(){
+  try{
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl')));
+  }catch(e){ return false; }
+}
+
 // This script is for the hero particle animation.
-// It will only run if the canvas with id="heroCanvas" is present in the DOM.
-if (canvasEl) {
+// It runs only if the canvas is present AND WebGL is actually available.
+if (canvasEl && heroWebGLAvailable()) {
     const isMobile = window.innerWidth <= 768 || window.matchMedia('(orientation:portrait)').matches;
 
     // Advanced Simplex 3D & Curl Noise Shader

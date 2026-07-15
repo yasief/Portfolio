@@ -4,6 +4,9 @@ service cloud.firestore {
 
     // ── Reflex test champion ──
     // Read open; write requires valid score & name and a future expiry within 25h.
+    // Name must not contain angle brackets (defence-in-depth against markup injection),
+    // and a new champion may only overwrite the current one with a strictly higher score
+    // — unless there is no champion yet or the existing one has expired (the 24h reset).
     match /game/champion {
       allow read: if true;
       allow write: if
@@ -11,18 +14,31 @@ service cloud.firestore {
         request.resource.data.name is string &&
         request.resource.data.name.size() > 0 &&
         request.resource.data.name.size() <= 24 &&
+        !request.resource.data.name.matches('.*[<>].*') &&
         request.resource.data.score is int &&
         request.resource.data.score >= 0 &&
         request.resource.data.score <= 10000 &&
         request.resource.data.expires is int &&
         request.resource.data.expires > request.time.toMillis() &&
-        request.resource.data.expires < request.time.toMillis() + 90000000; // < ~25h
+        request.resource.data.expires < request.time.toMillis() + 90000000 && // < ~25h
+        (
+          resource == null ||
+          resource.data.expires < request.time.toMillis() ||
+          request.resource.data.score > resource.data.score
+        );
     }
 
     // ── Per-game score logs ──
     // Append-only: validate shape and bounds, never readable from client.
+    // hasOnly() forbids arbitrary extra fields, and every string is length-capped
+    // (for a map, size() counts keys not bytes, so per-field caps are the real
+    // defence against a 1 MB document being stuffed into any single field).
     match /scores/{scoreId} {
       allow create: if
+        request.resource.data.keys().hasOnly([
+          'score','playedAt','device','screenWidth','screenHeight',
+          'viewportWidth','viewportHeight','userAgent','pageUrl','referrer'
+        ]) &&
         request.resource.data.keys().hasAll(['score','playedAt','device']) &&
         request.resource.data.score is int &&
         request.resource.data.score >= 0 &&
@@ -30,7 +46,10 @@ service cloud.firestore {
         request.resource.data.playedAt is string &&
         request.resource.data.playedAt.size() <= 40 &&
         request.resource.data.device is string &&
-        request.resource.data.device.size() <= 16;
+        request.resource.data.device.size() <= 16 &&
+        (!('userAgent' in request.resource.data) || (request.resource.data.userAgent is string && request.resource.data.userAgent.size() <= 512)) &&
+        (!('pageUrl'   in request.resource.data) || (request.resource.data.pageUrl   is string && request.resource.data.pageUrl.size()   <= 512)) &&
+        (!('referrer'  in request.resource.data) || (request.resource.data.referrer  is string && request.resource.data.referrer.size()  <= 1024));
       allow read, update, delete: if false;
     }
 

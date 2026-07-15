@@ -7,6 +7,9 @@ const _fbApp = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const _db = getFirestore(_fbApp);
 const _CHAMP_DOC = doc(_db, 'game', 'champion');
 
+/* Escape untrusted strings before they touch innerHTML (e.g. the cloud champion name). */
+function escHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 /* CURSOR */
 const cur=document.getElementById('cur'),cur2=document.getElementById('cur2'),cur3=document.getElementById('cur3');
 let mx=0,my=0,rx=0,ry=0,r3x=0,r3y=0;
@@ -15,6 +18,10 @@ let cursorAnimationId = null; // To store the requestAnimationFrame ID
 function startCursorAnimation() {
   // Only start if elements exist and animation is not already running
   if (!cur || !cur2 || !cur3 || cursorAnimationId !== null) return;
+  // Don't hide/replace the native pointer on touch or no-hover devices (incl. large
+  // hybrid tablets), or for visitors who asked to reduce motion — CSS restores the
+  // real cursor in those cases, so running this loop would leave them with no pointer.
+  if (window.matchMedia('(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)').matches) return;
 
     document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
     (function loop(){
@@ -174,7 +181,7 @@ let prepareTargetGame;
         if (!banner) return;
         const champ = await getChampion();
         if (champ) {
-            banner.innerHTML = `<span class="champ-crown">👑</span><span class="champ-name">${champ.name}</span><span class="champ-score">${champ.score} pts</span><span class="champ-exp">resets in 24h</span>`;
+            banner.innerHTML = `<span class="champ-crown">👑</span><span class="champ-name">${escHtml(champ.name)}</span><span class="champ-score">${Number(champ.score)||0} pts</span><span class="champ-exp">resets in 24h</span>`;
             banner.classList.remove('hidden');
             // sync local highscore with cloud
             if (champ.score > highScore) {
@@ -495,9 +502,15 @@ let prepareTargetGame;
         const hs = document.getElementById('highScore');
         if (hs) hs.textContent = 'Saving…';
         hideNameInput();
-        await saveChampion(name, highScore);
-        if (hs) hs.textContent = `👑 ${name} — ${highScore} pts`;
-        renderChampionBanner();
+        try {
+            await saveChampion(name, highScore);
+            if (hs) hs.textContent = `👑 ${name} — ${highScore} pts`;
+            renderChampionBanner();
+        } catch (e) {
+            // Never leave the UI stuck on "Saving…" — surface the failure and let them retry.
+            if (hs) hs.textContent = '⚠️ Couldn’t save — check your connection and try again.';
+            if (nameInputWrap) nameInputWrap.classList.remove('hidden');
+        }
     }
 
     const _saveBtn = document.getElementById('saveNameBtn');
@@ -619,7 +632,7 @@ function goTo(i){
   const prev=cur_p;
   cur_p=i;
   track.style.transform=`translateX(-${i*100}vw)`;
-  dots.forEach((d,j)=>d.classList.toggle('active',j===i));
+  dots.forEach((d,j)=>{d.classList.toggle('active',j===i);d.setAttribute('aria-selected',j===i);});
   prog.style.width=((i/(N-1))*100)+'%';
   panels.forEach((p,j)=>p.classList.toggle('active',j===i));
   // Keep content of the entering panel visible permanently so the previous panel
@@ -655,6 +668,11 @@ const desktopWheelHandler = e => {
     clearTimeout(wt); wt = setTimeout(() => scrolling = false, 1000);
 };
 const desktopKeydownHandler = e => {
+    // Don't hijack arrow keys while the visitor is typing in a field or a modal is open —
+    // otherwise the caret moves AND the page jumps to another panel.
+    if(document.body.classList.contains('cmd-open')) return;
+    const t = e.target;
+    if(t && (t.matches('input, textarea, [contenteditable]') || t.isContentEditable)) return;
     if(e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(cur_p + 1);
     if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(cur_p - 1);
 };
@@ -704,7 +722,7 @@ function setupMobileView() {
                     const idx = Array.from(panels).indexOf(entry.target);
                     if (idx !== -1) {
                         cur_p = idx;
-                        dots.forEach((d, j) => d.classList.toggle('active', j === idx));
+                        dots.forEach((d, j) => {d.classList.toggle('active', j === idx);d.setAttribute('aria-selected', j === idx);});
                         panels.forEach((p, j) => p.classList.toggle('active', j === idx));
                         panels[idx].classList.add('revealed');
                         if(idx===0 && typeof window.initHeroNetworkAnimation === 'function') window.initHeroNetworkAnimation();
@@ -868,7 +886,7 @@ function triggerAbout(){
     let n=0;const el=document.getElementById(id);if(!el)return;
     const iv=setInterval(()=>{n=Math.min(n+end/40,end);el.innerHTML=Math.round(n)+(suf?`<span style="font-size:1.5rem">${suf}</span>`:'');if(n>=end)clearInterval(iv);},40);
   }
-  cu('cnt1',4,'+');cu('cnt2',3,'');cu('cnt3',20,'%');cu('cnt4',35,'%');
+  cu('cnt1',5,'+');cu('cnt2',3,'');cu('cnt3',20,'%');cu('cnt4',35,'%');
   document.querySelectorAll('.sf').forEach(b=>{b.style.width=(b.dataset.w||50)+'%';});
   
   // Reset terminal animation state
@@ -930,12 +948,18 @@ function triggerMathUniverse(){
 
 /* EXPERIENCE TABS */
 document.querySelectorAll('.ex-tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.ex-tab').forEach(t=>t.classList.remove('active'));
+  const activate=()=>{
+    document.querySelectorAll('.ex-tab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false');});
     tab.classList.add('active');
+    tab.setAttribute('aria-selected','true');
     const pane=tab.dataset.pane;
     document.querySelectorAll('.ex-pane').forEach(p=>p.classList.remove('show'));
     const t=document.getElementById('pane-'+pane);if(t)t.classList.add('show');
+  };
+  tab.addEventListener('click',activate);
+  // Keyboard support: these are focusable (role="button", tabindex=0) so Enter/Space must work.
+  tab.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();activate();}
   });
 });
 
@@ -946,6 +970,8 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
   function scramble(el) {
     if(el.dataset.scrambled)return;
     el.dataset.scrambled='1';
+    // Respect reduced-motion: the final text is already in the DOM, so just leave it.
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     // Lock the element's height to prevent vertical layout shifts during animation.
     const originalHeight = el.offsetHeight;
@@ -1095,7 +1121,7 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
     {g:'Navigate',ic:ic('i-users'), label:'About Me',desc:'Background & philosophy',tag:'03',fn:()=>goTo(2)},
     {g:'Navigate',ic:ic('i-list'),  label:'Experience',desc:'LaundryBox · Muffin House',tag:'04',fn:()=>goTo(3)},
     {g:'Navigate',ic:ic('i-server'),label:'IT Dashboard',desc:'Live metrics & system status',tag:'05',fn:()=>goTo(4)},
-    {g:'Navigate',ic:ic('i-tool'),  label:'Technical Skills',desc:'Hex grid skill map',tag:'06',fn:()=>goTo(5)},
+    {g:'Navigate',ic:ic('i-tool'),  label:'Technical Skills',desc:'Skill bars & proficiency',tag:'06',fn:()=>goTo(5)},
     {g:'Navigate',ic:ic('i-rocket'),label:'Key Projects',desc:'4 impact projects',tag:'07',fn:()=>goTo(6)},
     {g:'Navigate',ic:ic('i-chart'), label:'Achievements',desc:'Measurable outcomes',tag:'08',fn:()=>goTo(7)},
     {g:'Navigate',ic:ic('i-mail'),  label:'Contact',desc:'Get in touch',tag:'09',fn:()=>goTo(8)},
@@ -1194,4 +1220,11 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
       }
     }
   });
+})();
+
+/* ═══ FOOTER YEAR ═══
+   Keep the copyright year current automatically. */
+(function(){
+  const el=document.getElementById('footYear');
+  if(el) el.textContent=new Date().getFullYear();
 })();

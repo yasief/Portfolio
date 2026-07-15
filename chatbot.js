@@ -10,20 +10,18 @@ const _app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const _db  = getFirestore(_app);
 
 // ─── EmailJS ─────────────────────────────────────────────────────────────────
-// HOW TO SET UP (5 minutes, free tier = 200 emails/month):
-//   1. Sign up at https://www.emailjs.com
-//   2. Dashboard → Email Services → Add Service → Gmail → connect mohamedyasief@gmail.com
-//   3. Dashboard → Email Templates → Create Template
-//      Subject:  New message from your portfolio chatbot
-//      Body:     {{visitor_message}}  |  Sent: {{sent_at}}  |  Session: {{session_id}}
-//      Set "To Email" to: mohamedyasief@gmail.com
-//   4. Copy your values into the three constants below:
-const EJS_PUBLIC_KEY  = 'f48Iu19MCWIawh5lQ';   // Account → API Keys → Public Key (Remember to update this!)
-const EJS_SERVICE_ID  = 'service_ygvqn9d';   // Email Services → Service ID (e.g., 'service_yourid')
-const EJS_TEMPLATE_ID = 'template_ejz8rtj';  // Email Templates → Template ID (e.g., 'template_yourid')
+// Public (client-side) EmailJS identifiers. These are safe to expose, but abuse
+// is prevented in the EmailJS dashboard (Allowed Origins locked to this domain +
+// reCAPTCHA on the template), not here.
+const EJS_PUBLIC_KEY  = 'f48Iu19MCWIawh5lQ';
+const EJS_SERVICE_ID  = 'service_ygvqn9d';
+const EJS_TEMPLATE_ID = 'template_ejz8rtj';
 
 // ─── Session ID (groups all messages from one visitor) ────────────────────────
-const SESSION_ID = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+// Prefer a collision-resistant UUID so session docs can't be guessed/overwritten.
+const SESSION_ID = (self.crypto && crypto.randomUUID)
+  ? crypto.randomUUID()
+  : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 const SESSION_START = new Date();
 
 // ─── Visitor info collected once per session ──────────────────────────────────
@@ -108,15 +106,18 @@ async function updateSessionDocument(role, text, isContactMsg = false) {
 }
 
 // ─── EmailJS: notify Mohamed when someone leaves a direct message ──────────────
+// Returns true only if the email was actually accepted, so the UI can tell the
+// visitor the truth instead of a blanket "Done ✓".
 async function notifyByEmail(text) {
-  if (!window.emailjs || EJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY' || EJS_SERVICE_ID === 'YOUR_EMAILJS_SERVICE_ID' || EJS_TEMPLATE_ID === 'YOUR_EMAILJS_TEMPLATE_ID') return;
+  if (!window.emailjs) return false;
   try {
     await window.emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
       visitor_message: text,
       sent_at:         new Date().toLocaleString('en-AE', { timeZone: 'Asia/Dubai' }),
       session_id:      SESSION_ID,
     }, EJS_PUBLIC_KEY);
-  } catch (e) { /* silent */ }
+    return true;
+  } catch (e) { return false; }
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -211,9 +212,10 @@ function getPhaseAwareGreeting(phase, userType) {
   }
 }
 
-// Minimal markdown → HTML: **bold** and newlines only
+// Minimal markdown → HTML: **bold** and newlines only.
+// Escapes first so untrusted text (e.g. an echoed user query) can never inject markup.
 function md(text) {
-  return text
+  return esc(text)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\n/g, '<br>');
 }
@@ -247,8 +249,8 @@ const INTENTS = [
     keywords: ['who is', 'about him', 'about mohamed', 'overview', 'summary', 'background', 'profile', 'biography'],
     match: q => /\b(who (is|are)|about (him|mohamed)|overview|summary|introduce|profile|background|tell me about|biography|career summary|quick bio)\b/.test(q),
     respond: () => pick([
-      `Mohamed Yasief is an IT leader with **7+ years** of hands-on experience. He's currently **Head of IT & Digital Transformation at Laundrybox Dubai** (since April 2025), where he manages smart locker infrastructure, IoT systems, a custom WhatsApp chatbot, digital marketing, and operations tech. Previously, he was IT Administrator at a multi-brand F&B group in India (2021-2025), where he deployed ERP systems, built CRM solutions, and led digital campaigns. His unique blend: deep technical expertise (ERP, cloud, security) + business acumen (marketing, strategy, operations).`,
-      `Mohamed is a Dubai-based IT leader with proven expertise in **ERP systems, cloud infrastructure, cybersecurity, and digital marketing**. Currently Head of IT & Digital Transformation at Laundrybox, he oversees a 24/7 IoT operation across Dubai. He's deployed 3+ ERP systems, trained 50+ staff, achieved 99.7% uptime, and grew online engagement by 35% through strategic digital initiatives. Available for IT leadership, transformation, and ERP consulting roles.`,
+      `Mohamed Yasief is an IT Administrator with **5+ years** of hands-on experience. He's currently **IT Administrator at LaundryBox Dubai** (since May 2025), where he manages smart locker infrastructure, IoT systems, a custom WhatsApp chatbot, digital marketing, and operations tech. Previously, he was IT Administrator at a multi-brand F&B group in India (2021-2025), where he deployed ERP systems, built CRM solutions, and led digital campaigns. His unique blend: deep technical expertise (ERP, cloud, security) + business acumen (marketing, strategy, operations).`,
+      `Mohamed is a Dubai-based IT Administrator with proven expertise in **ERP systems, cloud infrastructure, cybersecurity, and digital marketing**. Currently IT Administrator at LaundryBox Dubai, he oversees a 24/7 IoT operation across Dubai. He's deployed 3+ ERP systems, trained 50+ staff, achieved 99.7% uptime, and grew online engagement by 35% through strategic digital initiatives. Available for IT administration, ERP, and digital-transformation roles.`,
     ]),
     suggestions: ['Current job', 'Previous job', 'Key achievements', 'Is he available to hire?'],
   },
@@ -259,8 +261,8 @@ const INTENTS = [
     keywords: ['current job', 'current role', 'laundrybox', 'head of it', 'present role', 'what does he do'],
     match: q => /\b(current (job|role|position)|laundrybox|laundry box|head of it|present role|what does he do|what do you do|2025 role|latest role)\b/.test(q),
     respond: () => pick([
-      `**Head of IT & Digital Transformation at Laundrybox Dubai** — since April 2025. Laundrybox operates 24/7 smart laundry lockers across Dubai's residential buildings. Mohamed's scope: IoT infrastructure (locker firmware, cloud sync), the **24/7 WhatsApp chatbot** he built for bookings/support, mobile app backend, enterprise systems (QuickBill ERP, hardware tracking), digital marketing, SEO, CCTV, telephony systems, and the **Heat Seal Garment Label System**. He's the sole IT lead — everything digital and operational tech goes through him. It's a hybrid role: 70% tech infrastructure, 30% business ops.`,
-      `He's the **Head of IT & Digital Transformation at Laundrybox Dubai** — a fast-growing smart laundry locker company. His full responsibilities: manage the entire IoT network (100+ lockers across Dubai), built and maintain the WhatsApp chatbot (100+ daily interactions), oversee QuickBill ERP and operational systems, implement security protocols (zero breaches to date), drive digital strategy and SEO, and ensure 99%+ uptime of all systems. One-person IT department running a 24/7 operation. It's demanding but incredibly rewarding.`,
+      `**IT Administrator at LaundryBox Dubai** — since May 2025. LaundryBox operates 24/7 smart laundry lockers across Dubai's residential buildings. Mohamed's scope: IoT infrastructure (locker firmware, cloud sync), the **24/7 WhatsApp chatbot** he built for bookings/support, mobile app backend, enterprise systems (QuickBill ERP, hardware tracking), digital marketing, SEO, CCTV, telephony systems, and the **Heat Seal Garment Label System**. He's the sole IT lead — everything digital and operational tech goes through him. It's a hybrid role: 70% tech infrastructure, 30% business ops.`,
+      `He's the **IT Administrator at LaundryBox Dubai** — a fast-growing smart laundry locker company. His full responsibilities: manage the entire IoT network (100+ lockers across Dubai), built and maintain the WhatsApp chatbot (100+ daily interactions), oversee QuickBill ERP and operational systems, implement security protocols (zero breaches to date), drive digital strategy and SEO, and ensure 99%+ uptime of all systems. One-person IT department running a 24/7 operation. It's demanding but incredibly rewarding.`,
     ]),
     suggestions: ['Technical skills', 'WhatsApp chatbot', 'IoT systems', 'Contact Mohamed'],
   },
@@ -270,7 +272,7 @@ const INTENTS = [
     keywords: ['previous job', 'past job', 'muffin house', 'mfoods', 'india', 'bangalore', 'kerala', 'earlier role', 'where did he work before'],
     match: q => /\b(previous (job|role|work|experience)|past (job|role)|muffin house|yumm|mfoods|india|bangalore|kerala|2021|2022|2023|2024|earlier role|where did he work|work history)\b/.test(q),
     respond: () => pick([
-      `He was **IT Administrator at The Muffin House / YummBites / MFoods** (Feb 2021 – March 2025) in Kerala and Bangalore, India. Managed IT for 3 F&B brands: server infrastructure, network security, Odoo ERP rollout across multiple locations (50+ staff trained), CRM implementation (Reelo — drove **+20% lead conversion**), cybersecurity, backups, and spearheaded digital marketing campaigns that increased online engagement by **+35%**. Key learning: IT can directly impact revenue when aligned with business strategy.`,
+      `He was **IT Administrator at The Muffin House / Yumm Bites / MFoods** (Feb 2021 – March 2025) in Kerala and Bangalore, India. Managed IT for 3 F&B brands: server infrastructure, network security, Odoo ERP rollout across multiple locations (50+ staff trained), CRM implementation (Reelo — drove **+20% lead conversion**), cybersecurity, backups, and spearheaded digital marketing campaigns that increased online engagement by **+35%**. Key learning: IT can directly impact revenue when aligned with business strategy.`,
       `His previous role was **IT Administrator** at a multi-brand F&B group in India (4 years, 2021-2025). Responsibilities: full IT infrastructure for 3 brands across 2 states, enterprise ERP implementation, cybersecurity framework, CRM setup, digital marketing strategy, and staff training. Tangible results: **20% conversion lift**, **35% engagement growth**, **99%+ uptime**, **zero security breaches**. That experience showed him how to run IT like a business unit, not just a support function.`,
     ]),
     suggestions: ['Current job', 'ERP expertise', 'Key achievements', 'Technical skills'],
@@ -280,7 +282,7 @@ const INTENTS = [
   {
     keywords: ['whatsapp chatbot', 'chatbot', 'bot', 'doubletick', 'whatsapp bot'],
     match: q => /\b(chatbot|whatsapp (bot|chatbot|chat)|bot|doubletick|messaging bot|ai bot|24.?7 bot)\b/.test(q),
-    respond: () => `One of Mohamed's standout projects is the **24/7 WhatsApp chatbot** he built at Laundrybox — completely from scratch, no template. He started by analysing real user behaviour patterns, then designed the conversation flows around how customers actually use the service. It handles bookings and support around the clock, significantly cut response times, and is built on DoubleTick with Meta Flow automation. It's not just a FAQ bot — it's a proper customer experience tool built on data.`,
+    respond: () => `One of Mohamed's standout projects is the **24/7 WhatsApp chatbot** he built at LaundryBox — completely from scratch, no template. He started by analysing real user behaviour patterns, then designed the conversation flows around how customers actually use the service. It handles bookings and support around the clock, significantly cut response times, and is built on DoubleTick with Meta Flow automation. It's not just a FAQ bot — it's a proper customer experience tool built on data.`,
     suggestions: ['Heat Seal label system', 'All projects', 'Current job', 'Key achievements'],
   },
 
@@ -288,7 +290,7 @@ const INTENTS = [
   {
     keywords: ['heat seal', 'heat seal label system', 'garment tracking', 'label system', 'garment label'],
     match: q => /\b(heat seal|garment track|label system|garment label|heat seal label)\b/.test(q),
-    respond: () => `The Heat Seal Label System is something Mohamed implemented at Laundrybox to solve a real operational problem — garments getting mixed up or lost in the process. Every item that comes in now gets a heat seal label, and it's tracked through every stage: wash, dry, fold, delivery. It transformed accuracy and completely changed how departments communicate about orders. It was a cross-functional rollout involving operations, customer service, and IT — the kind of project that looks simple but requires careful coordination to actually work.`,
+    respond: () => `The Heat Seal Label System is something Mohamed implemented at LaundryBox to solve a real operational problem — garments getting mixed up or lost in the process. Every item that comes in now gets a heat seal label, and it's tracked through every stage: wash, dry, fold, delivery. It transformed accuracy and completely changed how departments communicate about orders. It was a cross-functional rollout involving operations, customer service, and IT — the kind of project that looks simple but requires careful coordination to actually work.`,
     suggestions: ['WhatsApp chatbot', 'All projects', 'Current job', 'Contact Mohamed'],
   },
 
@@ -296,7 +298,7 @@ const INTENTS = [
   {
     keywords: ['erp', 'odoo', 'zoho', 'quickbill', 'tally', 'cleancloud', 'erp expertise', 'erp systems'],
     match: q => /\b(erp|odoo|zoho|quickbill|tally|enterprise resource|cleancloud|erp expertise|erp systems|erp experience|erp rollout|erp implementation)\b/.test(q),
-    respond: () => `ERP is genuinely Mohamed's deepest technical area. He's been doing **Odoo** for 4+ years at expert level — custom modules, data migration, go-live support, the full cycle. He also knows **Zoho Suite**, **QuickBill** (currently at Laundrybox), **Tally**, and **Cleancloud**. He's led end-to-end ERP rollouts across multi-brand businesses, training 50+ staff and handling everything from requirements through post-go-live. It's a real differentiator — a lot of IT people know ERP in theory, fewer have actually shipped one.`,
+    respond: () => `ERP is genuinely Mohamed's deepest technical area. He's been doing **Odoo** for 4+ years at expert level — custom modules, data migration, go-live support, the full cycle. He also knows **Zoho Suite**, **QuickBill** (currently at LaundryBox), **Tally**, and **Cleancloud**. He's led end-to-end ERP rollouts across multi-brand businesses, training 50+ staff and handling everything from requirements through post-go-live. It's a real differentiator — a lot of IT people know ERP in theory, fewer have actually shipped one.`,
     suggestions: ['CRM experience', 'Previous job', 'Technical skills', 'All projects'],
   },
 
@@ -304,7 +306,7 @@ const INTENTS = [
   {
     keywords: ['crm', 'reelo', 'freshdesk', 'zoho crm', 'customer relationship', 'crm experience'],
     match: q => /\b(crm|customer rel|reelo|freshdesk|zoho crm|crm experience|crm platform|lead conversion)\b/.test(q),
-    respond: () => `He's worked with several CRM platforms — **Zoho CRM**, **Reelo** (which drove a 20% conversion lift at MFoods), **DoubleTick** for WhatsApp CRM at Laundrybox, and **Freshdesk** for support ticketing. The Reelo CRM implementation at MFoods is a good example of his approach: he didn't just deploy it, he structured the lead tracking process and tied it to measurable outcomes. The 20% conversion improvement came from that whole redesign, not just the tool.`,
+    respond: () => `He's worked with several CRM platforms — **Zoho CRM**, **Reelo** (which drove a 20% conversion lift at MFoods), **DoubleTick** for WhatsApp CRM at LaundryBox, and **Freshdesk** for support ticketing. The Reelo CRM implementation at MFoods is a good example of his approach: he didn't just deploy it, he structured the lead tracking process and tied it to measurable outcomes. The 20% conversion improvement came from that whole redesign, not just the tool.`,
     suggestions: ['ERP expertise', 'WhatsApp chatbot', 'Digital marketing', 'Key achievements'],
   },
 
@@ -312,7 +314,7 @@ const INTENTS = [
   {
     keywords: ['security', 'cybersecurity', 'firewall', 'vpn', 'endpoint', 'cyber'],
     match: q => /\b(security|cybersecurity|cyber|firewall|vpn|encrypt|endpoint|threat|breach|protect|data safe|zero breach|incident response)\b/.test(q),
-    respond: () => `Security is something he takes seriously at every role. He's done firewall configuration, endpoint protection, VPN setup, data encryption, and IoT security for the locker network at Laundrybox. He's run staff security awareness training and built incident response procedures. The most telling stat: **zero critical security incidents** across his entire career. That's not luck — that's consistent, layered security practice.`,
+    respond: () => `Security is something he takes seriously at every role. He's done firewall configuration, endpoint protection, VPN setup, data encryption, and IoT security for the locker network at LaundryBox. He's run staff security awareness training and built incident response procedures. The most telling stat: **zero critical security incidents** across his entire career. That's not luck — that's consistent, layered security practice.`,
     suggestions: ['Cloud & DevOps', 'IoT systems', 'Key achievements', 'Current job'],
   },
 
@@ -344,7 +346,7 @@ const INTENTS = [
   {
     keywords: ['digital marketing', 'marketing', 'seo', 'google ads', 'analytics', 'campaign'],
     match: q => /\b(marketing|seo|campaign|social media|google ads|analytics|digital marketing|engagement|clarity|appsflyer)\b/.test(q),
-    respond: () => `This is where Mohamed stands out from most IT people — he genuinely runs digital marketing. **SEO** (including AI SEO), **Google Analytics**, **Google Ads**, social campaigns. At MFoods he co-led campaigns that grew online engagement by 35%. At Laundrybox he drives digital strategy alongside the marketing team. He uses **MS Clarity** for heatmaps, **Firebase** and **AppsFlyer** for app analytics. It's data-driven marketing, not just social posting.`,
+    respond: () => `This is where Mohamed stands out from most IT people — he genuinely runs digital marketing. **SEO** (including AI SEO), **Google Analytics**, **Google Ads**, social campaigns. At MFoods he co-led campaigns that grew online engagement by 35%. At LaundryBox he drives digital strategy alongside the marketing team. He uses **MS Clarity** for heatmaps, **Firebase** and **AppsFlyer** for app analytics. It's data-driven marketing, not just social posting.`,
     suggestions: ['CRM experience', 'Key achievements', 'Design & creative', 'Contact Mohamed'],
   },
 
@@ -360,7 +362,7 @@ const INTENTS = [
   {
     keywords: ['iot', 'iot systems', 'smart locker', 'cctv', 'yeastar', 'tracksolid', 'locker'],
     match: q => /\b(iot|iot systems|locker|smart locker|hardware|tracksolid|pabx|yeastar|cctv|smart system|firmware|iot infrastructure|iot network)\b/.test(q),
-    respond: () => `**IoT & Smart Systems** is a growing part of his expertise at Laundrybox. He manages:\n\n• **100+ Smart Lockers** — firmware updates, cloud sync, 24/7 uptime\n• **Locker Management Software** — custom backend, user app integration\n• **Hardware Tracking** — Tracksolid platform for device monitoring\n• **CCTV Infrastructure** — security cameras, remote monitoring\n• **IP Telephony** — Yeastar PABX system for customer support\n• **IoT Security** — encryption, access control, threat detection\n\nThis is cutting-edge work — most IT people don't have hands-on IoT experience. He's doing industrial-grade operational technology, not just office IT.`,
+    respond: () => `**IoT & Smart Systems** is a growing part of his expertise at LaundryBox. He manages:\n\n• **100+ Smart Lockers** — firmware updates, cloud sync, 24/7 uptime\n• **Locker Management Software** — custom backend, user app integration\n• **Hardware Tracking** — Tracksolid platform for device monitoring\n• **CCTV Infrastructure** — security cameras, remote monitoring\n• **IP Telephony** — Yeastar PABX system for customer support\n• **IoT Security** — encryption, access control, threat detection\n\nThis is cutting-edge work — most IT people don't have hands-on IoT experience. He's doing industrial-grade operational technology, not just office IT.`,
     suggestions: ['Current job', 'Cybersecurity', 'Technical skills', 'Contact Mohamed'],
   },
 
@@ -385,7 +387,7 @@ const INTENTS = [
   {
     keywords: ['certifications', 'certified', 'qualifications', 'credentials', 'courses'],
     match: q => /\b(certificate|certified|qualification|license|accred|credential|course|what certifications|certifications)\b/.test(q),
-    respond: () => `He doesn't chase certification letters, but his **practical qualifications** speak louder:\n\n• **7+ years hands-on IT experience** — more valuable than any certificate\n• **ERP Expert** — 4+ years deep Odoo experience, trained 50+ users, deployed across multiple businesses\n• **Cybersecurity Framework** — built from scratch at MFoods, maintained zero-breach record\n• **Cloud Architecture** — deployed and maintained AWS, Azure, and hybrid infrastructures\n• **Digital Marketing Proficiency** — SEO, CRM, analytics, campaign strategy\n• **IoT Systems Management** — currently managing 100+ connected smart devices\n• **B.Tech Mechanical Engineering** — from PRIST College (2021-2024) — shows ability to pivot and learn\n\nHe believes in learning-by-doing over collecting badges. His portfolio is his resume.`,
+    respond: () => `He doesn't chase certification letters, but his **practical qualifications** speak louder:\n\n• **5+ years hands-on IT experience** — more valuable than any certificate\n• **ERP Expert** — 4+ years deep Odoo experience, trained 50+ users, deployed across multiple businesses\n• **Cybersecurity Framework** — built from scratch at MFoods, maintained zero-breach record\n• **Cloud Architecture** — deployed and maintained AWS, Azure, and hybrid infrastructures\n• **Digital Marketing Proficiency** — SEO, CRM, analytics, campaign strategy\n• **IoT Systems Management** — currently managing 100+ connected smart devices\n• **B.Tech Mechanical Engineering** — from PRIST College (2021-2024) — shows ability to pivot and learn\n\nHe believes in learning-by-doing over collecting badges. His portfolio is his resume.`,
     suggestions: ['Technical skills', 'Education', 'Current job', 'Key achievements'],
   },
 
@@ -410,7 +412,7 @@ const INTENTS = [
     intentType: 'achievements',
     keywords: ['key achievements', 'achievements', 'accomplishments', 'results', 'impact'],
     match: q => /\b(key achievements|achievements|accomplish|result|outcome|impact|success|milestone|what did he|deliver|numbers)\b/.test(q),
-    respond: () => `The numbers that stand out from his career:\n\n• Built a **24/7 WhatsApp chatbot** from scratch at Laundrybox\n• Implemented the **Heat Seal garment tracking system**\n• **+20%** CRM lead conversion at MFoods\n• **+35%** online engagement through digital campaigns\n• **+15%** operational efficiency gain\n• **99%+** system uptime across all managed infrastructure\n• **Zero** critical security incidents, ever\n\nAll documented real-world outcomes.`,
+    respond: () => `The numbers that stand out from his career:\n\n• Built a **24/7 WhatsApp chatbot** from scratch at LaundryBox\n• Implemented the **Heat Seal garment tracking system**\n• **+20%** CRM lead conversion at MFoods\n• **+35%** online engagement through digital campaigns\n• **+15%** operational efficiency gain\n• **99%+** system uptime across all managed infrastructure\n• **Zero** critical security incidents, ever\n\nAll documented real-world outcomes.`,
     suggestions: ['WhatsApp chatbot', 'ERP expertise', 'Contact Mohamed', 'Previous job'],
   },
 
@@ -418,7 +420,7 @@ const INTENTS = [
   {
     keywords: ['all projects', 'projects', 'portfolio', 'what has he built', 'key projects'],
     match: q => /\b(all projects|projects|portfolio|built|created|implement|launch|deploy|key projects|what has he (done|built)|worked on)\b/.test(q),
-    respond: () => `His key projects:\n\n**01 · 24/7 WhatsApp Chatbot** — built from scratch at Laundrybox for bookings and support\n**02 · Heat Seal Label System** — garment tracking that transformed Laundrybox operations\n**03 · End-to-End ERP Rollout** — Odoo across 3 brands, 50+ staff trained\n**04 · Enterprise Infrastructure Upgrade** — network re-architecture, cloud integration, 15% efficiency gain\n**05 · Cybersecurity Program** — layered security framework, zero breaches\n**06 · CRM & Marketing Overhaul** — +20% conversions, +35% engagement`,
+    respond: () => `His key projects:\n\n**01 · 24/7 WhatsApp Chatbot** — built from scratch at LaundryBox for bookings and support\n**02 · Heat Seal Label System** — garment tracking that transformed LaundryBox operations\n**03 · End-to-End ERP Rollout** — Odoo across 3 brands, 50+ staff trained\n**04 · Enterprise Infrastructure Upgrade** — network re-architecture, cloud integration, 15% efficiency gain\n**05 · Cybersecurity Program** — layered security framework, zero breaches\n**06 · CRM & Marketing Overhaul** — +20% conversions, +35% engagement`,
     suggestions: ['WhatsApp chatbot', 'ERP expertise', 'Heat Seal label system', 'Key achievements'],
   },
 
@@ -442,7 +444,7 @@ const INTENTS = [
   {
     keywords: ['where is he based?', 'dubai', 'uae', 'location', 'relocate'],
     match: q => /\b(where.*based|where.*located|dubai|uae|united arab emirates|based in|located in|relocate|kerala|bangalore|current location|where is he)\b/.test(q),
-    respond: () => `He's based in **Dubai, UAE**. Relocated there in April 2025 for the Laundrybox role. Before that he was in Kerala and Bangalore, India for about 4 years. He's available for roles in Dubai and open to discussing other arrangements.`,
+    respond: () => `He's based in **Dubai, UAE**. Relocated there in May 2025 for the LaundryBox role. Before that he was in Kerala and Bangalore, India for about 4 years. He's available for roles in Dubai and open to discussing other arrangements.`,
     suggestions: ['Current job', 'Previous job', 'Contact Mohamed', 'Is he available to hire?'],
   },
 
@@ -674,12 +676,16 @@ async function sendMessage(rawText) {
   if (awaitingContactMsg) {
     awaitingContactMsg = false;
     updateSessionDocument('user', text, true); // Log user's contact message
-    notifyByEmail(text); // Send email
     conversationHistory.push({ role: 'bot', content: 'Contact message received' });
-    const botResponse =
-      `Done! ✓ Mohamed will see your message. For urgent matters, you can also email him directly at **mohamedyasief@gmail.com** or call **+971 50 359 3856**.`;
-    updateSessionDocument('bot', botResponse, false); // Log bot's response
-    showTypingThen(botResponse, ['Who is Mohamed?', 'Technical skills', 'Contact info'], 1200);
+    // Wait for the actual send result before confirming — never claim success on a
+    // silent failure. On failure, fall back to direct email/phone.
+    notifyByEmail(text).then(sent => {
+      const botResponse = sent
+        ? `Done! ✓ Mohamed will see your message. For urgent matters, you can also email him directly at **mohamedyasief@gmail.com** or call **+971 50 359 3856**.`
+        : `I couldn't send that just now — sorry about that. Please email Mohamed directly at **mohamedyasief@gmail.com** or call **+971 50 359 3856** and he'll get right back to you.`;
+      updateSessionDocument('bot', botResponse, false); // Log bot's response
+      showTypingThen(botResponse, ['Who is Mohamed?', 'Technical skills', 'Contact info'], 1200);
+    });
     return;
   }
 
@@ -759,7 +765,7 @@ function init() {
   // Welcome message
   setTimeout(() => {
     addBotMsg(
-      `**Hi! 👋 I'm Mohamed's AI assistant.** I answer questions about his **7+ years** of IT leadership, **ERP expertise**, **smart systems**, and **digital transformation** work. Ask me anything — or pick a quick reply below to get started!`,
+      `**Hi! 👋 I'm Mohamed's AI assistant.** I answer questions about his **5+ years** of IT administration, **ERP expertise**, **smart systems**, and **digital transformation** work. Ask me anything — or pick a quick reply below to get started!`,
       ['Who is Mohamed?', 'Current job', 'Key achievements', 'Leave a message']
     );
   }, 600);

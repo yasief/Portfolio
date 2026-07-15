@@ -3,44 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<!-- Content Security Policy (defence-in-depth; GitHub Pages can't send real headers).
+     Deliberately permissive so nothing breaks, while still blocking plugins/framing
+     base-tag hijacking and non-HTTPS resources. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#04080f" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#eef2fb" media="(prefers-color-scheme: light)">
 <meta name="color-scheme" content="dark light">
 <title>Mohamed Yasief — IT Administrator · ERP & Cloud · Dubai</title>
 <meta name="description" content="IT Administrator & ERP Specialist based in Dubai. Odoo · Zoho · AWS · IoT · Cybersecurity. 99.7% uptime delivered across smart-tech and multi-brand environments.">
 <meta name="author" content="Mohamed Yasief">
-<meta name="keywords" content="IT Administrator Dubai, ERP Specialist, Odoo, Zoho, AWS, IoT, Cybersecurity, Network Admin, Mohamed Yasief">
 
 <link rel="canonical" href="https://yasief.github.io/">
 
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Mohamed Yasief">
+<meta property="og:locale" content="en_US">
 <meta property="og:url" content="https://yasief.github.io/">
 <meta property="og:title" content="Mohamed Yasief — IT Administrator · Dubai">
 <meta property="og:description" content="IT Administrator & ERP Specialist · Dubai · Odoo · AWS · IoT · 99.7% uptime delivered.">
-<meta property="og:image" content="Main_Tech.png">
+<!-- NOTE: Main_Tech.png is portrait (1792×2390). For the best social cards, replace with a dedicated 1200×630 landscape image and update the dimensions below. -->
+<meta property="og:image" content="https://yasief.github.io/Main_Tech.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1792">
+<meta property="og:image:height" content="2390">
+<meta property="og:image:alt" content="Mohamed Yasief — IT Administrator & ERP Specialist, Dubai">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mohamed Yasief — IT Administrator · Dubai">
 <meta name="twitter:description" content="IT Administrator & ERP Specialist · Odoo · AWS · IoT · 99.7% uptime delivered.">
-<meta name="twitter:image" content="Main_Tech.png">
+<meta name="twitter:image" content="https://yasief.github.io/Main_Tech.png">
+<meta name="twitter:image:alt" content="Mohamed Yasief — IT Administrator & ERP Specialist, Dubai">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Mohamed Yasief",
+  "givenName": "Mohamed",
+  "familyName": "Yasief",
   "jobTitle": "IT Administrator & ERP Specialist",
+  "description": "IT Administrator & ERP Specialist based in Dubai, delivering 99.7% uptime across smart-tech, IoT and multi-brand environments.",
   "worksFor": { "@type": "Organization", "name": "LaundryBox Dubai" },
   "url": "https://yasief.github.io/",
   "image": "https://yasief.github.io/Main_Tech.png",
   "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
   "email": "mailto:mohamedyasief@gmail.com",
   "telephone": "+971503593856",
-  "sameAs": ["https://linkedin.com/in/yasief"],
+  "knowsLanguage": ["English","Tamil","Malayalam","Arabic"],
+  "sameAs": ["https://linkedin.com/in/yasief","https://github.com/yasief"],
   "knowsAbout": ["ERP Systems","Odoo","Zoho","AWS","IoT","Cybersecurity","Network Administration","Digital Marketing"]
 }
 </script>
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d2ff'/%3E%3Cstop offset='1' stop-color='%237b2fff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23040810'/%3E%3Cpath d='M14 44V20l9 14 9-14v24M40 20v24M40 20h12M40 32h9' fill='none' stroke='url(%23g)' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<!-- Warm up the critical third-party origins so the largest downloads start sooner -->
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
 <script type="importmap">
   {
@@ -50,10 +73,13 @@
     }
   }
 </script>
+<link rel="modulepreload" href="https://unpkg.com/three@0.160.0/build/three.module.js">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Fraunces:ital,wght@0,300;0,400;1,300;1,700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<!-- Load fonts without blocking first paint; noscript keeps them for non-JS clients -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Fraunces:ital,wght@0,300;0,400;1,300;1,700&family=Orbitron:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Fraunces:ital,wght@0,300;0,400;1,300;1,700&family=Orbitron:wght@400;700&display=swap"></noscript>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="chatbot.css">
 </head>
@@ -187,26 +213,26 @@
 <nav id="nav">
   <div class="nav-logo"><span class="br">[</span>M.YASIEF<span class="br">]</span></div>
   <div class="nav-status"><div class="nav-dot"></div>Available · Dubai, UAE</div>
-  <button id="theme-toggle" type="button" aria-label="Switch theme" aria-live="polite"><span class="tt-ic" aria-hidden="true"><svg width="14" height="14"><use href="#i-moon"/></svg></span><span>Night</span></button>
-  <div id="cmd-hint" role="button" tabindex="0" onclick="window.openCmdPalette&&window.openCmdPalette()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openCmdPalette&&window.openCmdPalette()}"><svg width="11" height="11" style="opacity:.7;margin-right:.2rem"><use href="#i-search"/></svg><span class="ck">Ctrl</span><span class="ck">K</span>&nbsp;Command</div>
+  <button id="theme-toggle" type="button" aria-label="Switch theme"><span class="tt-ic" aria-hidden="true"><svg width="14" height="14"><use href="#i-moon"/></svg></span><span>Night</span></button>
+  <div id="cmd-hint" role="button" tabindex="0" aria-label="Open command palette" onclick="window.openCmdPalette&&window.openCmdPalette()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openCmdPalette&&window.openCmdPalette()}"><svg width="11" height="11" style="opacity:.7;margin-right:.2rem" aria-hidden="true"><use href="#i-search"/></svg><span class="ck">Ctrl</span><span class="ck">K</span>&nbsp;Command</div>
 </nav>
 <div id="dots" role="tablist" aria-label="Section navigation">
-  <button class="dot active" data-i="0" type="button" role="tab" aria-label="Hero" tabindex="0"></button>
-  <button class="dot" data-i="1" type="button" role="tab" aria-label="Reflex Game" tabindex="0"></button>
-  <button class="dot" data-i="2" type="button" role="tab" aria-label="About" tabindex="0"></button>
-  <button class="dot" data-i="3" type="button" role="tab" aria-label="Experience" tabindex="0"></button>
-  <button class="dot" data-i="4" type="button" role="tab" aria-label="Dashboard" tabindex="0"></button>
-  <button class="dot" data-i="5" type="button" role="tab" aria-label="Skills" tabindex="0"></button>
-  <button class="dot" data-i="6" type="button" role="tab" aria-label="Projects" tabindex="0"></button>
-  <button class="dot" data-i="7" type="button" role="tab" aria-label="Achievements" tabindex="0"></button>
-  <button class="dot" data-i="8" type="button" role="tab" aria-label="Contact" tabindex="0"></button>
+  <button class="dot active" data-i="0" type="button" role="tab" aria-label="Hero" aria-selected="true" tabindex="0"></button>
+  <button class="dot" data-i="1" type="button" role="tab" aria-label="Reflex Game" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="2" type="button" role="tab" aria-label="About" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="3" type="button" role="tab" aria-label="Experience" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="4" type="button" role="tab" aria-label="Dashboard" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="5" type="button" role="tab" aria-label="Skills" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="6" type="button" role="tab" aria-label="Projects" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="7" type="button" role="tab" aria-label="Achievements" aria-selected="false" tabindex="0"></button>
+  <button class="dot" data-i="8" type="button" role="tab" aria-label="Contact" aria-selected="false" tabindex="0"></button>
 </div>
 
-<div id="track">
+<div id="track" role="main">
 
-<div class="panel" id="p0">
-  <canvas id="heroNetCanvas"></canvas>
-  <canvas id="heroCanvas"></canvas>
+<div class="panel" id="p0" tabindex="-1">
+  <canvas id="heroNetCanvas" aria-hidden="true"></canvas>
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
 
   <div class="h-ov"></div><div class="h-scan"></div>
 
@@ -220,7 +246,7 @@
       <svg class="h-loc-ic" width="11" height="11" aria-hidden="true"><use href="#i-pin"/></svg> LaundryBox Dubai &nbsp;·&nbsp; May 2025 – Present
     </div>
     <div class="h-ctas">
-      <a href="https://mail.google.com/mail/?view=cm&to=mohamedyasief@gmail.com" target="_blank" rel="noopener" class="cta cta-fill"><svg width="13" height="13" aria-hidden="true"><use href="#i-mail"/></svg>Get in Touch</a>
+      <a href="mailto:mohamedyasief@gmail.com" class="cta cta-fill"><svg width="13" height="13" aria-hidden="true"><use href="#i-mail"/></svg>Get in Touch</a>
       <a href="https://linkedin.com/in/yasief" target="_blank" rel="noopener" class="cta cta-ghost"><svg width="13" height="13" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn <svg width="11" height="11" aria-hidden="true" class="cta-arrow"><use href="#i-arrow"/></svg></a>
       <a href="Mohamed_Yasief_IT_Administrator_Resume.pdf" download class="cta cta-ghost"><svg width="13" height="13" aria-hidden="true"><use href="#i-download"/></svg>Resume</a>
     </div>
@@ -265,11 +291,11 @@
     </div>
 
     <!-- Ripple background -->
-    <canvas id="ripple-canvas"></canvas>
+    <canvas id="ripple-canvas" aria-hidden="true"></canvas>
 
     <!-- Canvas Container -->
     <div id="canvas-container">
-      <canvas id="webgl-canvas"></canvas>
+      <canvas id="webgl-canvas" aria-hidden="true"></canvas>
     </div>
 
     <div class="game-overlay pr pr-d4">
@@ -280,7 +306,7 @@
             <button id="gameSoundBtn" type="button" hidden aria-hidden="true" tabindex="-1">🔊 SOUND</button>
             <!-- Game Header -->
             <div class="game-header" style="padding: 1rem 1.5rem;">
-                <h1 class="game-title-nt" style="font-size: 1rem;">REFLEX TEST</h1>
+                <h2 class="game-title-nt" style="font-size: 1rem;">REFLEX TEST</h2>
                 <div class="stats" style="gap: 1.5rem;" role="group" aria-label="Game stats">
                     <div class="stat-nt">
                         <div class="stat-label-nt" style="font-size: 0.5rem;">Score</div>
@@ -298,18 +324,18 @@
             </div>
             <div class="game-area" id="gameArea"></div>
             <div class="start-screen" id="startScreen">
-                <h1 class="start-title" style="font-size: 2rem;">Reflex Test</h1>
+                <h2 class="start-title" style="font-size: 2rem;">Reflex Test</h2>
                 <p class="start-subtitle" style="font-size: 0.8rem;">Click the targets.</p>
-                <div id="championBanner" class="champion-banner hidden"></div>
+                <div id="championBanner" class="champion-banner hidden" aria-live="polite"></div>
                 <button class="btn-nt" id="startBtn" style="font-size: 0.9rem; padding: 0.8rem 2rem;">Start</button>
             </div>
             <div class="game-over-screen hidden" id="gameOverScreen">
                 <h2 class="start-subtitle">Complete</h2>
                 <div class="final-score" id="finalScore" style="font-size: 3rem;">0</div>
-                <div class="high-score" id="highScore"></div>
+                <div class="high-score" id="highScore" aria-live="polite"></div>
                 <div id="nameInputWrap" class="name-input-wrap hidden">
-                    <p class="name-input-label">New High Score! Enter your name:</p>
-                    <input id="championNameInput" class="champion-name-input" type="text" maxlength="20" placeholder="Your name…" autocomplete="off" spellcheck="false">
+                    <p class="name-input-label" id="nameInputLabel">New High Score! Enter your name:</p>
+                    <input id="championNameInput" class="champion-name-input" type="text" maxlength="20" placeholder="Your name…" aria-labelledby="nameInputLabel" autocomplete="off" spellcheck="false">
                     <button class="btn-nt" id="saveNameBtn" style="font-size: 0.8rem; padding: 0.6rem 1.5rem;">Save</button>
                 </div>
                 <button class="btn-nt" id="restartBtn" style="font-size: 0.9rem; padding: 0.8rem 2rem;">Again</button>
@@ -332,11 +358,11 @@
     <div class="stat-row pr pr-d2">
       <div class="stat-box"><div class="sn" id="cnt1">0</div><div class="sl">Years Experience</div><div class="sbar"><div class="sf sf-c" data-w="80"></div></div></div>
       <div class="stat-box"><div class="sn o" id="cnt2">0</div><div class="sl">Brands Managed</div><div class="sbar"><div class="sf sf-o" data-w="60"></div></div></div>
-      <div class="stat-box"><div class="sn v" id="cnt3">0<span style="font-size:1.5rem">%</span></div><div class="sl">CRM Lead Growth</div><div class="sbar"><div class="sf sf-c" data-w="20"></div></div></div>
+      <div class="stat-box"><div class="sn v" id="cnt3">0<span style="font-size:1.5rem">%</span></div><div class="sl">CRM Lead Conversion</div><div class="sbar"><div class="sf sf-c" data-w="20"></div></div></div>
       <div class="stat-box"><div class="sn g" id="cnt4">0<span style="font-size:1.5rem">%</span></div><div class="sl">Engagement Increase</div><div class="sbar"><div class="sf sf-o" data-w="35"></div></div></div>
     </div>
     <div class="cb-list pr pr-d3">
-      <div class="cb"><div class="cb-ic"><svg width="16" height="16" aria-hidden="true"><use href="#i-mail"/></svg></div><div><div class="cb-lbl">Email</div><div class="cb-val"><a href="https://mail.google.com/mail/?view=cm&to=mohamedyasief@gmail.com" target="_blank" rel="noopener">mohamedyasief@gmail.com</a></div></div></div>
+      <div class="cb"><div class="cb-ic"><svg width="16" height="16" aria-hidden="true"><use href="#i-mail"/></svg></div><div><div class="cb-lbl">Email</div><div class="cb-val"><a href="mailto:mohamedyasief@gmail.com">mohamedyasief@gmail.com</a></div></div></div>
       <div class="cb"><div class="cb-ic"><svg width="16" height="16" aria-hidden="true"><use href="#i-phone"/></svg></div><div><div class="cb-lbl">UAE Mobile</div><div class="cb-val"><a href="tel:+971503593856">+971 50 359 3856</a></div></div></div>
       <div class="cb"><div class="cb-ic"><svg width="16" height="16" aria-hidden="true"><use href="#i-linkedin"/></svg></div><div><div class="cb-lbl">LinkedIn</div><div class="cb-val"><a href="https://linkedin.com/in/yasief" target="_blank" rel="noopener">linkedin.com/in/yasief</a></div></div></div>
     </div>
@@ -345,18 +371,18 @@
 
 <div class="panel" id="p2">
   <div class="ex-hd pr">
-    <div class="ex-hd-t" data-scramble="WORK EXPERIENCE">Work<br><span>Experience</span></div>
+    <h2 class="ex-hd-t" data-scramble="WORK EXPERIENCE">Work<br><span>Experience</span></h2>
     <div class="ex-hd-s">// 02 of 07</div>
   </div>
   <div class="ex-bd">
-    <div class="ex-nav">
-      <div class="ex-tab active" data-pane="lb">
+    <div class="ex-nav" role="tablist" aria-label="Experience timeline">
+      <div class="ex-tab active" data-pane="lb" role="button" tabindex="0" aria-selected="true">
         <div class="et-badge"><div class="et-dot da"></div><span style="color:var(--c4);letter-spacing:.2em;font-size:.55rem;font-family:'JetBrains Mono',monospace">CURRENT</span></div>
         <div class="et-co">LaundryBox Dubai</div>
         <div class="et-rl">IT Administrator</div>
         <div class="et-pr">May 2025 → Present</div>
       </div>
-      <div class="ex-tab" data-pane="mh">
+      <div class="ex-tab" data-pane="mh" role="button" tabindex="0" aria-selected="false">
         <div class="et-badge"><div class="et-dot dp"></div><span style="color:var(--dim2);letter-spacing:.2em;font-size:.55rem;font-family:'JetBrains Mono',monospace">PREVIOUS</span></div>
         <div class="et-co">The Muffin House Group</div>
         <div class="et-rl">IT Administrator</div>
@@ -420,7 +446,7 @@
 <div class="panel" id="p3">
   <div class="dw">
     <div class="d-hd">
-      <div class="d-title pr" data-scramble="IT ADMIN DASHBOARD">IT Admin<br><span>Dashboard</span></div>
+      <h2 class="d-title pr" data-scramble="IT ADMIN DASHBOARD">IT Admin<br><span>Dashboard</span></h2>
       <div class="ex-hd-s">// 03 of 07</div>
     </div>
     <div class="dgrid">
@@ -436,7 +462,7 @@
       </div>
       <div class="dt pr pr-d2">
         <div class="dt-lbl"><svg width="13" height="13" aria-hidden="true"><use href="#i-network"/></svg> Network Topology</div>
-        <div class="ncw"><canvas id="netCanvas"></canvas></div>
+        <div class="ncw"><canvas id="netCanvas" aria-hidden="true"></canvas></div>
       </div>
       <div class="dt pr pr-d2">
         <div class="dt-lbl"><svg width="13" height="13" aria-hidden="true"><use href="#i-uptime"/></svg> System Uptime</div>
@@ -492,7 +518,7 @@
 
 <div class="panel" id="p4">
   <div class="sk-hd pr">
-    <div class="sk-ht" data-scramble="TECHNICAL SKILLS">Technical<br><em>Skills</em></div>
+    <h2 class="sk-ht" data-scramble="TECHNICAL SKILLS">Technical<br><em>Skills</em></h2>
     <div class="ex-hd-s">// 04 of 07</div>
   </div>
   <div class="sk-bd">
@@ -572,7 +598,7 @@
 
 <div class="panel" id="p5">
   <div class="pj-hd pr">
-    <div class="pj-ht" data-scramble="KEY PROJECTS">Key<br><span>Projects</span></div>
+    <h2 class="pj-ht" data-scramble="KEY PROJECTS">Key<br><span>Projects</span></h2>
     <div class="ex-hd-s">// 05 of 07</div>
   </div>
   <div class="pj-grid">
@@ -614,9 +640,9 @@
 <div class="panel" id="p6">
   <div class="ac-l pr">
     <div class="sec-tag" style="margin-bottom:1.5rem">// Results</div>
-    <div class="ac-big" data-scramble="REAL RESULTS MEASURED">Real<br>results,<br><em>measured.</em></div>
+    <h2 class="ac-big" data-scramble="REAL RESULTS MEASURED">Real<br>results,<br><em>measured.</em></h2>
     <p class="ac-sub">Every number below is a real, documented business outcome — delivered through technical precision, cross-team leadership, and a relentless focus on measurable impact.</p>
-    <a href="https://mail.google.com/mail/?view=cm&to=mohamedyasief@gmail.com" target="_blank" rel="noopener" class="ac-cta">Discuss a Project →</a>
+    <a href="mailto:mohamedyasief@gmail.com" class="ac-cta">Discuss a Project →</a>
   </div>
   <div class="ac-r pr pr-d2">
     <div class="ac-item"><div class="ac-num anc"><span class="cn" data-n="20">0</span>%</div><div class="ac-txt"><strong>CRM Lead Conversion Uplift</strong><p>Implemented a structured CRM system that improved lead tracking workflows and directly increased conversion rates by 20% across sales teams.</p></div></div>
@@ -627,18 +653,18 @@
 </div>
 
 <div class="panel" id="p7">
-  <canvas id="mathUniverseCanvas" style="position:absolute; inset:0; z-index:0;"></canvas>
+  <canvas id="mathUniverseCanvas" style="position:absolute; inset:0; z-index:0;" aria-hidden="true"></canvas>
   <div class="ct-c pr">
     <div class="ct-pre"><svg width="11" height="11" aria-hidden="true" style="color:var(--c4)"><use href="#i-spark"/></svg>Open to Opportunities</div>
-    <div class="ct-big" data-scramble="LETS CONNECT">Let's<br><span class="ci2">connect</span></div>
+    <h2 class="ct-big" data-scramble="LETS CONNECT">Let's<br><span class="ci2">connect</span></h2>
     <div class="ct-acts">
-      <a href="https://mail.google.com/mail/?view=cm&to=mohamedyasief@gmail.com" target="_blank" rel="noopener" class="cpill cp1"><svg width="14" height="14" aria-hidden="true"><use href="#i-mail"/></svg>mohamedyasief@gmail.com</a>
+      <a href="mailto:mohamedyasief@gmail.com" class="cpill cp1"><svg width="14" height="14" aria-hidden="true"><use href="#i-mail"/></svg>mohamedyasief@gmail.com</a>
       <a href="https://linkedin.com/in/yasief" target="_blank" rel="noopener" class="cpill cp2"><svg width="14" height="14" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn</a>
       <a href="tel:+971503593856" class="cpill cp3"><svg width="14" height="14" aria-hidden="true"><use href="#i-phone"/></svg>+971 50 359 3856</a>
     </div>
     <div class="ct-note">Based in Dubai, UAE · Available for full-time roles & projects</div>
   </div>
-  <div class="ft"><div class="ft-c">© 2025 Mohamed Yasief</div><div class="ft-c">Dubai, UAE</div></div>
+  <div class="ft" role="contentinfo"><div class="ft-c">© <span id="footYear">2026</span> Mohamed Yasief</div><div class="ft-c">Dubai, UAE</div></div>
 </div>
 
 </div>
@@ -647,7 +673,7 @@
   <div id="cmd-box">
     <div id="cmd-input-row">
       <span class="cmd-search-ic"><svg width="14" height="14" aria-hidden="true"><use href="#i-search"/></svg></span>
-      <input id="cmd-input" placeholder="Navigate or search…" autocomplete="off" spellcheck="false">
+      <input id="cmd-input" placeholder="Navigate or search…" aria-label="Search commands and navigate sections" autocomplete="off" spellcheck="false">
       <span class="cmd-esc">ESC</span>
     </div>
     <div id="cmd-list"></div>
@@ -660,10 +686,10 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="module" src="chatbot.js"></script>
-<script src="mathUniverseAnimation.js"></script>
-<script src="rippleAnimation.js"></script>
+<script defer src="mathUniverseAnimation.js"></script>
+<script defer src="rippleAnimation.js"></script>
 <script type="module" src="script.js"></script>
 <script type="module" src="animation.js"></script>
 <script type="module" src="threejsAnimation.js"></script>      <!-- For p-threejs -->

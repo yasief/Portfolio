@@ -14,8 +14,12 @@
     transition-duration:.01ms !important;
     scroll-behavior:auto !important;
   }
-  /* Hide decorative scan/noise/ripple layers — they're pure motion noise */
-  .h-scan,#noise,#heroNetCanvas,#mathUniverseCanvas,#ripple-canvas,#netCanvas{opacity:0 !important;}
+  /* Hide decorative scan/noise/ripple/WebGL layers — they're pure motion noise.
+     The hero heading and portrait text remain in the DOM, so nothing is lost. */
+  .h-scan,#noise,#heroNetCanvas,#heroCanvas,#mathUniverseCanvas,#ripple-canvas,#netCanvas,#webgl-canvas{opacity:0 !important;}
+  /* Restore the native pointer — the custom-cursor rAF loop is skipped under reduced motion. */
+  body{cursor:auto !important;}
+  #cur,#cur2,#cur3{display:none !important;}
 }
 
 /* ═══ THEME TOKENS ═══
@@ -28,9 +32,9 @@
   /* Accent palette */
   --c1:#00d2ff;--c2:#7b2fff;--c3:#ff6b35;--c4:#00ff9d;--c5:#ff3e8a;
   --c1-rgb:0,210,255;--c2-rgb:123,47,255;--c3-rgb:255,107,53;--c4-rgb:0,255,157;--c5-rgb:255,62,138;
-  /* Foreground / dimmed */
+  /* Foreground / dimmed — raised for WCAG AA legibility on the dark ground */
   --w:#eef2ff;--w-rgb:238,242,255;
-  --dim:rgba(var(--w-rgb),0.42);--dim2:rgba(var(--w-rgb),0.22);
+  --dim:rgba(var(--w-rgb),0.66);--dim2:rgba(var(--w-rgb),0.50);
   /* Borders */
   --border:rgba(var(--c1-rgb),0.08);--blight:rgba(var(--c1-rgb),0.20);
   /* Overlays / surfaces */
@@ -52,7 +56,7 @@ body[data-theme='daylight']{
   --c1:#2563eb;--c2:#7c3aed;--c3:#ea580c;--c4:#0d9488;--c5:#db2777;
   --c1-rgb:37,99,235;--c2-rgb:124,58,237;--c3-rgb:234,88,12;--c4-rgb:13,148,136;--c5-rgb:219,39,119;
   --w:#0f172a;--w-rgb:15,23,42;
-  --dim:rgba(var(--w-rgb),0.62);--dim2:rgba(var(--w-rgb),0.32);
+  --dim:rgba(var(--w-rgb),0.72);--dim2:rgba(var(--w-rgb),0.52);
   --border:rgba(var(--c1-rgb),0.18);--blight:rgba(var(--c1-rgb),0.36);
   --ov:240,244,255;
   /* Terminal stays IDE-dark even in light mode for readability of code-like UI */
@@ -73,7 +77,7 @@ body[data-theme='solar']{
   --c1:#22d3ee;--c2:#facc15;--c3:#fb7185;--c4:#4ade80;--c5:#f472b6;
   --c1-rgb:34,211,238;--c2-rgb:250,204,21;--c3-rgb:251,113,133;--c4-rgb:74,222,128;--c5-rgb:244,114,182;
   --w:#f8fafc;--w-rgb:248,250,252;
-  --dim:rgba(var(--w-rgb),0.66);--dim2:rgba(var(--w-rgb),0.34);
+  --dim:rgba(var(--w-rgb),0.72);--dim2:rgba(var(--w-rgb),0.50);
   --border:rgba(var(--c1-rgb),0.16);--blight:rgba(var(--c1-rgb),0.32);
   --ov:8,22,26;
   --surface-deep:#06141a;
@@ -950,31 +954,6 @@ body.cmd-open #cmd-backdrop #cmd-input{cursor:text;}
 /* Toast */
 .cmd-toast{position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%);background:rgba(var(--c4-rgb),.08);border:1px solid rgba(var(--c4-rgb),.3);color:var(--c4);padding:.55rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;z-index:10002;pointer-events:none;transition:opacity .4s;}
 
-/* ═══ HEX SKILL GRID ═══ */
-.hex-area{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;overflow:hidden;}
-.hex-col{border-right:1px solid var(--border);padding:1.5rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
-.hex-col::-webkit-scrollbar{display:none;}
-.hex-col:last-child{border-right:none;}
-.hex-col-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);flex-shrink:0;}
-.hct-c{color:var(--c1);}.hct-o{color:var(--c3);}.hct-p{color:var(--c2);}.hct-g{color:var(--c4);}
-.hex-wrap{display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;}
-.hex-cell{position:relative;width:78px;height:78px;flex-shrink:0;cursor:none;transition:transform .25s,filter .25s;}
-.hex-cell:hover{transform:scale(1.1);filter:brightness(1.4);}
-.hex-bg{position:absolute;inset:0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);}
-.hex-fg{position:absolute;inset:3px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
-.hex-pct{font-family:'Outfit',sans-serif;font-weight:900;font-size:.92rem;line-height:1;}
-.hex-nm{font-size:.37rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);text-align:center;padding:0 5px;line-height:1.3;}
-.hx-c .hex-bg{background:rgba(var(--c1-rgb),.22);}.hx-c .hex-pct{color:var(--c1);}
-.hx-o .hex-bg{background:rgba(var(--c3-rgb),.22);}.hx-o .hex-pct{color:var(--c3);}
-.hx-p .hex-bg{background:rgba(var(--c2-rgb),.22);}.hx-p .hex-pct{color:var(--c2);}
-.hx-g .hex-bg{background:rgba(var(--c4-rgb),.18);}.hx-g .hex-pct{color:var(--c4);}
-.soft-hex-section{display:flex;flex-direction:column;gap:.9rem;}
-.sft-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
-.sft-tag{padding:.38rem .8rem;font-size:.6rem;border:1px solid var(--border);color:var(--dim);transition:border-color .3s,color .3s;cursor:none;}
-.sft-tag:hover{border-color:var(--c2);color:var(--c2);}
-.lang-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
-.lang-chip{padding:.38rem .85rem;border:1px solid rgba(var(--c2-rgb),.35);font-size:.6rem;color:var(--c2);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;}
-
 /* ═══ PROJECT OUTCOME-FIRST ═══ */
 .pc-outcome{display:flex;align-items:center;gap:.7rem;margin-bottom:.75rem;padding:.45rem .8rem;background:rgba(var(--c3-rgb),.06);border-left:2px solid var(--c3);}
 .pc-oc-label{font-family:'JetBrains Mono',monospace;font-size:.46rem;letter-spacing:.28em;text-transform:uppercase;color:var(--c3);flex-shrink:0;}
@@ -1629,4 +1608,18 @@ body[data-theme='daylight'] .terminal{box-shadow:0 14px 32px rgba(15,23,42,.18);
   .ex-cn{padding:2.5rem 4rem;}
   .ep-co{font-size:1.7rem;}
   .pj-c{padding:2.4rem 2rem;}
+}
+
+/* ── Section titles are semantic headings (h2/h3) for document outline & SEO.
+   Neutralise the user-agent heading margins so the layout is unchanged. ── */
+.a-hl,.ex-hd-t,.d-title,.sk-ht,.pj-ht,.ac-big,.ct-big,.game-title-nt,.start-title{margin:0;}
+
+/* ── Keep a visible pointer on touch / no-hover devices (incl. large hybrid
+   tablets treated as "desktop" by width). The custom cursor is disabled here;
+   placed last so it overrides the earlier cursor:none rules. ── */
+@media (hover: none), (pointer: coarse){
+  body,#p-threejs{cursor:auto;}
+  #cur,#cur2,#cur3{display:none !important;}
+  a,button,[role="button"],.dot,.cta,.cpill,.cb,.ex-tab,.resp-item,.sk-item,.sp,.badge,.pj-c,.dt,.ac-item,.btn-nt{cursor:pointer;}
+  input,textarea,.champion-name-input,#cmd-input{cursor:text;}
 }

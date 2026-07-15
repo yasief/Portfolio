@@ -497,10 +497,26 @@ export function initThreeJSAnimation() {
     }
 
     // ── Init ──────────────────────────────────────────────────────────────────
+    function threejsWebGLAvailable(){
+        try{
+            const c = document.createElement('canvas');
+            return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl')));
+        }catch(e){ return false; }
+    }
+
     async function init() {
         // On mobile the canvas container is laid out by flex after panel switch,
         // so wait one rAF to ensure CSS dimensions are settled before reading size.
         await new Promise(r => requestAnimationFrame(r));
+
+        // If WebGL is unavailable, don't even attempt to build a renderer — Three.js
+        // logs context-creation errors to the console on the attempt. Hide the loader
+        // so the panel (and the reflex game beneath it) stays usable.
+        if (!threejsWebGLAvailable()) {
+            const loader = document.getElementById('loader');
+            if (loader) { loader.classList.add('hidden'); setTimeout(() => { loader.style.display = 'none'; }, 600); }
+            return;
+        }
 
         initScene();
         const image = new Image();

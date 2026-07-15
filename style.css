@@ -1638,3 +1638,45 @@ body[data-theme='daylight'] .terminal{box-shadow:0 14px 32px rgba(15,23,42,.18);
   a,button,[role="button"],.dot,.cta,.cpill,.cb,.ex-tab,.resp-item,.sk-item,.sp,.badge,.pj-c,.dt,.ac-item,.btn-nt{cursor:pointer;}
   input,textarea,.champion-name-input,#cmd-input{cursor:text;}
 }
+
+/* ── Mobile command-palette launcher (touch devices can't press Ctrl/⌘+K) ── */
+#cmd-fab{
+  position:fixed; left:max(16px,env(safe-area-inset-left)); bottom:max(16px,env(safe-area-inset-bottom));
+  z-index:9000; width:48px; height:48px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--card); color:var(--c1); border:1px solid var(--blight);
+  box-shadow:var(--shadow-card); cursor:pointer;
+}
+#cmd-fab:active{transform:scale(.94);}
+
+/* ── First-visit navigation hint ── */
+#coach{
+  position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
+  z-index:9500; max-width:min(92vw,430px);
+  background:var(--card); border:1px solid var(--blight); box-shadow:var(--shadow-lg);
+  border-radius:10px; padding:.8rem 1rem; animation:coachIn .4s ease;
+}
+#coach.gone{opacity:0; transform:translate(-50%,10px); transition:opacity .35s,transform .35s;}
+.coach-inner{display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; font-size:.8rem; color:var(--dim);}
+.coach-inner strong{color:var(--c1); font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.15em; text-transform:uppercase;}
+.coach-inner span{flex:1; min-width:150px; line-height:1.5;}
+#coachClose{background:var(--c1); color:var(--bg); border:none; border-radius:6px; padding:.4rem .85rem; font-size:.7rem; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif;}
+@keyframes coachIn{from{opacity:0; transform:translate(-50%,12px);} to{opacity:1; transform:translate(-50%,0);}}
+
+/* ══ PRINT / "Save as PDF" — linearise the horizontal deck into a clean document ══ */
+@media print{
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  body{overflow:visible !important; height:auto !important; background:#fff !important; color:#111 !important; cursor:auto !important;}
+  #noise,#cur,#cur2,#cur3,#prog,#nav,#dots,.h-scroll,.h-ticker,#cmd-fab,#coach,#cmd-backdrop,
+  #chat-toggle-btn,#chat-panel,canvas,#loader,.game-overlay,#p-threejs,.h-ov,.h-scan,
+  .champion-banner,.terminal,.portrait-fallback,.skip-link{ display:none !important; }
+  #track{ display:block !important; transform:none !important; width:auto !important; height:auto !important; }
+  .panel{ position:relative !important; inset:auto !important; width:100% !important; height:auto !important;
+    min-height:0 !important; display:block !important; opacity:1 !important; transform:none !important;
+    padding:1.1rem 1.4rem !important; border-bottom:1px solid #ddd; page-break-inside:avoid; break-inside:avoid; }
+  .pr{ opacity:1 !important; transform:none !important; }
+  .ex-pane{ display:block !important; opacity:1 !important; }   /* force both experience roles open */
+  a{ color:#111 !important; text-decoration:underline; }
+  h1,h2,.h-name,.h-name strong,.h-name .glitch{ color:#111 !important; -webkit-text-fill-color:#111 !important; }
+  .pj-grid,.dgrid,.sk-bd,.resp-grid{ display:block !important; }
+}

@@ -627,6 +627,21 @@ const prog=document.getElementById('prog');
 const panels=document.querySelectorAll('.panel');
 let cur_p=0,scrolling=false,wt=null;
 const N = panels.length;
+
+// Deep-linking: each panel index maps to a URL hash so sections are shareable and
+// a refresh (or a returning visitor) lands where they left off.
+const SECTION_HASH=['home','game','about','experience','dashboard','skills','projects','achievements','contact'];
+function updateHash(i){
+  if(SECTION_HASH[i]){ try{ history.replaceState(null,'','#'+SECTION_HASH[i]); }catch(e){} }
+  try{ localStorage.setItem('yasiefLastSection',String(i)); }catch(e){}
+}
+function initialIndex(){
+  const h=(location.hash||'').replace('#','');
+  let idx=SECTION_HASH.indexOf(h);
+  if(idx<0){ const saved=parseInt(localStorage.getItem('yasiefLastSection'),10); if(!isNaN(saved)&&saved>0&&saved<N) idx=saved; }
+  return idx>0?idx:0;
+}
+
 function goTo(i){
   if(i<0||i>=N)return;
   const prev=cur_p;
@@ -634,6 +649,7 @@ function goTo(i){
   track.style.transform=`translateX(-${i*100}vw)`;
   dots.forEach((d,j)=>{d.classList.toggle('active',j===i);d.setAttribute('aria-selected',j===i);});
   prog.style.width=((i/(N-1))*100)+'%';
+  updateHash(i);
   panels.forEach((p,j)=>p.classList.toggle('active',j===i));
   // Keep content of the entering panel visible permanently so the previous panel
   // doesn't appear blank during the 1s slide transition.
@@ -722,6 +738,7 @@ function setupMobileView() {
                     const idx = Array.from(panels).indexOf(entry.target);
                     if (idx !== -1) {
                         cur_p = idx;
+                        updateHash(idx);
                         dots.forEach((d, j) => {d.classList.toggle('active', j === idx);d.setAttribute('aria-selected', j === idx);});
                         panels.forEach((p, j) => p.classList.toggle('active', j === idx));
                         panels[idx].classList.add('revealed');
@@ -754,10 +771,13 @@ function handleViewChange() {
     }
 }
 
-// Initial Setup
-if (panels.length > 0) { panels[0].classList.add('active'); panels[0].classList.add('revealed'); }
-if (prog) prog.style.width = '0%';
+// Initial Setup — honour a deep-link hash / last-visited section.
+cur_p = initialIndex();
+if (panels.length > 0) { panels[cur_p].classList.add('active'); panels[cur_p].classList.add('revealed'); }
+if (prog) prog.style.width = ((cur_p/(N-1))*100) + '%';
 handleViewChange();
+// Desktop is positioned by goTo() inside setupDesktopView; on mobile, scroll to the target panel.
+if (!isDesktop && cur_p > 0 && panels[cur_p]) { setTimeout(() => panels[cur_p].scrollIntoView({ behavior: 'auto' }), 60); }
 
 // Kick off hero network animation as soon as the function is available.
 (function startHeroNet(){
@@ -1128,7 +1148,11 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
     {g:'Actions', ic:ic('i-mail'),  label:'Copy Email',desc:'mohamedyasief@gmail.com',tag:'',fn:()=>copy('mohamedyasief@gmail.com','Email copied!')},
     {g:'Actions', ic:ic('i-phone'), label:'Copy Phone',desc:'+971 50 359 3856',tag:'',fn:()=>copy('+971503593856','Phone copied!')},
     {g:'Actions', ic:ic('i-linkedin'),label:'LinkedIn',desc:'linkedin.com/in/yasief',tag:'',fn:()=>window.open('https://linkedin.com/in/yasief','_blank','noopener')},
+    {g:'Actions', ic:ic('i-phone'), label:'WhatsApp Mohamed',desc:'Chat on WhatsApp',tag:'',fn:()=>window.open('https://wa.me/971503593856?text=Hi%20Mohamed%20%E2%80%94%20I%20saw%20your%20portfolio%20and%20I%27d%20like%20to%20talk%20about%20a%20role%2Fproject.','_blank','noopener')},
     {g:'Actions', ic:ic('i-download'),label:'Download Resume',desc:'PDF · Mohamed Yasief',tag:'',fn:()=>{const a=document.createElement('a');a.href='Mohamed_Yasief_IT_Administrator_Resume.pdf';a.download='';a.click();}},
+    {g:'Actions', ic:ic('i-users'),  label:'Save contact (.vcf)',desc:'Add Mohamed to your contacts',tag:'',fn:()=>saveVCard()},
+    {g:'Actions', ic:ic('i-arrow'),  label:'Share this profile',desc:'Send or copy the link',tag:'',fn:()=>shareProfile()},
+    {g:'Actions', ic:ic('i-moon'),   label:'Switch theme',desc:'Night · Day · Solar',tag:'',fn:()=>{const t=document.getElementById('theme-toggle');if(t)t.click();}},
   ];
   const backdrop=document.getElementById('cmd-backdrop');
   const input=document.getElementById('cmd-input');
@@ -1145,6 +1169,25 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
     t.className='cmd-toast';t.textContent=msg;
     document.body.appendChild(t);
     setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),450);},1400);
+  }
+  // Save Mohamed as a phone contact (client-side vCard, no backend).
+  function saveVCard(){
+    const v=['BEGIN:VCARD','VERSION:3.0','N:Yasief;Mohamed;;;','FN:Mohamed Yasief',
+      'TITLE:IT Administrator & ERP Specialist','TEL;TYPE=CELL:+971503593856',
+      'EMAIL:mohamedyasief@gmail.com','URL:https://yasief.github.io/',
+      'URL:https://linkedin.com/in/yasief','ADR;TYPE=WORK:;;Dubai;;;;UAE','END:VCARD'].join('\r\n');
+    const blob=new Blob([v],{type:'text/vcard'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='Mohamed_Yasief.vcf';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast('Contact downloaded');close();
+  }
+  // Native share sheet on mobile; copy-link fallback on desktop.
+  async function shareProfile(){
+    const url=location.href.split('#')[0];
+    try{ if(navigator.share){ await navigator.share({title:'Mohamed Yasief — IT Administrator · Dubai',text:'IT Administrator & ERP Specialist · Dubai',url}); return; } }catch(e){ return; }
+    try{ await navigator.clipboard.writeText(url); toast('Link copied!'); }catch(e){ toast('Copy failed'); }
+    close();
   }
   function render(){
     list.innerHTML='';
@@ -1227,4 +1270,50 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
 (function(){
   const el=document.getElementById('footYear');
   if(el) el.textContent=new Date().getFullYear();
+})();
+
+/* ═══ LIVE DUBAI CLOCK + TIME-AWARE STATUS ═══ */
+(function(){
+  const el=document.querySelector('.nav-status');
+  if(!el) return;
+  el.innerHTML='<div class="nav-dot"></div><span class="nav-state">Available</span> · <span class="nav-time"></span> Dubai';
+  const stateEl=el.querySelector('.nav-state'), timeEl=el.querySelector('.nav-time');
+  function paint(){
+    const now=new Date();
+    timeEl.textContent=now.toLocaleTimeString('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',hour12:false});
+    const h=parseInt(now.toLocaleString('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',hour12:false}),10);
+    stateEl.textContent=(h>=9 && h<19)?'Available now':'Online · replies soon';
+  }
+  paint(); setInterval(paint,60000);
+})();
+
+/* ═══ COMMAND PALETTE: Mac key label + mobile launcher ═══ */
+(function(){
+  const isMac=/Mac|iPhone|iPad|iPod/.test(navigator.platform||'')||/Mac OS X/.test(navigator.userAgent||'');
+  if(isMac){
+    document.querySelectorAll('#cmd-hint .ck').forEach(el=>{ if(el.textContent.trim()==='Ctrl') el.textContent='⌘'; });
+    document.querySelectorAll('#cmd-footer .ck').forEach(el=>{ if(el.textContent.trim()==='Ctrl K') el.textContent='⌘ K'; });
+  }
+  // Touch/coarse-pointer devices can't press Ctrl+K — give them a launcher button.
+  if(window.matchMedia('(hover: none), (pointer: coarse)').matches){
+    const fab=document.createElement('button');
+    fab.id='cmd-fab'; fab.type='button'; fab.setAttribute('aria-label','Open command menu');
+    fab.innerHTML='<svg width="20" height="20" aria-hidden="true"><use href="#i-search"/></svg>';
+    fab.addEventListener('click',()=>{ if(typeof window.openCmdPalette==='function') window.openCmdPalette(); });
+    document.body.appendChild(fab);
+  }
+})();
+
+/* ═══ FIRST-VISIT NAVIGATION HINT ═══ */
+(function(){
+  try{ if(localStorage.getItem('yasiefCoachSeen')==='1') return; }catch(e){}
+  const touch=window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  const c=document.createElement('div'); c.id='coach';
+  c.innerHTML='<div class="coach-inner"><strong>Tip</strong><span>'+
+    (touch?'Swipe or tap the dots to move between sections.':'Scroll, use ←/→ arrows, or press <span class="ck">Ctrl</span><span class="ck">K</span> to jump anywhere.')+
+    '</span><button type="button" id="coachClose">Got it</button></div>';
+  document.body.appendChild(c);
+  function dismiss(){ c.classList.add('gone'); setTimeout(()=>c.remove(),400); try{localStorage.setItem('yasiefCoachSeen','1');}catch(e){} }
+  const btn=document.getElementById('coachClose'); if(btn) btn.addEventListener('click',dismiss);
+  setTimeout(dismiss,9000);
 })();

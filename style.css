@@ -14,9 +14,11 @@
     transition-duration:.01ms !important;
     scroll-behavior:auto !important;
   }
-  /* Hide decorative scan/noise/ripple/WebGL layers — they're pure motion noise.
-     The hero heading and portrait text remain in the DOM, so nothing is lost. */
-  .h-scan,#noise,#heroNetCanvas,#heroCanvas,#mathUniverseCanvas,#ripple-canvas,#netCanvas,#webgl-canvas{opacity:0 !important;}
+  /* Hide only the purely-decorative background layers — scan lines, noise, the 2D
+     network/ripple/math canvases. The hero particle canvas (#heroCanvas) and the
+     portrait particle canvas (#webgl-canvas) are PRIMARY visual content with no DOM
+     fallback, so they must stay visible even under reduced motion. */
+  .h-scan,#noise,#heroNetCanvas,#mathUniverseCanvas,#ripple-canvas,#netCanvas{opacity:0 !important;}
   /* Restore the native pointer — the custom-cursor rAF loop is skipped under reduced motion. */
   body{cursor:auto !important;}
   #cur,#cur2,#cur3{display:none !important;}

@@ -183,6 +183,19 @@ body.hov #cur3{width:80px;height:80px;}
 #p-threejs { background: var(--bg); font-family: 'Orbitron', 'Courier New', monospace; color: #00eeff; cursor: none; }
 #ripple-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 #p-threejs #canvas-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+/* Static portrait shown when WebGL is unavailable (see threejsAnimation.js) — keeps
+   the panel complete and gently animated on every device, GPU or not. */
+#p-threejs #canvas-container .portrait-fallback{
+  position:absolute; top:50%; left:50%;
+  max-width:min(78%,480px); max-height:82%; object-fit:contain;
+  opacity:0; z-index:1; pointer-events:none;
+  filter:drop-shadow(0 0 34px rgba(var(--c1-rgb),.28));
+  transform:translate(-50%,-50%);
+  animation:portraitIn 1.1s ease forwards, portraitFloat 6s ease-in-out 1.2s infinite;
+}
+@keyframes portraitIn{from{opacity:0;}to{opacity:1;}}
+@keyframes portraitFloat{0%,100%{transform:translate(-50%,-50%) translateY(0);}50%{transform:translate(-50%,-50%) translateY(-10px);}}
+@media (prefers-reduced-motion: reduce){ #p-threejs #canvas-container .portrait-fallback{animation:portraitIn .01ms forwards;} }
 #p-threejs #webgl-canvas {
   display: block;
   width: 50%;

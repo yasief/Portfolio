@@ -504,19 +504,31 @@ export function initThreeJSAnimation() {
         }catch(e){ return false; }
     }
 
+    // When WebGL isn't available, present the actual portrait image (the same one the
+    // particle system samples) with a gentle CSS float, so EVERY device shows a
+    // polished, animated portrait instead of a blank panel. Also hides the loader.
+    function showPortraitFallback(){
+        const container = document.getElementById('canvas-container');
+        if (container && !container.querySelector('.portrait-fallback')) {
+            const img = document.createElement('img');
+            img.src = IMAGE_SRC;
+            img.alt = 'Mohamed Yasief';
+            img.className = 'portrait-fallback';
+            container.appendChild(img);
+        }
+        const loader = document.getElementById('loader');
+        if (loader) { loader.classList.add('hidden'); setTimeout(() => { loader.style.display = 'none'; }, 600); }
+    }
+
     async function init() {
         // On mobile the canvas container is laid out by flex after panel switch,
         // so wait one rAF to ensure CSS dimensions are settled before reading size.
         await new Promise(r => requestAnimationFrame(r));
 
         // If WebGL is unavailable, don't even attempt to build a renderer — Three.js
-        // logs context-creation errors to the console on the attempt. Hide the loader
-        // so the panel (and the reflex game beneath it) stays usable.
-        if (!threejsWebGLAvailable()) {
-            const loader = document.getElementById('loader');
-            if (loader) { loader.classList.add('hidden'); setTimeout(() => { loader.style.display = 'none'; }, 600); }
-            return;
-        }
+        // logs context-creation errors to the console on the attempt. Show the static
+        // portrait fallback so the panel still looks complete on every device.
+        if (!threejsWebGLAvailable()) { showPortraitFallback(); return; }
 
         initScene();
         const image = new Image();
@@ -552,11 +564,9 @@ export function initThreeJSAnimation() {
     }
 
     init().catch(() => {
-        // WebGL or the image is unavailable — hide the loader so the panel (and the
-        // reflex game beneath it) is usable instead of hanging on "LOADING PARTICLE
-        // SYSTEM…" forever. The portrait is decorative; the game still works.
-        const loader = document.getElementById('loader');
-        if (loader) { loader.classList.add('hidden'); setTimeout(() => { loader.style.display = 'none'; }, 600); }
+        // WebGL or the image failed mid-init — fall back to the static portrait so the
+        // panel never hangs on "LOADING PARTICLE SYSTEM…" and stays visually complete.
+        showPortraitFallback();
     });
 }
 

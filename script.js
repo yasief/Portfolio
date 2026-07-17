@@ -1132,6 +1132,36 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
   });
 })();
 
+/* ═══ SHARED UI HELPERS ═══
+   toast() is hoisted to module scope so panels, the command palette, and
+   later features share ONE implementation (it used to be private to the
+   palette IIFE). copyText() adds a clipboard + haptic + toast affordance. */
+function toast(msg){
+  const t=document.createElement('div');
+  t.className='cmd-toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),450);},1400);
+}
+function haptic(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||15); }catch(e){} }
+async function copyText(txt,msg){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){ try{ const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.top='-999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove(); }catch(_){} }
+  haptic(15); if(msg) toast(msg);
+}
+window.toast=toast;
+
+/* ═══ CLICK-TO-COPY AFFORDANCES ═══
+   Any element with [data-copy] copies its value with a toast + haptic,
+   while its inner mailto:/tel: link stays the primary tap target. */
+(function(){
+  document.addEventListener('click',e=>{
+    const btn=e.target.closest('[data-copy]');
+    if(!btn)return;
+    e.preventDefault();
+    copyText(btn.getAttribute('data-copy'),btn.getAttribute('data-copy-msg')||'Copied');
+  });
+})();
+
 /* ═══ COMMAND PALETTE ═══ */
 (function(){
   const ic = id => `<svg width="14" height="14"><use href="#${id}"/></svg>`;
@@ -1153,6 +1183,10 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
     {g:'Actions', ic:ic('i-users'),  label:'Save contact (.vcf)',desc:'Add Mohamed to your contacts',tag:'',fn:()=>saveVCard()},
     {g:'Actions', ic:ic('i-arrow'),  label:'Share this profile',desc:'Send or copy the link',tag:'',fn:()=>shareProfile()},
     {g:'Actions', ic:ic('i-moon'),   label:'Switch theme',desc:'Night · Day · Solar',tag:'',fn:()=>{const t=document.getElementById('theme-toggle');if(t)t.click();}},
+    {g:'Actions', ic:ic('i-download'),label:'Save as PDF / Print',desc:'Print-optimized résumé view',tag:'',fn:()=>{close();setTimeout(()=>window.print(),160);}},
+    {g:'Run',     ic:ic('i-bolt'),   label:'Run diagnostics',desc:'Mock system self-check',tag:'',fn:()=>runDiagnostics()},
+    {g:'Run',     ic:ic('i-network'),label:'Ping services',desc:'Real fetch latency check',tag:'',fn:()=>pingServices()},
+    {g:'Run',     ic:ic('i-spark'),  label:'Play reflex game',desc:'Jump to the mini-game',tag:'',fn:()=>{goTo(1);close();}},
   ];
   const backdrop=document.getElementById('cmd-backdrop');
   const input=document.getElementById('cmd-input');
@@ -1161,14 +1195,24 @@ document.querySelectorAll('.ex-tab').forEach(tab=>{
   let sel=0,filtered=[...CMDS];
 
   function copy(txt,msg){
-    navigator.clipboard.writeText(txt).catch(()=>{});
-    toast(msg);close();
+    copyText(txt,msg);close();
   }
-  function toast(msg){
-    const t=document.createElement('div');
-    t.className='cmd-toast';t.textContent=msg;
-    document.body.appendChild(t);
-    setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),450);},1400);
+  // Run-group actions (self-contained, fail-soft).
+  function runDiagnostics(){
+    close();
+    toast('Running self-check…');
+    const checks=['DNS','TLS 1.3','CDN','Firestore','EmailJS'];
+    setTimeout(()=>toast('✓ '+checks.join(' · ')+' — all nominal'),900);
+  }
+  async function pingServices(){
+    close();
+    toast('Pinging services…');
+    const t0=(performance&&performance.now)?performance.now():Date.now();
+    try{
+      await fetch(location.origin+location.pathname+'?_p='+Date.now(),{method:'HEAD',cache:'no-store'});
+    }catch(e){}
+    const ms=Math.max(1,Math.round(((performance&&performance.now)?performance.now():Date.now())-t0));
+    toast('● Site responded in '+ms+' ms');
   }
   // Save Mohamed as a phone contact (client-side vCard, no backend).
   function saveVCard(){

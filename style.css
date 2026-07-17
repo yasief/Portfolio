@@ -338,6 +338,9 @@ body[data-theme='daylight'] #p-threejs #webgl-canvas {
 .cb-lbl{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);}
 .cb-val{font-size:.82rem;color:var(--w);font-weight:500;}
 .cb-val a{color:var(--c1);text-decoration:none;}
+.cb-copy{margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--dim2);border-radius:6px;padding:.4rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:color .2s,border-color .2s,background .2s;}
+.cb-copy:hover{color:var(--c1);border-color:var(--c1);background:rgba(var(--c1-rgb),.08);}
+.cb-copy:focus-visible{outline:2px solid var(--c1);outline-offset:2px;}
 
 /* ═══ P2 EXPERIENCE ═══ */
 #p2{background:var(--bg);display:flex;flex-direction:column;}

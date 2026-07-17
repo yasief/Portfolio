@@ -986,7 +986,7 @@ body.cmd-open #cmd-backdrop #cmd-input{cursor:text;}
 @media(max-width:768px),(orientation:portrait){
 
   /* ── Global ── */
-  html{scroll-snap-type:y mandatory;}
+  html{scroll-snap-type:y proximity;}
   body,html{overflow-y:auto!important;overflow-x:hidden!important;cursor:auto;height:auto;}
   body{padding-bottom:3.5rem;}
   #cur,#cur2,#cur3,.nav-status,.h-scroll,#prog{display:none!important;}
@@ -1000,15 +1000,15 @@ body.cmd-open #cmd-backdrop #cmd-input{cursor:text;}
   /* ── Base panel ──
      Content-heavy panels grow with their content (height:auto).
      #p0, #p-threejs, #p7 are capped at exactly 100vh. */
-  .panel{width:100%;height:auto;min-height:100vh;overflow:hidden;padding:0;flex-shrink:unset;position:relative;display:flex;flex-direction:column;align-items:stretch;scroll-snap-align:start;scroll-snap-stop:always;}
-  #p0,#p-threejs,#p7{height:100vh;min-height:unset;overflow:hidden;}
+  .panel{width:100%;height:auto;min-height:100vh;min-height:100dvh;overflow:hidden;padding:0;flex-shrink:unset;position:relative;display:flex;flex-direction:column;align-items:stretch;scroll-snap-align:start;scroll-snap-stop:always;}
+  #p0,#p-threejs,#p7{height:100vh;height:100dvh;min-height:unset;overflow:hidden;}
 
   /* ── Nav ── */
   #nav{padding:1rem 1.5rem;background:rgba(var(--ov),.9);width:100%;}
   .nav-logo{font-size:1rem;}
 
   /* ── Dots (bottom row on mobile) ── */
-  #dots{position:fixed;left:0;right:auto;top:auto;bottom:.8rem;width:100%;transform:none;display:flex;justify-content:center;flex-direction:row;gap:8px;}
+  #dots{position:fixed;left:0;right:auto;top:auto;bottom:calc(.8rem + env(safe-area-inset-bottom));width:100%;transform:none;display:flex;justify-content:center;flex-direction:row;gap:8px;}
   .dot{width:6px;height:6px;}
   .dot.active{height:6px;width:20px;}
 
@@ -1078,11 +1078,15 @@ body.cmd-open #cmd-backdrop #cmd-input{cursor:text;}
   }
   .badge{font-size:.6rem;padding:.5rem .7rem;gap:.5rem;background:rgba(var(--card-rgb),.85)!important;border-radius:6px!important;}
   .bi{width:22px;height:22px;font-size:.75rem;flex-shrink:0;}
+  /* Fallback when the WebGL particle name can't render (e.g. iOS GPGPU unsupported):
+     centre the card + badges together so the hero reads as intentional instead of
+     leaving a large empty gap. The 2D network canvas still animates behind. */
+  #p0.hero-no-particles{justify-content:center!important;gap:1.5rem!important;}
 
   /* ── Game panel (p-threejs) — canvas top half, game bottom half ── */
   #p-threejs{
     justify-content:flex-start;align-items:stretch;cursor:auto;
-    flex-direction:column;height:100vh;min-height:100vh;overflow:hidden;
+    flex-direction:column;height:100vh;height:100dvh;min-height:100vh;min-height:100dvh;overflow:hidden;
     position:relative;
   }
   /* Ripple stays absolutely behind everything inside the panel */
@@ -1095,8 +1099,8 @@ body.cmd-open #cmd-backdrop #cmd-input{cursor:text;}
   /* Canvas wrapper takes up top 42% of the panel, in normal flow */
   #p-threejs #canvas-container{
     position:relative!important;inset:auto!important;
-    width:100%!important;height:42vh!important;
-    flex:0 0 42vh!important;
+    width:100%!important;height:42vh!important;height:42dvh!important;
+    flex:0 0 42vh!important;flex:0 0 42dvh!important;
     display:flex!important;align-items:center!important;justify-content:center!important;
     overflow:hidden!important;z-index:1;pointer-events:none;
   }

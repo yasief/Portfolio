@@ -20,6 +20,11 @@ function heroWebGLAvailable(){
 // This script is for the hero particle animation.
 // It runs only if the canvas is present AND WebGL is actually available.
 if (canvasEl && heroWebGLAvailable()) {
+  // Even when a basic WebGL context exists, the GPGPU particle system needs
+  // float/half-float render targets that some browsers (notably iOS Safari) restrict.
+  // Wrap the whole setup so any failure degrades to a clean fallback instead of an
+  // empty hero. See the matching gpuCompute.init() check and the catch block below.
+  try {
     const isMobile = window.innerWidth <= 768 || window.matchMedia('(orientation:portrait)').matches;
 
     // Advanced Simplex 3D & Curl Noise Shader
@@ -264,7 +269,8 @@ if (canvasEl && heroWebGLAvailable()) {
         velocityVariable.material.uniforms.uMouse = { value: new THREE.Vector2(-100, -100) };
         velocityVariable.material.uniforms.tOrigins = { value: dtOrigins };
 
-        gpuCompute.init();
+        const gpuInitError = gpuCompute.init();
+        if (gpuInitError !== null) { throw new Error('GPUComputationRenderer.init failed: ' + gpuInitError); }
 
         // Render mesh
         const geometry = new THREE.BufferGeometry();
@@ -475,4 +481,19 @@ if (canvasEl && heroWebGLAvailable()) {
         }
 
         animate();
+  } catch (heroErr) {
+    // Particle name couldn't initialise (WebGL/GPGPU unsupported or a runtime error).
+    // Hide the blank canvas and flag the hero so CSS collapses the reserved gap — the
+    // 2D network canvas still animates behind, so the hero reads as intentional.
+    console.warn('[hero] particle system unavailable; using static fallback.', heroErr);
+    if (canvasEl) canvasEl.style.display = 'none';
+    const p0el = document.getElementById('p0');
+    if (p0el) p0el.classList.add('hero-no-particles');
+  }
+} else if (canvasEl) {
+  // WebGL unavailable up front — apply the same graceful fallback so the hero
+  // never shows a large empty gap where the particle name would be.
+  canvasEl.style.display = 'none';
+  const p0Fallback = document.getElementById('p0');
+  if (p0Fallback) p0Fallback.classList.add('hero-no-particles');
 }

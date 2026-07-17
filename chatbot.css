@@ -398,8 +398,8 @@
 /* ── Mobile ─────────────────────────────────── */
 @media (max-width: 480px) {
   #chatbot-widget {
-    bottom: 1.2rem;
-    right: 1.2rem;
+    bottom: calc(1.2rem + env(safe-area-inset-bottom));
+    right: calc(1.2rem + env(safe-area-inset-right));
   }
 
   #chat-panel {

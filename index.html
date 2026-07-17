@@ -808,6 +808,22 @@
   </div>
 </div>
 
+<!-- ═══ PROJECT CASE-STUDY MODAL (idea 12) — populated on card click ═══ -->
+<div id="project-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="proj-modal-title" hidden>
+  <div class="modal-box" role="document">
+    <button class="modal-close" type="button" aria-label="Close">&#10005;</button>
+    <div class="modal-eyebrow" id="proj-modal-cat"></div>
+    <h2 id="proj-modal-title" class="modal-title"></h2>
+    <div class="proj-outcome" id="proj-modal-outcome"></div>
+    <div class="par">
+      <div class="par-row"><div class="par-k">Problem</div><div class="par-v" id="proj-p"></div></div>
+      <div class="par-row"><div class="par-k">Approach</div><div class="par-v" id="proj-a"></div></div>
+      <div class="par-row"><div class="par-k">Result</div><div class="par-v" id="proj-r"></div></div>
+    </div>
+    <div class="proj-tags" id="proj-modal-tags"></div>
+  </div>
+</div>
+
 <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="module" src="chatbot.js"></script>
 <script defer src="mathUniverseAnimation.js"></script>

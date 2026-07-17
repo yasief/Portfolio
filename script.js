@@ -1206,6 +1206,68 @@ window.toast=toast;
   });
 })();
 
+/* ═══ PROJECT CASE STUDIES (idea 12) ═══
+   Each project card opens a Problem -> Approach -> Result modal. Content is
+   restructured from the real card copy — nothing invented. */
+(function(){
+  const modal=document.getElementById('project-modal');
+  if(!modal) return;
+  const PROJECTS={
+    '01':{cat:'Automation',name:'24/7 WhatsApp Chatbot',outcome:'24/7 coverage · faster replies',
+      p:'Customers needed bookings and support around the clock, but off-hours queries went unanswered and response times lagged.',
+      a:'Built from scratch on DoubleTick with Meta Flow automation — no template. Designed the conversation flows around real customer behaviour so it handles bookings and support end to end.',
+      r:'Now handles 100+ interactions a day, 24/7, significantly cutting response times.',
+      tags:['DoubleTick','Meta Flow','Automation']},
+    '02':{cat:'IoT & Ops',name:'Heat Seal Garment Tracking',outcome:'Order accuracy transformed',
+      p:'Garments were getting mixed up or lost as they moved through wash, dry, fold and delivery.',
+      a:'Gave every item a heat-seal label tracked through each stage, in a cross-functional rollout across operations, customer service and IT.',
+      r:'Transformed order accuracy across the facility.',
+      tags:['IoT','Process Design','Tracking']},
+    '03':{cat:'Infrastructure',name:'Enterprise Infrastructure Upgrade',outcome:'15% efficiency gain',
+      p:'Aging infrastructure across multiple locations was limiting scalability and raising cost of ownership.',
+      a:'Re-architected the network topology, upgraded server hardware, and integrated cloud services for scalability.',
+      r:'Improved operational efficiency by ~15% while reducing cost of ownership.',
+      tags:['AWS','Networking','Server Admin']},
+    '04':{cat:'Security',name:'Cybersecurity Enhancement Program',outcome:'Zero critical breaches',
+      p:'The environment needed a layered defense and a repeatable way to respond to incidents.',
+      a:'Deployed endpoint protection, firewall rules, VPN and encryption policies, plus staff awareness training and incident-response procedures.',
+      r:'Maintained a zero critical-breach record.',
+      tags:['Firewall','VPN','Encryption']},
+    '05':{cat:'ERP',name:'End-to-End ERP Integration',outcome:'3 brands unified',
+      p:'Multiple brands were running on disconnected systems with no unified ERP.',
+      a:'Led the full-lifecycle Odoo rollout — scoping, data migration, custom modules, training 50+ employees, and post-go-live hypercare.',
+      r:'Unified 3 brands on one ERP, delivered ahead of schedule.',
+      tags:['Odoo','SQL','Migration']},
+    '06':{cat:'Marketing & CRM',name:'CRM & Digital Marketing Overhaul',outcome:'+20% conv · +35% reach',
+      p:'Lead tracking was unstructured and campaign performance went unmeasured.',
+      a:'Implemented Reelo CRM for structured lead tracking and ran digital campaigns across social and email, with analytics dashboards to measure ROI.',
+      r:'Lifted conversion by ~20% and grew reach ~35%.',
+      tags:['Reelo CRM','Adobe','Analytics']},
+  };
+  function fill(n){
+    const d=PROJECTS[n]; if(!d) return;
+    modal.querySelector('#proj-modal-cat').textContent='// '+d.cat;
+    modal.querySelector('#proj-modal-title').textContent=d.name;
+    modal.querySelector('#proj-modal-outcome').textContent=d.outcome;
+    modal.querySelector('#proj-p').textContent=d.p;
+    modal.querySelector('#proj-a').textContent=d.a;
+    modal.querySelector('#proj-r').textContent=d.r;
+    modal.querySelector('#proj-modal-tags').innerHTML=d.tags.map(t=>'<span class="pc-tg">'+t+'</span>').join('');
+  }
+  document.querySelectorAll('#p5 .pj-c').forEach(card=>{
+    const n=((card.querySelector('.pc-n')||{}).textContent||'').trim();
+    if(!PROJECTS[n]) return;
+    card.setAttribute('data-proj',n);
+    card.setAttribute('role','button');
+    card.setAttribute('tabindex','0');
+    card.setAttribute('aria-haspopup','dialog');
+    card.title='View case study';
+    const open=()=>{ fill(n); if(window.openModal) window.openModal('project-modal'); };
+    card.addEventListener('click',open);
+    card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+  });
+})();
+
 /* ═══ COMMAND PALETTE ═══ */
 (function(){
   const ic = id => `<svg width="14" height="14"><use href="#${id}"/></svg>`;

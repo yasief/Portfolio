@@ -1172,6 +1172,40 @@ window.toast=toast;
   });
 })();
 
+/* ═══ REUSABLE MODALS (ideas 12,14,15,19,21) ═══
+   Any [data-modal="id"] opens #id; ESC / backdrop / ✕ close it. Fixed overlay,
+   so it never affects the 100vh panel layout. */
+(function(){
+  let lastFocus=null;
+  function openModal(id){
+    const m=(typeof id==='string')?document.getElementById(id):id; if(!m) return;
+    lastFocus=document.activeElement;
+    m.hidden=false;
+    requestAnimationFrame(()=>m.classList.add('open'));
+    document.body.classList.add('modal-open');
+    const c=m.querySelector('.modal-close'); if(c) c.focus();
+  }
+  function closeModal(m){
+    if(typeof m==='string') m=document.getElementById(m);
+    if(!m) return;
+    m.classList.remove('open');
+    document.body.classList.remove('modal-open');
+    setTimeout(()=>{ m.hidden=true; },250);
+    if(lastFocus&&lastFocus.focus){ try{lastFocus.focus();}catch(e){} }
+  }
+  window.openModal=openModal; window.closeModal=closeModal;
+  document.addEventListener('click',e=>{
+    const trig=e.target.closest('[data-modal]');
+    if(trig){ e.preventDefault(); openModal(trig.getAttribute('data-modal')); return; }
+    if(e.target.closest('.modal-close')){ const b=e.target.closest('.modal-backdrop'); if(b) closeModal(b); return; }
+    if(e.target.classList && e.target.classList.contains('modal-backdrop')) closeModal(e.target);
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ const o=document.querySelector('.modal-backdrop.open'); if(o) closeModal(o); }
+    else if(e.key==='Enter'||e.key===' '){ const t=e.target; if(t&&t.matches&&t.matches('[data-modal]')){ e.preventDefault(); openModal(t.getAttribute('data-modal')); } }
+  });
+})();
+
 /* ═══ COMMAND PALETTE ═══ */
 (function(){
   const ic = id => `<svg width="14" height="14"><use href="#${id}"/></svg>`;
@@ -1185,6 +1219,7 @@ window.toast=toast;
     {g:'Navigate',ic:ic('i-rocket'),label:'Key Projects',desc:'4 impact projects',tag:'07',fn:()=>goTo(6)},
     {g:'Navigate',ic:ic('i-chart'), label:'Achievements',desc:'Measurable outcomes',tag:'08',fn:()=>goTo(7)},
     {g:'Navigate',ic:ic('i-mail'),  label:'Contact',desc:'Get in touch',tag:'09',fn:()=>goTo(8)},
+    {g:'Navigate',ic:ic('i-users'), label:'My Story',desc:'Education, journey & how I work',tag:'',fn:()=>{close();if(window.openModal)window.openModal('story-modal');}},
     {g:'Actions', ic:ic('i-mail'),  label:'Copy Email',desc:'mohamedyasief@gmail.com',tag:'',fn:()=>copy('mohamedyasief@gmail.com','Email copied!')},
     {g:'Actions', ic:ic('i-phone'), label:'Copy Phone',desc:'+971 50 359 3856',tag:'',fn:()=>copy('+971503593856','Phone copied!')},
     {g:'Actions', ic:ic('i-linkedin'),label:'LinkedIn',desc:'linkedin.com/in/yasief',tag:'',fn:()=>window.open('https://linkedin.com/in/yasief','_blank','noopener')},

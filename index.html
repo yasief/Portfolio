@@ -21,16 +21,15 @@
 <meta property="og:url" content="https://yasief.github.io/">
 <meta property="og:title" content="Mohamed Yasief — IT Administrator · Dubai">
 <meta property="og:description" content="IT Administrator & ERP Specialist · Dubai · Odoo · AWS · IoT · 99.7% uptime delivered.">
-<!-- NOTE: Main_Tech.png is portrait (1792×2390). For the best social cards, replace with a dedicated 1200×630 landscape image and update the dimensions below. -->
-<meta property="og:image" content="https://yasief.github.io/Main_Tech.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1792">
-<meta property="og:image:height" content="2390">
-<meta property="og:image:alt" content="Mohamed Yasief — IT Administrator & ERP Specialist, Dubai">
+<meta property="og:image" content="https://yasief.github.io/og-card.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mohamed Yasief — IT Administrator & ERP Specialist, Dubai · 99.7% uptime · 0 breaches">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mohamed Yasief — IT Administrator · Dubai">
 <meta name="twitter:description" content="IT Administrator & ERP Specialist · Odoo · AWS · IoT · 99.7% uptime delivered.">
-<meta name="twitter:image" content="https://yasief.github.io/Main_Tech.png">
+<meta name="twitter:image" content="https://yasief.github.io/og-card.jpg">
 <meta name="twitter:image:alt" content="Mohamed Yasief — IT Administrator & ERP Specialist, Dubai">
 
 <script type="application/ld+json">
@@ -44,7 +43,7 @@
   "description": "IT Administrator & ERP Specialist based in Dubai, delivering 99.7% uptime across smart-tech, IoT and multi-brand environments.",
   "worksFor": { "@type": "Organization", "name": "LaundryBox Dubai" },
   "url": "https://yasief.github.io/",
-  "image": "https://yasief.github.io/Main_Tech.png",
+  "image": "https://yasief.github.io/og-card.jpg",
   "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
   "email": "mailto:mohamedyasief@gmail.com",
   "telephone": "+971503593856",
@@ -458,8 +457,8 @@
         </div>
       </div>
       <div class="dt pr pr-d2">
-        <div class="dt-lbl"><svg width="13" height="13" aria-hidden="true"><use href="#i-network"/></svg> Network Topology</div>
-        <div class="ncw"><canvas id="netCanvas" aria-hidden="true"></canvas></div>
+        <div class="dt-lbl dt-trig" data-modal="arch-modal" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="arch-modal" title="View the full system architecture"><svg width="13" height="13" aria-hidden="true"><use href="#i-network"/></svg> Network Topology</div>
+        <div class="ncw" data-modal="arch-modal" title="View the full system architecture"><canvas id="netCanvas" aria-hidden="true"></canvas></div>
       </div>
       <div class="dt pr pr-d2">
         <div class="dt-lbl"><svg width="13" height="13" aria-hidden="true"><use href="#i-uptime"/></svg> System Uptime</div>
@@ -754,6 +753,58 @@
         </div>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- ═══ SYSTEM ARCHITECTURE MODAL (idea 16) — real LaundryBox stack ═══ -->
+<div id="arch-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="arch-modal-title" hidden>
+  <div class="modal-box modal-wide" role="document">
+    <button class="modal-close" type="button" aria-label="Close">&#10005;</button>
+    <div class="modal-eyebrow">// Real stack · LaundryBox Dubai</div>
+    <h2 id="arch-modal-title" class="modal-title">System architecture</h2>
+    <p class="arch-intro">The smart-laundry platform I keep running end to end — from the physical lockers in the building to the customer's WhatsApp.</p>
+    <div class="arch-svg-wrap">
+      <svg viewBox="0 0 820 624" role="img" aria-label="Layered system architecture: edge devices, connectivity, cloud backend, and customer interfaces, with IoT security spanning every layer.">
+        <style>
+          .ab-box{fill:rgba(0,210,255,.055);stroke:rgba(0,210,255,.34);stroke-width:1.5;}
+          .ab-cloud{fill:rgba(123,47,255,.07);stroke:rgba(123,47,255,.4);}
+          .ab-sec{fill:rgba(255,62,138,.06);stroke:rgba(255,62,138,.4);}
+          .ab-lbl{fill:#eef2ff;font:600 15px 'Outfit',sans-serif;}
+          .ab-sub{fill:#8b98b4;font:400 10.5px 'JetBrains Mono',monospace;}
+          .ab-tier{fill:#00d2ff;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.16em;}
+          .ab-arr{stroke:rgba(0,210,255,.5);stroke-width:1.6;fill:none;}
+        </style>
+        <defs>
+          <marker id="ab-ah" markerWidth="9" markerHeight="9" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(0,210,255,.7)"/></marker>
+        </defs>
+        <!-- EDGE -->
+        <text class="ab-tier" x="40" y="40">EDGE · DEVICES</text>
+        <rect class="ab-box" x="40" y="52" width="220" height="72" rx="10"/><text class="ab-lbl" x="56" y="82">Smart Lockers</text><text class="ab-sub" x="56" y="104">100+ · firmware · 24/7 sync</text>
+        <rect class="ab-box" x="300" y="52" width="200" height="72" rx="10"/><text class="ab-lbl" x="316" y="82">CCTV</text><text class="ab-sub" x="316" y="104">cameras · remote monitor</text>
+        <rect class="ab-box" x="540" y="52" width="240" height="72" rx="10"/><text class="ab-lbl" x="556" y="82">Yeastar PABX</text><text class="ab-sub" x="556" y="104">IP telephony · support</text>
+        <!-- CONNECTIVITY -->
+        <text class="ab-tier" x="40" y="164">CONNECTIVITY</text>
+        <rect class="ab-box" x="40" y="176" width="350" height="72" rx="10"/><text class="ab-lbl" x="56" y="206">IoT Gateway</text><text class="ab-sub" x="56" y="228">secure device connectivity</text>
+        <rect class="ab-box" x="430" y="176" width="350" height="72" rx="10"/><text class="ab-lbl" x="446" y="206">Tracksolid</text><text class="ab-sub" x="446" y="228">hardware tracking &amp; monitoring</text>
+        <!-- CLOUD -->
+        <text class="ab-tier" x="40" y="288">CLOUD BACKEND</text>
+        <rect class="ab-box" x="40" y="300" width="380" height="72" rx="10"/><text class="ab-lbl" x="56" y="330">Locker Management Backend</text><text class="ab-sub" x="56" y="352">custom · user-app integration</text>
+        <rect class="ab-box ab-cloud" x="460" y="300" width="320" height="72" rx="10"/><text class="ab-lbl" x="476" y="330">AWS · Azure · Firebase</text><text class="ab-sub" x="476" y="352">compute · storage · realtime DB</text>
+        <!-- INTERFACES -->
+        <text class="ab-tier" x="40" y="412">CUSTOMER INTERFACES</text>
+        <rect class="ab-box" x="40" y="424" width="220" height="72" rx="10"/><text class="ab-lbl" x="56" y="454">Customer App</text><text class="ab-sub" x="56" y="476">bookings · payments</text>
+        <rect class="ab-box" x="300" y="424" width="240" height="72" rx="10"/><text class="ab-lbl" x="316" y="454">WhatsApp Bot</text><text class="ab-sub" x="316" y="476">DoubleTick + Meta Flow</text>
+        <rect class="ab-box" x="580" y="424" width="200" height="72" rx="10"/><text class="ab-lbl" x="596" y="454">QuickBill</text><text class="ab-sub" x="596" y="476">billing · ERP</text>
+        <!-- flow arrows (central spine) -->
+        <path class="ab-arr" d="M410,124 L410,174" marker-end="url(#ab-ah)"/>
+        <path class="ab-arr" d="M410,248 L410,298" marker-end="url(#ab-ah)"/>
+        <path class="ab-arr" d="M410,372 L410,422" marker-end="url(#ab-ah)"/>
+        <!-- SECURITY band -->
+        <rect class="ab-box ab-sec" x="40" y="540" width="740" height="64" rx="10"/>
+        <text class="ab-lbl" x="56" y="570" style="fill:#ff3e8a">IoT Security</text>
+        <text class="ab-sub" x="56" y="590">spans every layer — encryption · access control · threat detection · zero breaches</text>
+      </svg>
+    </div>
   </div>
 </div>
 

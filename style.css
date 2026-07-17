@@ -1506,6 +1506,14 @@ body.modal-open{overflow:hidden;}
 .sec-tag[data-modal]{cursor:pointer;transition:color .15s;}
 .sec-tag[data-modal]:hover{color:var(--c1);}
 .sec-tag[data-modal]::after{content:" \2197";font-size:.8em;opacity:.7;}
+.modal-wide{max-width:880px;}
+.arch-intro{color:var(--dim);font-size:.9rem;line-height:1.55;margin:0 0 1.3rem;}
+.arch-svg-wrap{width:100%;overflow-x:auto;}
+.arch-svg-wrap svg{width:100%;min-width:560px;height:auto;display:block;}
+.dt-trig{cursor:pointer;transition:color .15s;}
+.dt-trig:hover{color:var(--c1);}
+.dt-trig::after{content:" \2197";font-size:.85em;opacity:.65;}
+.ncw[data-modal]{cursor:pointer;}
 @media(max-width:600px){.story-vs{grid-template-columns:1fr;}.modal-box{padding:1.6rem 1.3rem 1.8rem;}}
 
 /* ── Section number badges (// XX of XX) — compact line ─── */

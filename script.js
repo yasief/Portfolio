@@ -1220,6 +1220,7 @@ window.toast=toast;
     {g:'Navigate',ic:ic('i-chart'), label:'Achievements',desc:'Measurable outcomes',tag:'08',fn:()=>goTo(7)},
     {g:'Navigate',ic:ic('i-mail'),  label:'Contact',desc:'Get in touch',tag:'09',fn:()=>goTo(8)},
     {g:'Navigate',ic:ic('i-users'), label:'My Story',desc:'Education, journey & how I work',tag:'',fn:()=>{close();if(window.openModal)window.openModal('story-modal');}},
+    {g:'Navigate',ic:ic('i-network'),label:'System Architecture',desc:'Real LaundryBox stack diagram',tag:'',fn:()=>{close();if(window.openModal)window.openModal('arch-modal');}},
     {g:'Actions', ic:ic('i-mail'),  label:'Copy Email',desc:'mohamedyasief@gmail.com',tag:'',fn:()=>copy('mohamedyasief@gmail.com','Email copied!')},
     {g:'Actions', ic:ic('i-phone'), label:'Copy Phone',desc:'+971 50 359 3856',tag:'',fn:()=>copy('+971503593856','Phone copied!')},
     {g:'Actions', ic:ic('i-linkedin'),label:'LinkedIn',desc:'linkedin.com/in/yasief',tag:'',fn:()=>window.open('https://linkedin.com/in/yasief','_blank','noopener')},

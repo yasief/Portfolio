@@ -1206,6 +1206,42 @@ window.toast=toast;
   });
 })();
 
+/* ═══ RELIABILITY / COST-OF-DOWNTIME CALCULATOR (ideas 40, 41) ═══ */
+(function(){
+  const modal=document.getElementById('calc-modal');
+  if(!modal) return;
+  function fmtDur(sec){
+    if(sec<90) return sec.toFixed(sec<10?1:0)+' sec';
+    const min=sec/60; if(min<90) return min.toFixed(min<10?1:0)+' min';
+    const hr=min/60; if(hr<48) return hr.toFixed(hr<10?1:0)+' hrs';
+    return (hr/24).toFixed(1)+' days';
+  }
+  let curSla=99.7;
+  function renderSla(){
+    const frac=(100-curSla)/100;
+    modal.querySelector('#sla-day').textContent=fmtDur(86400*frac);
+    modal.querySelector('#sla-month').textContent=fmtDur(2592000*frac);
+    modal.querySelector('#sla-year').textContent=fmtDur(31536000*frac);
+    modal.querySelector('#sla-note').textContent='At '+curSla+'% you can be down up to '+fmtDur(31536000*frac)+' a year. I sustain 99.7% across ERP, IoT and networks.';
+  }
+  const presets=modal.querySelector('#sla-presets');
+  presets.addEventListener('click',e=>{const b=e.target.closest('button[data-sla]');if(!b)return;curSla=parseFloat(b.dataset.sla);[...presets.children].forEach(x=>x.classList.toggle('on',x===b));renderSla();});
+  let cur='AED';
+  const rev=modal.querySelector('#cd-rev'), up=modal.querySelector('#cd-up');
+  const fmtMoney=v=>cur+' '+Math.round(v).toLocaleString('en-US');
+  function renderCost(){
+    const annual=Math.max(0,parseFloat(rev.value)||0)*12;
+    let u=parseFloat(up.value); if(isNaN(u))u=99; u=Math.min(100,Math.max(0,u));
+    const lost=annual*((100-u)/100);
+    const saved=Math.max(0,lost-annual*0.003);
+    modal.querySelector('#cd-lost').textContent=fmtMoney(lost);
+    modal.querySelector('#cd-saved').textContent=u<99.7?fmtMoney(saved):'Already ≥ 99.7%';
+  }
+  modal.querySelector('#cur-tog').addEventListener('click',e=>{const b=e.target.closest('button[data-cur]');if(!b)return;cur=b.dataset.cur;[...e.currentTarget.children].forEach(x=>x.classList.toggle('on',x===b));renderCost();});
+  rev.addEventListener('input',renderCost); up.addEventListener('input',renderCost);
+  renderSla(); renderCost();
+})();
+
 /* ═══ PROJECT CASE STUDIES (idea 12) ═══
    Each project card opens a Problem -> Approach -> Result modal. Content is
    restructured from the real card copy — nothing invented. */
@@ -1295,6 +1331,7 @@ window.toast=toast;
     {g:'Run',     ic:ic('i-bolt'),   label:'Run diagnostics',desc:'Mock system self-check',tag:'',fn:()=>runDiagnostics()},
     {g:'Run',     ic:ic('i-network'),label:'Ping services',desc:'Real fetch latency check',tag:'',fn:()=>pingServices()},
     {g:'Run',     ic:ic('i-spark'),  label:'Play reflex game',desc:'Jump to the mini-game',tag:'',fn:()=>{goTo(1);close();}},
+    {g:'Run',     ic:ic('i-uptime'), label:'Uptime / ROI calculator',desc:'SLA nines & cost of downtime',tag:'',fn:()=>{close();if(window.openModal)window.openModal('calc-modal');}},
   ];
   const backdrop=document.getElementById('cmd-backdrop');
   const input=document.getElementById('cmd-input');

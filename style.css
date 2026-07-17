@@ -1518,6 +1518,29 @@ body.modal-open{overflow:hidden;}
 .proj-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem;}
 @media(max-width:600px){.par-row{grid-template-columns:1fr;gap:.25rem;}}
 .modal-wide{max-width:880px;}
+/* Reliability / cost-of-downtime calculator (ideas 40,41) */
+.calc-sec{margin-bottom:1.8rem;}
+.calc-sec>h3{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin:0 0 .9rem;font-family:'JetBrains Mono',monospace;}
+.sla-presets{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.1rem;}
+.sla-presets button{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.5rem .9rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:color .15s,border-color .15s,background .15s;}
+.sla-presets button:hover{border-color:var(--c1);color:var(--w);}
+.sla-presets button.on{background:var(--c1);color:#04080f;border-color:transparent;font-weight:600;}
+.calc-out{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;}
+.calc-cell{border:1px solid var(--border);border-radius:10px;padding:1rem;background:rgba(var(--c1-rgb),.03);}
+.calc-cell .n{font-size:1.45rem;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums;}
+.calc-cell .l{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2);margin-top:.5rem;}
+.calc-note{font-size:.74rem;color:var(--dim2);margin:.9rem 0 0;line-height:1.5;}
+.calc-inputs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.1rem;}
+.calc-inputs label{display:flex;flex-direction:column;gap:.4rem;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);font-family:'JetBrains Mono',monospace;position:relative;}
+.calc-inputs input{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;color:var(--w);font-size:1rem;font-family:'Outfit',sans-serif;}
+.calc-inputs input:focus{outline:2px solid var(--c1);outline-offset:1px;border-color:transparent;}
+.cur-tog{position:absolute;right:0;top:-2px;display:inline-flex;gap:2px;}
+.cur-tog button{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:.22rem .45rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--dim2);cursor:pointer;}
+.cur-tog button.on{background:var(--c1);color:#04080f;border-color:transparent;}
+#calc-modal .c1{color:var(--c1);}
+#calc-modal .c3{color:var(--c3);}
+#calc-modal .c4{color:var(--c4);}
+@media(max-width:600px){.calc-out{grid-template-columns:1fr;}.calc-inputs{grid-template-columns:1fr;}}
 .arch-intro{color:var(--dim);font-size:.9rem;line-height:1.55;margin:0 0 1.3rem;}
 .arch-svg-wrap{width:100%;overflow-x:auto;}
 .arch-svg-wrap svg{width:100%;min-width:560px;height:auto;display:block;}

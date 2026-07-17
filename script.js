@@ -179,7 +179,12 @@ let prepareTargetGame;
     async function renderChampionBanner() {
         const banner = document.getElementById('championBanner');
         if (!banner) return;
+        // Skeleton shimmer while the Firestore champion doc resolves (idea 63)
+        banner.innerHTML = '<span class="champ-skel champ-skel-crown"></span><span class="champ-skel champ-skel-name"></span><span class="champ-skel champ-skel-score"></span>';
+        banner.classList.add('champ-loading');
+        banner.classList.remove('hidden');
         const champ = await getChampion();
+        banner.classList.remove('champ-loading');
         if (champ) {
             banner.innerHTML = `<span class="champ-crown">👑</span><span class="champ-name">${escHtml(champ.name)}</span><span class="champ-score">${Number(champ.score)||0} pts</span><span class="champ-exp">resets in 24h</span>`;
             banner.classList.remove('hidden');
@@ -642,12 +647,12 @@ function initialIndex(){
   return idx>0?idx:0;
 }
 
-function goTo(i){
+function goTo(i, focusPanel){
   if(i<0||i>=N)return;
   const prev=cur_p;
   cur_p=i;
   track.style.transform=`translateX(-${i*100}vw)`;
-  dots.forEach((d,j)=>{d.classList.toggle('active',j===i);d.setAttribute('aria-selected',j===i);});
+  dots.forEach((d,j)=>{d.classList.toggle('active',j===i);d.setAttribute('aria-selected',j===i);d.tabIndex=(j===i)?0:-1;});
   prog.style.width=((i/(N-1))*100)+'%';
   updateHash(i);
   panels.forEach((p,j)=>p.classList.toggle('active',j===i));
@@ -669,6 +674,11 @@ function goTo(i){
   if(i===8)triggerMathUniverse();
   if(i===7)triggerAch();
   if(i===1 && typeof prepareTargetGame === 'function') prepareTargetGame();
+  // Keyboard-driven nav: hand focus to the entering panel + flash the HUD (idea 62)
+  if(focusPanel){
+    if(panels[i] && typeof panels[i].focus === 'function') panels[i].focus({preventScroll:true});
+    if(typeof window.showNavHud === 'function') window.showNavHud(i);
+  }
 }
 
 let isDesktop;
@@ -689,10 +699,10 @@ const desktopKeydownHandler = e => {
     if(document.body.classList.contains('cmd-open')) return;
     const t = e.target;
     if(t && (t.matches('input, textarea, [contenteditable]') || t.isContentEditable)) return;
-    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(cur_p + 1);
-    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(cur_p - 1);
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(cur_p + 1, true);
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(cur_p - 1, true);
 };
-const desktopDotHandler = e => goTo(+e.currentTarget.dataset.i);
+const desktopDotHandler = e => goTo(+e.currentTarget.dataset.i, true);
 let tx = 0;
 const desktopTouchStart = e => { tx = e.touches[0].clientX; };
 const desktopTouchEnd = e => {
@@ -1307,6 +1317,59 @@ window.toast=toast;
       }
     }
   });
+})();
+
+/* ═══ KEYBOARD NAV — leveled up (idea 62) ═══
+   Digit 1-9 jumps to a section; the section dots become a roving-tabindex
+   tablist (Arrow/Home/End); a transient HUD confirms position. Desktop only —
+   mobile uses native scroll. */
+(function(){
+  const dotEls=[...document.querySelectorAll('.dot')];
+  if(!dotEls.length) return;
+  const hud=document.createElement('div'); hud.id='nav-hud'; hud.setAttribute('aria-hidden','true');
+  document.body.appendChild(hud);
+  let hudT;
+  window.showNavHud=function(i){
+    const label=(dotEls[i]&&dotEls[i].getAttribute('aria-label'))||('Section '+(i+1));
+    hud.textContent=String(i+1).padStart(2,'0')+' / '+String(dotEls.length).padStart(2,'0')+'  ·  '+label;
+    hud.classList.add('show');
+    clearTimeout(hudT); hudT=setTimeout(()=>hud.classList.remove('show'),1600);
+  };
+  document.addEventListener('keydown',e=>{
+    if(!isDesktop) return;
+    if(document.body.classList.contains('cmd-open')) return;
+    const t=e.target; if(t&&(t.matches('input,textarea,[contenteditable]')||t.isContentEditable)) return;
+    if(e.key>='1' && e.key<='9'){
+      const idx=parseInt(e.key,10)-1;
+      if(idx<dotEls.length){ e.preventDefault(); goTo(idx,true); }
+    }
+  });
+  const wrap=document.getElementById('dots');
+  if(wrap){
+    wrap.addEventListener('keydown',e=>{
+      if(!isDesktop) return;
+      let idx=dotEls.indexOf(document.activeElement);
+      if(idx<0) idx=dotEls.findIndex(d=>d.classList.contains('active'));
+      let n=idx;
+      if(e.key==='ArrowRight'||e.key==='ArrowDown') n=Math.min(dotEls.length-1,idx+1);
+      else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=Math.max(0,idx-1);
+      else if(e.key==='Home') n=0;
+      else if(e.key==='End') n=dotEls.length-1;
+      else return;
+      e.preventDefault(); dotEls[n].focus(); goTo(n,true);
+    });
+  }
+})();
+
+/* ═══ RETURNING-VISITOR WELCOME (idea 64) ═══
+   Count visits in localStorage; greet returning visitors non-intrusively.
+   Resume-to-last-section is already handled on load by the deep-link logic. */
+(function(){
+  let n=0;
+  try{ n=(parseInt(localStorage.getItem('yasiefVisits')||'0',10)||0)+1; localStorage.setItem('yasiefVisits',String(n)); }catch(e){}
+  if(n>=2){
+    setTimeout(()=>{ if(typeof window.toast==='function') window.toast('Welcome back 👋'); }, 1800);
+  }
 })();
 
 /* ═══ FOOTER YEAR ═══

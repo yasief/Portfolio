@@ -1459,6 +1459,16 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   animation:skShimmer 2.4s ease-in-out infinite;
 }
 @keyframes skShimmer{0%,100%{opacity:.6;}50%{opacity:.95;}}
+/* Leaderboard skeleton shimmer while the champion doc loads (idea 63) */
+.champ-loading{display:inline-flex;align-items:center;gap:.5rem;}
+.champ-skel{display:inline-block;border-radius:5px;background:rgba(var(--c1-rgb),.16);animation:skShimmer 1.2s ease-in-out infinite;}
+.champ-skel-crown{width:16px;height:16px;border-radius:50%;}
+.champ-skel-name{width:84px;height:11px;}
+.champ-skel-score{width:52px;height:11px;}
+/* "Where am I" HUD for keyboard navigation (idea 62) */
+#nav-hud{position:fixed;left:50%;bottom:2.2rem;transform:translateX(-50%) translateY(8px);background:rgba(var(--ov),.92);border:1px solid rgba(var(--c1-rgb),.3);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:.5rem .9rem;border-radius:8px;z-index:9500;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+#nav-hud.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:768px),(orientation:portrait){#nav-hud{display:none;}}
 
 /* ── Section number badges (// XX of XX) — compact line ─── */
 .ex-hd-s,.a-num{font-variant-numeric:tabular-nums;}

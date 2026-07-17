@@ -320,6 +320,10 @@ body[data-theme='daylight'] #p-threejs #webgl-canvas {
 .tl{display:flex;gap:.8rem;}
 .tp{color:#a78bfa}.tc{color:#4ade80}.to{color:rgba(230,237,243,.6);padding-left:1.5rem;}
 .to span{color:#22d3ee;}
+/* Terminal REPL input (idea 35) */
+.tl-input{align-items:center;}
+.term-in{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:inherit;line-height:inherit;padding:0;margin:0;caret-color:#4ade80;}
+.t-body .to a{color:#22d3ee;text-decoration:underline;}
 .a-right{padding:5.5rem 4rem 3rem 3rem;display:flex;flex-direction:column;justify-content:center;}
 .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:2rem;}
 .stat-box{background:var(--card);padding:1.6rem;border:1px solid var(--border);transition:border-color .3s;}

@@ -864,6 +864,7 @@ function typeNext(){
         setTimeout(() => { if(aLeft) aLeft.style.transition = ''; }, 400);
       }
     }
+    initTermRepl();
     return;
   }
   const tb=document.getElementById('termBody');
@@ -882,6 +883,65 @@ function typeNext(){
     el.innerHTML=(line.t==='cmd'?' ':'')+line.txt.substring(0,chIdx);
     chIdx++;setTimeout(typeNext,line.t==='cmd'?55:22);
   } else {typing=false;tIdx++;setTimeout(typeNext,line.t==='cmd'?220:700);}
+}
+
+/* ═══ TERMINAL REPL (ideas 35, 43) ═══
+   After the boot animation the About terminal becomes a live shell. On desktop
+   its height is locked so REPL output scrolls internally instead of growing the
+   fixed-height panel; on mobile the panel flows, so no cap is needed. */
+let termCapped=false;
+const TERM_HIST=[]; let histPtr=0;
+function termPrint(txt,kind){
+  const tb=document.getElementById('termBody'); if(!tb) return;
+  const div=document.createElement('div'); div.className='tl';
+  if(kind==='cmd') div.innerHTML='<span class="tp">yasief@dubai:~$</span><span class="tc"> '+txt+'</span>';
+  else div.innerHTML='<span class="to">'+txt+'</span>';
+  const inp=tb.querySelector('.tl-input');
+  if(inp) tb.insertBefore(div,inp); else tb.appendChild(div);
+  tb.scrollTop=tb.scrollHeight;
+}
+function runHireSequence(){
+  try{ localStorage.setItem('yasiefHireFound','1'); }catch(e){}
+  const steps=['$ ./hire_mohamed.sh','&#9656; verifying credentials … ok','&#9656; checking availability … OPEN','&#9656; matching role … strong fit','✓ decision: HIRE — let’s talk 👇'];
+  let i=0;
+  (function step(){ if(i>=steps.length){ termPrint('<a href="mailto:mohamedyasief@gmail.com">mohamedyasief@gmail.com</a> &middot; <a href="https://wa.me/971503593856" target="_blank" rel="noopener">WhatsApp</a>','out'); return; } termPrint(steps[i++],'out'); setTimeout(step,420); })();
+  return null;
+}
+const TERM_CMDS={
+  help:()=>'commands: <span>help whoami skills experience projects resume contact theme clear hire</span>',
+  whoami:()=>'Mohamed Yasief — IT Administrator &middot; ERP Specialist &middot; Dubai',
+  skills:()=>'ERP &middot; Networks &middot; Security &middot; Cloud/DevOps &middot; Python &middot; Digital Marketing',
+  experience:()=>'LaundryBox Dubai (2025–now) &middot; Muffin House / MFoods, India (2021–2025)',
+  projects:()=>{ setTimeout(()=>goTo(6,true),350); return 'opening Key Projects…'; },
+  resume:()=>{ const a=document.createElement('a');a.href='Mohamed_Yasief_IT_Administrator_Resume.pdf';a.download='';a.click(); return 'downloading resume.pdf…'; },
+  contact:()=>'mohamedyasief@gmail.com &middot; wa.me/971503593856 &middot; linkedin.com/in/yasief',
+  theme:()=>{ const t=document.getElementById('theme-toggle'); if(t)t.click(); return 'theme switched'; },
+  clear:()=>{ const tb=document.getElementById('termBody'); const inp=tb.querySelector('.tl-input'); tb.innerHTML=''; if(inp)tb.appendChild(inp); return null; },
+  hire:runHireSequence,
+};
+function runTermCmd(raw){
+  const cmd=(raw||'').trim(); if(!cmd) return;
+  TERM_HIST.push(cmd); histPtr=TERM_HIST.length;
+  termPrint(cmd.replace(/</g,'&lt;'),'cmd');
+  const key=cmd.toLowerCase().replace(/^sudo\s+/,'');
+  const fn=TERM_CMDS[key];
+  if(fn){ const out=fn(); if(out!=null) termPrint(out,'out'); }
+  else termPrint('command not found: '+cmd.replace(/</g,'&lt;')+' — type <span>help</span>','out');
+}
+function initTermRepl(){
+  const tb=document.getElementById('termBody'); if(!tb || tb.querySelector('.tl-input')) return;
+  const line=document.createElement('div'); line.className='tl tl-input';
+  line.innerHTML='<span class="tp">yasief@dubai:~$</span><input class="term-in" type="text" aria-label="Terminal command" autocomplete="off" spellcheck="false" enterkeyhint="go">';
+  tb.appendChild(line);
+  termPrint('type <span>help</span> to explore, or <span>hire</span> 😉','out');
+  if(!termCapped && isDesktop){ termCapped=true; tb.style.height=tb.scrollHeight+'px'; tb.style.overflowY='auto'; }
+  const input=line.querySelector('.term-in');
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); const v=input.value; input.value=''; runTermCmd(v); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); if(histPtr>0){ histPtr--; input.value=TERM_HIST[histPtr]||''; } }
+    else if(e.key==='ArrowDown'){ e.preventDefault(); if(histPtr<TERM_HIST.length-1){ histPtr++; input.value=TERM_HIST[histPtr]||''; } else { histPtr=TERM_HIST.length; input.value=''; } }
+  });
+  tb.addEventListener('click',e=>{ if(!e.target.closest('a')) input.focus(); });
 }
 
 /* ACTIVITY LOG */

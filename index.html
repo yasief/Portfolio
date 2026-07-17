@@ -53,7 +53,16 @@
 }
 </script>
 
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d2ff'/%3E%3Cstop offset='1' stop-color='%237b2fff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23040810'/%3E%3Cpath d='M14 44V20l9 14 9-14v24M40 20v24M40 20h12M40 32h9' fill='none' stroke='url(%23g)' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d2ff'/%3E%3Cstop offset='1' stop-color='%237b2fff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23040810'/%3E%3Cpath d='M14 44V20l9 14 9-14v24M40 20L46 32L52 20M46 32V44' fill='none' stroke='url(%23g)' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<!-- Progressive Web App: installable, offline-capable app shell -->
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="M. Yasief">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Mohamed Yasief">
 
 <!-- Warm up the critical third-party origins so the largest downloads start sooner -->
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
@@ -886,6 +895,134 @@
   </div>
 </div>
 
+<!-- FAQ modal (idea #68) — visible copy is mirrored in FAQPage JSON-LD below -->
+<div id="faq-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="faq-modal-title" hidden>
+  <div class="modal-box" role="document">
+    <button class="modal-close" type="button" aria-label="Close">&#10005;</button>
+    <div class="modal-eyebrow">// The questions I get asked most</div>
+    <h2 id="faq-modal-title" class="modal-title">Frequently asked</h2>
+    <p class="arch-intro">Short, straight answers. For anything not covered here, the Contact section is the fastest route.</p>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-q">What exactly do you do?</summary>
+        <div class="faq-a">I'm an IT Administrator &amp; ERP Specialist based in Dubai. In practice I keep business systems running end-to-end — ERP platforms (Odoo, Zoho), cloud and networking (AWS, IoT device fleets), and cybersecurity — with a track record of 99.7% uptime across smart-tech and multi-brand environments.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Which ERP platforms do you specialise in?</summary>
+        <div class="faq-a">Primarily Odoo and Zoho — configuration, module setup, workflow automation, third-party integrations and ongoing administration. My focus is making ERP actually reduce manual work rather than add to it.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">What's your cloud &amp; infrastructure background?</summary>
+        <div class="faq-a">AWS, network administration, and IoT device fleets across hybrid on-prem/cloud setups — plus the monitoring and uptime engineering that keeps them reliable. Network topology, provisioning and incident response are day-to-day work for me.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">How do you approach cybersecurity?</summary>
+        <div class="faq-a">Defensive-first and practical: least-privilege access, timely patching, tested backups and disaster recovery, monitoring, and user awareness. The goal is resilience — systems that keep running and recover fast when something goes wrong.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">What results have you delivered?</summary>
+        <div class="faq-a">99.7% uptime across the environments I run, meaningful reductions in manual effort through ERP automation, and consolidated IT operations across multiple brands under one smart-tech umbrella.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">What languages do you speak?</summary>
+        <div class="faq-a">English, Tamil, Malayalam and Arabic — useful across Dubai's multinational teams and vendor relationships.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">What makes you different from other IT admins?</summary>
+        <div class="faq-a">I pair hands-on systems administration with real ERP depth and marketing/analytics literacy — so I connect IT to business outcomes, not just keep the lights on. I'm as comfortable in a server console as I am mapping a workflow to what the business actually needs.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">How do I get your résumé or start a conversation?</summary>
+        <div class="faq-a">The one-page résumé is a click away (the download button, or the “Résumé” shortcut if you've installed this as an app), and the fastest path is email or LinkedIn on the Contact section. For specifics like availability, work authorisation and notice period, just reach out — I'm happy to share directly.</div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ERP configurator (idea #36) — interactive scoping tool -->
+<div id="erp-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="erp-modal-title" hidden>
+  <div class="modal-box modal-box-wide" role="document">
+    <button class="modal-close" type="button" aria-label="Close">&#10005;</button>
+    <div class="modal-eyebrow">// Scope an ERP rollout in 20 seconds</div>
+    <h2 id="erp-modal-title" class="modal-title">ERP configurator</h2>
+    <p class="arch-intro">Pick your industry, team size and the modules you need — I'll sketch a platform recommendation, a phased rollout and an indicative timeline. Figures are directional, not a quote.</p>
+    <div class="erp-grid">
+      <div class="erp-controls">
+        <div class="erp-field">
+          <span class="erp-lbl">Industry</span>
+          <div class="erp-pills" data-erp="industry" role="group" aria-label="Industry">
+            <button type="button" class="erp-pill active" data-val="retail">Retail &amp; POS</button>
+            <button type="button" class="erp-pill" data-val="services">Professional Services</button>
+            <button type="button" class="erp-pill" data-val="manufacturing">Manufacturing</button>
+            <button type="button" class="erp-pill" data-val="hospitality">Hospitality / F&amp;B</button>
+            <button type="button" class="erp-pill" data-val="ecommerce">eCommerce</button>
+          </div>
+        </div>
+        <div class="erp-field">
+          <span class="erp-lbl">Team size</span>
+          <div class="erp-pills" data-erp="size" role="group" aria-label="Team size">
+            <button type="button" class="erp-pill active" data-val="s">1–10</button>
+            <button type="button" class="erp-pill" data-val="m">11–50</button>
+            <button type="button" class="erp-pill" data-val="l">51–200</button>
+            <button type="button" class="erp-pill" data-val="xl">200+</button>
+          </div>
+        </div>
+        <div class="erp-field">
+          <span class="erp-lbl">Modules <span class="erp-hint">tap to toggle · picking an industry loads a starter set</span></span>
+          <div class="erp-mods" data-erp="modules" role="group" aria-label="Modules">
+            <button type="button" class="erp-mod" data-mod="crm">Sales / CRM</button>
+            <button type="button" class="erp-mod" data-mod="inventory">Inventory</button>
+            <button type="button" class="erp-mod" data-mod="accounting">Accounting</button>
+            <button type="button" class="erp-mod" data-mod="pos">POS</button>
+            <button type="button" class="erp-mod" data-mod="purchase">Purchase</button>
+            <button type="button" class="erp-mod" data-mod="mrp">Manufacturing</button>
+            <button type="button" class="erp-mod" data-mod="hr">HR &amp; Payroll</button>
+            <button type="button" class="erp-mod" data-mod="project">Project</button>
+            <button type="button" class="erp-mod" data-mod="website">Website / eShop</button>
+            <button type="button" class="erp-mod" data-mod="helpdesk">Helpdesk</button>
+            <button type="button" class="erp-mod" data-mod="marketing">Marketing</button>
+          </div>
+        </div>
+      </div>
+      <aside class="erp-result" aria-live="polite">
+        <div class="erp-rec">
+          <div class="erp-rec-lbl">Recommended platform</div>
+          <div class="erp-rec-val" id="erp-platform">Odoo</div>
+          <div class="erp-rec-why" id="erp-why"></div>
+        </div>
+        <div class="erp-stat-row">
+          <div class="erp-stat"><div class="erp-stat-n" id="erp-modcount">0</div><div class="erp-stat-l">modules</div></div>
+          <div class="erp-stat"><div class="erp-stat-n" id="erp-weeks">—</div><div class="erp-stat-l">indic. weeks</div></div>
+          <div class="erp-stat"><div class="erp-stat-n" id="erp-phases">—</div><div class="erp-stat-l">phases</div></div>
+        </div>
+        <div class="erp-plan">
+          <div class="erp-plan-lbl">Suggested rollout</div>
+          <ol class="erp-phaselist" id="erp-phaselist"></ol>
+        </div>
+        <div class="erp-notes" id="erp-notes"></div>
+        <button type="button" class="erp-cta" id="erp-cta">Talk through this setup →</button>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What exactly do you do?", "acceptedAnswer": { "@type": "Answer", "text": "I'm an IT Administrator & ERP Specialist based in Dubai. In practice I keep business systems running end-to-end — ERP platforms (Odoo, Zoho), cloud and networking (AWS, IoT device fleets), and cybersecurity — with a track record of 99.7% uptime across smart-tech and multi-brand environments." } },
+    { "@type": "Question", "name": "Which ERP platforms do you specialise in?", "acceptedAnswer": { "@type": "Answer", "text": "Primarily Odoo and Zoho — configuration, module setup, workflow automation, third-party integrations and ongoing administration. My focus is making ERP actually reduce manual work rather than add to it." } },
+    { "@type": "Question", "name": "What's your cloud and infrastructure background?", "acceptedAnswer": { "@type": "Answer", "text": "AWS, network administration, and IoT device fleets across hybrid on-prem/cloud setups — plus the monitoring and uptime engineering that keeps them reliable. Network topology, provisioning and incident response are day-to-day work for me." } },
+    { "@type": "Question", "name": "How do you approach cybersecurity?", "acceptedAnswer": { "@type": "Answer", "text": "Defensive-first and practical: least-privilege access, timely patching, tested backups and disaster recovery, monitoring, and user awareness. The goal is resilience — systems that keep running and recover fast when something goes wrong." } },
+    { "@type": "Question", "name": "What results have you delivered?", "acceptedAnswer": { "@type": "Answer", "text": "99.7% uptime across the environments I run, meaningful reductions in manual effort through ERP automation, and consolidated IT operations across multiple brands under one smart-tech umbrella." } },
+    { "@type": "Question", "name": "What languages do you speak?", "acceptedAnswer": { "@type": "Answer", "text": "English, Tamil, Malayalam and Arabic — useful across Dubai's multinational teams and vendor relationships." } },
+    { "@type": "Question", "name": "What makes you different from other IT admins?", "acceptedAnswer": { "@type": "Answer", "text": "I pair hands-on systems administration with real ERP depth and marketing/analytics literacy — so I connect IT to business outcomes, not just keep the lights on." } },
+    { "@type": "Question", "name": "How do I get your résumé or start a conversation?", "acceptedAnswer": { "@type": "Answer", "text": "The one-page résumé is a click away (the download button, or the Résumé shortcut if you've installed this as an app), and the fastest path is email or LinkedIn on the Contact section. For specifics like availability, work authorisation and notice period, just reach out." } }
+  ]
+}
+</script>
+
 <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="module" src="chatbot.js"></script>
 <script defer src="mathUniverseAnimation.js"></script>
@@ -904,6 +1041,42 @@ window.addEventListener('load', function () {
     y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
   })(window, document, "clarity", "script", "wmbjbans6o");
 });
+</script>
+
+<!-- PWA: register the service worker + honour ?go= deep links from install shortcuts -->
+<script>
+(function () {
+  // Service worker (offline shell + installability). Freshness handled inside sw.js.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').then(function (reg) {
+        reg.addEventListener('updatefound', function () {
+          var nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', function () {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller && window.toast) {
+              window.toast('Refreshed in the background — reload for the latest ✨');
+            }
+          });
+        });
+      }).catch(function () {});
+    });
+  }
+
+  // Manifest shortcuts / deep links: /?go=contact|projects|about|…  -> jump to that panel.
+  try {
+    var go = new URLSearchParams(location.search).get('go');
+    if (!go) return;
+    var MAP = { hero:0, game:1, about:2, experience:3, dashboard:4, skills:5, projects:6, achievements:7, contact:8 };
+    if (!(go in MAP)) return;
+    var idx = MAP[go], tries = 0;
+    var iv = setInterval(function () {
+      var dot = document.querySelector('.dot[data-i="' + idx + '"]');
+      if (dot) { clearInterval(iv); setTimeout(function () { dot.click(); }, 450); }
+      else if (++tries > 50) clearInterval(iv);
+    }, 100);
+  } catch (e) {}
+})();
 </script>
 </body>
 </html>

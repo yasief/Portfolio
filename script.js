@@ -1379,6 +1379,7 @@ window.toast=toast;
     {g:'Navigate',ic:ic('i-mail'),  label:'Contact',desc:'Get in touch',tag:'09',fn:()=>goTo(8)},
     {g:'Navigate',ic:ic('i-users'), label:'My Story',desc:'Education, journey & how I work',tag:'',fn:()=>{close();if(window.openModal)window.openModal('story-modal');}},
     {g:'Navigate',ic:ic('i-network'),label:'System Architecture',desc:'Real LaundryBox stack diagram',tag:'',fn:()=>{close();if(window.openModal)window.openModal('arch-modal');}},
+    {g:'Navigate',ic:ic('i-search'), label:'FAQ',desc:'Straight answers to common questions',tag:'',fn:()=>{close();if(window.openModal)window.openModal('faq-modal');}},
     {g:'Actions', ic:ic('i-mail'),  label:'Copy Email',desc:'mohamedyasief@gmail.com',tag:'',fn:()=>copy('mohamedyasief@gmail.com','Email copied!')},
     {g:'Actions', ic:ic('i-phone'), label:'Copy Phone',desc:'+971 50 359 3856',tag:'',fn:()=>copy('+971503593856','Phone copied!')},
     {g:'Actions', ic:ic('i-linkedin'),label:'LinkedIn',desc:'linkedin.com/in/yasief',tag:'',fn:()=>window.open('https://linkedin.com/in/yasief','_blank','noopener')},
@@ -1387,12 +1388,14 @@ window.toast=toast;
     {g:'Actions', ic:ic('i-users'),  label:'Save contact (.vcf)',desc:'Add Mohamed to your contacts',tag:'',fn:()=>saveVCard()},
     {g:'Actions', ic:ic('i-arrow'),  label:'Share this profile',desc:'Send or copy the link',tag:'',fn:()=>shareProfile()},
     {g:'Actions', ic:ic('i-moon'),   label:'Switch theme',desc:'Night · Day · Solar',tag:'',fn:()=>{const t=document.getElementById('theme-toggle');if(t)t.click();}},
+    {g:'Actions', ic:ic('i-spark'),  label:'Take a quick tour',desc:'30-second guided walkthrough',tag:'',fn:()=>{close();if(typeof window.startTour==='function')setTimeout(window.startTour,180);}},
     {g:'Actions', ic:ic('i-check'),  label:'Accessibility',desc:'Keyboard · motion · screen-reader',tag:'',fn:()=>{close();if(window.openModal)window.openModal('a11y-modal');}},
     {g:'Actions', ic:ic('i-download'),label:'Save as PDF / Print',desc:'Print-optimized résumé view',tag:'',fn:()=>{close();setTimeout(()=>window.print(),160);}},
     {g:'Run',     ic:ic('i-bolt'),   label:'Run diagnostics',desc:'Mock system self-check',tag:'',fn:()=>runDiagnostics()},
     {g:'Run',     ic:ic('i-network'),label:'Ping services',desc:'Real fetch latency check',tag:'',fn:()=>pingServices()},
     {g:'Run',     ic:ic('i-spark'),  label:'Play reflex game',desc:'Jump to the mini-game',tag:'',fn:()=>{goTo(1);close();}},
     {g:'Run',     ic:ic('i-uptime'), label:'Uptime / ROI calculator',desc:'SLA nines & cost of downtime',tag:'',fn:()=>{close();if(window.openModal)window.openModal('calc-modal');}},
+    {g:'Run',     ic:ic('i-erp'),    label:'ERP configurator',desc:'Scope a rollout: platform · phases · timeline',tag:'',fn:()=>{close();if(window.openModal)window.openModal('erp-modal');}},
   ];
   const backdrop=document.getElementById('cmd-backdrop');
   const input=document.getElementById('cmd-input');
@@ -1614,9 +1617,205 @@ window.toast=toast;
   const c=document.createElement('div'); c.id='coach';
   c.innerHTML='<div class="coach-inner"><strong>Tip</strong><span>'+
     (touch?'Swipe or tap the dots to move between sections.':'Scroll, use ←/→ arrows, or press <span class="ck">Ctrl</span><span class="ck">K</span> to jump anywhere.')+
-    '</span><button type="button" id="coachClose">Got it</button></div>';
+    '</span><button type="button" id="coachTour">Take the tour</button><button type="button" id="coachClose">Got it</button></div>';
   document.body.appendChild(c);
   function dismiss(){ c.classList.add('gone'); setTimeout(()=>c.remove(),400); try{localStorage.setItem('yasiefCoachSeen','1');}catch(e){} }
   const btn=document.getElementById('coachClose'); if(btn) btn.addEventListener('click',dismiss);
+  const tbtn=document.getElementById('coachTour'); if(tbtn) tbtn.addEventListener('click',()=>{ dismiss(); if(typeof window.startTour==='function') setTimeout(window.startTour,140); });
   setTimeout(dismiss,9000);
+})();
+
+/* ═══ GUIDED TOUR (idea #49) — spotlight walkthrough of the key UI ═══ */
+(function(){
+  const STEPS=[
+    {sel:'#cmd-hint',   title:'Command palette',      body:'Press <span class="tk">⌘K</span> / <span class="tk">Ctrl&nbsp;K</span> — or click here — to jump to any section or run actions like copying my email or downloading the résumé.', place:'bottom'},
+    {sel:'#dots',       title:'Section navigation',   body:'These dots move between the nine sections. Arrow keys and digits <span class="tk">1</span>–<span class="tk">9</span> work too.', place:'left'},
+    {sel:'.h-ctas',     title:'Reach me in one click',body:'Email, WhatsApp, LinkedIn, or grab the one-page résumé — all right here.', place:'top'},
+    {sel:'#theme-toggle',title:'Make it yours',       body:'Switch between Night, Day and Solar themes anytime.', place:'bottom'},
+    {sel:'#chat-toggle-btn',title:'Ask my AI assistant',body:'Got a question about my experience or stack? Ask the assistant — it answers in seconds.', place:'left'}
+  ];
+  let steps=[], i=0, ov, spot, pop, keyH, lastFocus;
+
+  function build(){
+    ov=document.createElement('div'); ov.className='tour-overlay';
+    spot=document.createElement('div'); spot.className='tour-spot';
+    pop=document.createElement('div'); pop.className='tour-pop';
+    pop.setAttribute('role','dialog'); pop.setAttribute('aria-modal','true'); pop.setAttribute('aria-label','Guided tour');
+    ov.appendChild(spot); ov.appendChild(pop);
+    document.body.appendChild(ov);
+    pop.addEventListener('click',e=>{
+      const t=e.target.closest('[data-tour]'); if(!t) return;
+      const a=t.getAttribute('data-tour');
+      if(a==='next') next(); else if(a==='back') back(); else finish();
+    });
+  }
+  function render(){
+    const s=steps[i]; if(!s) return finish();
+    const el=document.querySelector(s.sel);
+    if(!el){ if(i<steps.length-1){ i++; return render(); } return finish(); }
+    const r=el.getBoundingClientRect(), pad=8;
+    spot.style.left=(r.left-pad)+'px'; spot.style.top=(r.top-pad)+'px';
+    spot.style.width=(r.width+pad*2)+'px'; spot.style.height=(r.height+pad*2)+'px';
+    pop.innerHTML=
+      '<div class="tour-step">Step '+(i+1)+' of '+steps.length+'</div>'+
+      '<h3 class="tour-title">'+s.title+'</h3>'+
+      '<p class="tour-body">'+s.body+'</p>'+
+      '<div class="tour-nav"><button type="button" class="tour-skip" data-tour="skip">Skip</button>'+
+      '<div class="tour-right">'+(i>0?'<button type="button" class="tour-btn" data-tour="back">Back</button>':'')+
+      '<button type="button" class="tour-btn tour-next" data-tour="next">'+(i===steps.length-1?'Done':'Next')+'</button></div></div>';
+    position(r,s.place);
+    const nb=pop.querySelector('.tour-next'); if(nb) nb.focus();
+  }
+  function position(r,place){
+    const gap=14, vw=innerWidth, vh=innerHeight, pr=pop.getBoundingClientRect(), pw=pr.width, ph=pr.height;
+    const room={bottom:vh-r.bottom, top:r.top, left:r.left, right:vw-r.right};
+    let p=place;
+    if(p==='bottom'&&room.bottom<ph+gap+10) p='top';
+    else if(p==='top'&&room.top<ph+gap+10) p='bottom';
+    if(p==='left'&&room.left<pw+gap+10) p='right';
+    else if(p==='right'&&room.right<pw+gap+10) p='left';
+    let top,left;
+    if(p==='bottom'){ top=r.bottom+gap; left=r.left; }
+    else if(p==='top'){ top=r.top-ph-gap; left=r.left; }
+    else if(p==='left'){ left=r.left-pw-gap; top=r.top; }
+    else { left=r.right+gap; top=r.top; }
+    left=Math.max(10,Math.min(left,vw-pw-10));
+    top=Math.max(10,Math.min(top,vh-ph-10));
+    pop.style.left=left+'px'; pop.style.top=top+'px';
+  }
+  function onKey(e){
+    if(e.key==='Escape'){ e.preventDefault(); finish(); }
+    else if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); back(); }
+  }
+  function onResize(){ if(steps[i]) render(); }
+  function next(){ if(i<steps.length-1){ i++; render(); } else finish(); }
+  function back(){ if(i>0){ i--; render(); } }
+  function finish(){
+    if(keyH){ removeEventListener('keydown',keyH); keyH=null; }
+    removeEventListener('resize',onResize);
+    if(ov){ const o=ov; o.classList.add('gone'); setTimeout(()=>o.remove(),300); ov=null; }
+    try{ localStorage.setItem('yasiefTourSeen','1'); }catch(e){}
+    if(lastFocus&&lastFocus.focus){ try{ lastFocus.focus(); }catch(e){} }
+  }
+  function start(){
+    if(ov) return; // already running
+    try{ localStorage.setItem('yasiefTourSeen','1'); }catch(e){}
+    lastFocus=document.activeElement;
+    const d0=document.querySelector('.dot[data-i="0"]'); if(d0) d0.click(); // hero holds the panel-bound targets
+    steps=STEPS.filter(s=>{ const e=document.querySelector(s.sel); return e && e.getBoundingClientRect().width>0; });
+    if(!steps.length) return;
+    i=0;
+    setTimeout(()=>{ build(); keyH=onKey; addEventListener('keydown',keyH); addEventListener('resize',onResize); render(); },700);
+  }
+  window.startTour=start;
+})();
+
+/* ═══ ERP CONFIGURATOR (idea #36) — interactive scoping tool ═══ */
+(function(){
+  const modal=document.getElementById('erp-modal');
+  if(!modal) return;
+  const START={
+    retail:['crm','inventory','accounting','pos','purchase'],
+    services:['crm','accounting','project','helpdesk','hr'],
+    manufacturing:['inventory','accounting','purchase','mrp','hr'],
+    hospitality:['pos','inventory','accounting','purchase','hr'],
+    ecommerce:['website','inventory','accounting','crm','marketing']
+  };
+  const MODNAME={crm:'Sales / CRM',inventory:'Inventory',accounting:'Accounting',pos:'POS',purchase:'Purchase',mrp:'Manufacturing',hr:'HR & Payroll',project:'Project',website:'Website / eShop',helpdesk:'Helpdesk',marketing:'Marketing'};
+  const SIZEF={s:1,m:1.35,l:1.75,xl:2.3};
+  const SIZELBL={s:'1–10',m:'11–50',l:'51–200',xl:'200+'};
+  const INDLBL={retail:'Retail & POS',services:'Professional Services',manufacturing:'Manufacturing',hospitality:'Hospitality / F&B',ecommerce:'eCommerce'};
+  const state={industry:'retail',size:'s',modules:new Set(START.retail)};
+  const $=s=>modal.querySelector(s);
+  const modBtns=[...modal.querySelectorAll('.erp-mod')];
+
+  function syncChips(){ modBtns.forEach(b=>b.classList.toggle('active',state.modules.has(b.dataset.mod))); }
+
+  function platform(){
+    const m=state.modules; let odoo=0,zoho=0;
+    if(m.has('mrp'))odoo+=3;
+    if(m.has('pos'))odoo+=2;
+    if(m.has('inventory'))odoo+=1;
+    if(m.has('website'))odoo+=1;
+    if(state.industry==='manufacturing')odoo+=2;
+    if(state.size==='xl')odoo+=2; else if(state.size==='l')odoo+=1;
+    if(m.size>=7)odoo+=1;
+    const lightOps=!m.has('inventory')&&!m.has('pos')&&!m.has('mrp');
+    if(lightOps&&(m.has('crm')||m.has('marketing')||m.has('helpdesk')||m.has('project')))zoho+=3;
+    if(state.industry==='services')zoho+=1;
+    if(state.size==='s')zoho+=1;
+    const pick=zoho>odoo?'Zoho':'Odoo';
+    let why;
+    if(pick==='Odoo'){
+      why = m.has('mrp') ? 'MRP + inventory + accounting in one database — Odoo avoids the integration tax between manufacturing and finance.'
+        : m.has('pos') ? 'Odoo POS decrements inventory and posts to accounting in real time — ideal for '+INDLBL[state.industry].toLowerCase()+'.'
+        : (state.size==='xl'||state.size==='l') ? 'At this headcount a single integrated Odoo database keeps data consistent as you scale.'
+        : 'Odoo’s tightly-integrated modules keep this stack consistent with room to grow.';
+    } else {
+      why='For a lean team centred on CRM, finance and customer ops, Zoho One is quick to roll out and easy on budget — without an over-built ERP.';
+    }
+    return {pick,why};
+  }
+  function phases(){
+    const m=state.modules;
+    const P1=['accounting','inventory','crm'].filter(x=>m.has(x));
+    const P2=['pos','purchase','mrp','project'].filter(x=>m.has(x));
+    const P3=['website','marketing','helpdesk','hr'].filter(x=>m.has(x));
+    const g=[];
+    if(P1.length)g.push(['Foundation',P1]);
+    if(P2.length)g.push(['Operations',P2]);
+    if(P3.length)g.push(['Growth & people',P3]);
+    return g;
+  }
+  function notes(){
+    const m=state.modules,out=[];
+    if(m.has('pos')&&m.has('inventory'))out.push('POS ↔ Inventory: stock decrements at the till in real time.');
+    if(m.has('website')&&m.has('inventory'))out.push('eShop ↔ Inventory: live online stock, no overselling.');
+    if(m.has('mrp')&&m.has('purchase'))out.push('MRP ↔ Purchase: auto-replenishment driven by bill-of-materials demand.');
+    if(m.has('crm')&&m.has('marketing'))out.push('CRM ↔ Marketing: closed-loop lead nurturing into the sales pipeline.');
+    if(m.has('accounting')&&(m.has('pos')||m.has('purchase')))out.push('Accounting auto-posts from POS/Purchase — no double entry.');
+    if(m.has('hr'))out.push('HR & Payroll: WPS-compliant payroll configuration for the UAE.');
+    return out.slice(0,4);
+  }
+  function recompute(){
+    const count=state.modules.size, {pick,why}=platform(), ph=phases();
+    const w=(3+count)*SIZEF[state.size];
+    const lo=Math.max(2,Math.round(w*0.8)), hi=Math.round(w*1.15);
+    $('#erp-platform').textContent=pick;
+    $('#erp-why').textContent=why;
+    $('#erp-modcount').textContent=count;
+    $('#erp-weeks').textContent=count?(lo+'–'+hi):'—';
+    $('#erp-phases').textContent=ph.length||'—';
+    const ol=$('#erp-phaselist'); ol.innerHTML='';
+    if(!ph.length){ ol.innerHTML='<li>Select a module to see a rollout plan.</li>'; }
+    else ph.forEach(g=>{ const li=document.createElement('li'); li.innerHTML='<strong>'+g[0]+':</strong> '+g[1].map(x=>MODNAME[x]).join(', '); ol.appendChild(li); });
+    const nt=$('#erp-notes'); nt.innerHTML='';
+    notes().forEach(n=>{ const d=document.createElement('div'); d.className='erp-note'; d.textContent=n; nt.appendChild(d); });
+  }
+  function ctaHref(){
+    const {pick}=platform();
+    const mods=[...state.modules].map(x=>MODNAME[x]).join(', ')||'core modules';
+    const msg='Hi Mohamed — I scoped an ERP setup on your site:\n• Industry: '+INDLBL[state.industry]+'\n• Team: '+SIZELBL[state.size]+'\n• Modules: '+mods+'\n• Suggested platform: '+pick+'\nCan we discuss?';
+    return 'https://wa.me/971503593856?text='+encodeURIComponent(msg);
+  }
+
+  modal.querySelectorAll('[data-erp="industry"] .erp-pill').forEach(b=>b.addEventListener('click',()=>{
+    modal.querySelectorAll('[data-erp="industry"] .erp-pill').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); state.industry=b.dataset.val;
+    state.modules=new Set(START[state.industry]); syncChips(); recompute();
+  }));
+  modal.querySelectorAll('[data-erp="size"] .erp-pill').forEach(b=>b.addEventListener('click',()=>{
+    modal.querySelectorAll('[data-erp="size"] .erp-pill').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); state.size=b.dataset.val; recompute();
+  }));
+  modBtns.forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.mod;
+    if(state.modules.has(k))state.modules.delete(k); else state.modules.add(k);
+    b.classList.toggle('active'); recompute();
+  }));
+  const cta=$('#erp-cta');
+  if(cta)cta.addEventListener('click',()=>window.open(ctaHref(),'_blank','noopener'));
+
+  syncChips(); recompute();
 })();

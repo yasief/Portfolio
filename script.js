@@ -1387,6 +1387,7 @@ window.toast=toast;
     {g:'Actions', ic:ic('i-users'),  label:'Save contact (.vcf)',desc:'Add Mohamed to your contacts',tag:'',fn:()=>saveVCard()},
     {g:'Actions', ic:ic('i-arrow'),  label:'Share this profile',desc:'Send or copy the link',tag:'',fn:()=>shareProfile()},
     {g:'Actions', ic:ic('i-moon'),   label:'Switch theme',desc:'Night · Day · Solar',tag:'',fn:()=>{const t=document.getElementById('theme-toggle');if(t)t.click();}},
+    {g:'Actions', ic:ic('i-check'),  label:'Accessibility',desc:'Keyboard · motion · screen-reader',tag:'',fn:()=>{close();if(window.openModal)window.openModal('a11y-modal');}},
     {g:'Actions', ic:ic('i-download'),label:'Save as PDF / Print',desc:'Print-optimized résumé view',tag:'',fn:()=>{close();setTimeout(()=>window.print(),160);}},
     {g:'Run',     ic:ic('i-bolt'),   label:'Run diagnostics',desc:'Mock system self-check',tag:'',fn:()=>runDiagnostics()},
     {g:'Run',     ic:ic('i-network'),label:'Ping services',desc:'Real fetch latency check',tag:'',fn:()=>pingServices()},

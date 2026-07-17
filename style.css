@@ -1522,6 +1522,12 @@ body.modal-open{overflow:hidden;}
 .proj-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem;}
 @media(max-width:600px){.par-row{grid-template-columns:1fr;gap:.25rem;}}
 .modal-wide{max-width:880px;}
+/* Accessibility list (idea 8) */
+.a11y-list{list-style:none;margin:1.3rem 0 0;padding:0;display:grid;gap:.8rem;}
+.a11y-list li{color:var(--dim);font-size:.9rem;line-height:1.55;padding-left:1.5rem;position:relative;}
+.a11y-list li::before{content:"\2713";position:absolute;left:0;color:var(--c4);font-weight:700;}
+.a11y-list code{font-family:'JetBrains Mono',monospace;font-size:.82em;color:var(--c1);background:rgba(var(--c1-rgb),.08);padding:.05rem .35rem;border-radius:4px;}
+.a11y-list .kb{font-family:'JetBrains Mono',monospace;font-size:.78em;border:1px solid var(--border);border-radius:4px;padding:.05rem .35rem;color:var(--w);}
 /* Reliability / cost-of-downtime calculator (ideas 40,41) */
 .calc-sec{margin-bottom:1.8rem;}
 .calc-sec>h3{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin:0 0 .9rem;font-family:'JetBrains Mono',monospace;}

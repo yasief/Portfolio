@@ -1,0 +1,26 @@
+{
+  "name": "Mohamed Yasief — IT Administrator & ERP Specialist",
+  "short_name": "M. Yasief",
+  "description": "IT Administrator & ERP Specialist · Dubai · Odoo · Zoho · AWS · IoT · 99.7% uptime delivered.",
+  "id": "/",
+  "start_url": "/?src=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "background_color": "#04080f",
+  "theme_color": "#04080f",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Contact", "short_name": "Contact", "url": "/?go=contact", "description": "Email, phone & LinkedIn" },
+    { "name": "Projects", "short_name": "Projects", "url": "/?go=projects", "description": "Case studies & results" },
+    { "name": "Résumé (PDF)", "short_name": "Résumé", "url": "/Mohamed_Yasief_IT_Administrator_Resume.pdf", "description": "Download the one-page résumé" }
+  ]
+}

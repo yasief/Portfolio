@@ -1394,6 +1394,7 @@ window.toast=toast;
     {g:'Run',     ic:ic('i-bolt'),   label:'Run diagnostics',desc:'Mock system self-check',tag:'',fn:()=>runDiagnostics()},
     {g:'Run',     ic:ic('i-network'),label:'Ping services',desc:'Real fetch latency check',tag:'',fn:()=>pingServices()},
     {g:'Run',     ic:ic('i-spark'),  label:'Play reflex game',desc:'Jump to the mini-game',tag:'',fn:()=>{goTo(1);close();}},
+    {g:'Run',     ic:ic('i-shield'), label:'Play NOC Defender',desc:'Incident-triage game · keep uptime up',tag:'',fn:()=>{close();if(window.openModal)window.openModal('game2-modal');}},
     {g:'Run',     ic:ic('i-uptime'), label:'Uptime / ROI calculator',desc:'SLA nines & cost of downtime',tag:'',fn:()=>{close();if(window.openModal)window.openModal('calc-modal');}},
     {g:'Run',     ic:ic('i-erp'),    label:'ERP configurator',desc:'Scope a rollout: platform · phases · timeline',tag:'',fn:()=>{close();if(window.openModal)window.openModal('erp-modal');}},
     {g:'Run',     ic:ic('i-server'), label:'Operations center (NOC)',desc:'Live service health, latency & incidents',tag:'',fn:()=>{close();if(window.openModal)window.openModal('noc-modal');}},
@@ -2054,4 +2055,85 @@ function onModalToggle(id,onOpen,onClose){
   } else {
     setTimeout(fire,45000); // mobile has no reliable exit signal — gentle timed fallback
   }
+})();
+
+/* ═══ NOC Defender mini-game (idea #45) ═══ */
+(function(){
+  const modal=document.getElementById('game2-modal'); if(!modal) return;
+  const grid=document.getElementById('g2-grid');
+  const ov=document.getElementById('g2-overlay');
+  const ovTitle=document.getElementById('g2-ov-title');
+  const ovSub=document.getElementById('g2-ov-sub');
+  const startBtn=document.getElementById('g2-start');
+  const NAMES=['PROD-01','DB-01','APP-API','CACHE','QUEUE','CDN-EDGE','AUTH','STORAGE','MAIL-GW'];
+  const ROUND=45000;
+  let cells=[], loop=null, running=false;
+  let score=0, uptime=100, timeLeft=ROUND, sinceSpawn=0;
+  let best=0; try{ best=parseInt(localStorage.getItem('yasiefNocBest')||'0',10)||0; }catch(e){}
+
+  function build(){
+    grid.innerHTML='';
+    cells=NAMES.map((nm,i)=>{
+      const b=document.createElement('button'); b.type='button'; b.className='g2-cell'; b.dataset.i=i;
+      b.innerHTML='<span class="g2-dot"></span><span class="g2-cell-nm">'+nm+'</span><span class="g2-cell-bar"><i></i></span>';
+      b.addEventListener('click',()=>hit(i));
+      grid.appendChild(b);
+      return {el:b,bar:b.querySelector('.g2-cell-bar>i'),state:'ok',ttl:0,max:1};
+    });
+  }
+  function setState(c,s){ c.state=s; c.el.classList.remove('alert','down','resolved'); if(s!=='ok') c.el.classList.add(s); if(s!=='alert') c.bar.style.transform='scaleX(0)'; }
+  function hud(){
+    document.getElementById('g2-score').textContent=score;
+    document.getElementById('g2-uptime').textContent=Math.max(0,Math.round(uptime))+'%';
+    document.getElementById('g2-time').textContent=Math.ceil(timeLeft/1000);
+    document.getElementById('g2-best').textContent=best;
+    const u=document.getElementById('g2-uptime'); u.style.color = uptime<50?'#ff3e5a':uptime<75?'#f5a623':'var(--c1)';
+  }
+  function hit(i){
+    if(!running) return;
+    const c=cells[i]; if(c.state!=='alert') return;
+    score++; setState(c,'resolved'); hud();
+    setTimeout(()=>{ if(c.state==='resolved') setState(c,'ok'); },220);
+  }
+  function spawn(){
+    const idle=cells.filter(c=>c.state==='ok'); if(!idle.length) return;
+    const c=idle[Math.floor(Math.random()*idle.length)];
+    const elapsed=(ROUND-timeLeft)/1000;
+    c.max=Math.max(1300,2300-elapsed*22); c.ttl=c.max;
+    setState(c,'alert');
+  }
+  function tick(){
+    const dt=100; timeLeft-=dt; sinceSpawn+=dt;
+    const elapsed=(ROUND-timeLeft)/1000;
+    const spawnEvery=Math.max(600,1500-elapsed*20);
+    if(sinceSpawn>=spawnEvery){ sinceSpawn=0; spawn(); }
+    cells.forEach(c=>{
+      if(c.state==='alert'){
+        c.ttl-=dt; c.bar.style.transform='scaleX('+Math.max(0,c.ttl/c.max)+')';
+        if(c.ttl<=0){ setState(c,'down'); uptime-=6; setTimeout(()=>{ if(c.state==='down') setState(c,'ok'); },1400); }
+      }
+    });
+    hud();
+    if(timeLeft<=0){ return end(true); }
+    if(uptime<=0){ uptime=0; return end(false); }
+  }
+  function start(){
+    stop(); build();
+    score=0; uptime=100; timeLeft=ROUND; sinceSpawn=0; running=true;
+    ov.classList.add('hidden'); hud();
+    loop=setInterval(tick,100);
+  }
+  function stop(){ if(loop){ clearInterval(loop); loop=null; } running=false; }
+  function end(survived){
+    stop();
+    if(score>best){ best=score; try{localStorage.setItem('yasiefNocBest',String(best));}catch(e){} }
+    ovTitle.textContent = survived ? 'Shift complete ✔' : 'Service down ✖';
+    ovSub.innerHTML = 'You resolved <b style="color:var(--c1)">'+score+'</b> incident'+(score===1?'':'s')+' at <b style="color:var(--c1)">'+Math.max(0,Math.round(uptime))+'%</b> uptime.'+(score>=best&&score>0?'<br>New best!':'<br>Best: '+best);
+    startBtn.textContent='▶ Play again';
+    ov.classList.remove('hidden'); hud();
+  }
+  function reset(){ stop(); build(); score=0; uptime=100; timeLeft=ROUND; hud(); ovTitle.textContent='Ready?'; ovSub.textContent='Click red servers before their timer runs out.'; startBtn.textContent='▶ Start shift'; ov.classList.remove('hidden'); }
+  startBtn.addEventListener('click',start);
+  build(); hud();
+  onModalToggle('game2-modal',null,reset); // stop + reset when the modal closes
 })();

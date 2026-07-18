@@ -1678,6 +1678,35 @@ body.modal-open{overflow:hidden;}
 .exit-primary:hover{filter:brightness(1.08);background:var(--c1);color:#04080f;}
 .exit-dismiss{display:block;margin:.2rem auto 0;background:none;border:none;color:var(--dim);font-size:.8rem;cursor:pointer;padding:.4rem;font-family:'Outfit',sans-serif;transition:color .15s;}
 .exit-dismiss:hover{color:var(--w);}
+
+/* ── NOC Defender mini-game (idea #45) ─── */
+.g2-hud{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1.2rem;text-align:center;}
+.g2-stat{background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:8px;padding:.5rem .3rem;}
+.g2-stat-n{display:block;font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:800;color:var(--c1);line-height:1;}
+.g2-stat-l{font-size:.58rem;color:var(--dim);letter-spacing:.03em;margin-top:.25rem;display:block;}
+.g2-board{position:relative;margin-top:.9rem;}
+.g2-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;}
+.g2-cell{position:relative;aspect-ratio:16/9;border:1px solid var(--border);border-radius:10px;background:rgba(0,210,255,.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;overflow:hidden;transition:background .12s,border-color .12s,transform .08s;font-family:'JetBrains Mono',monospace;}
+.g2-cell:active{transform:scale(.97);}
+.g2-cell-nm{font-size:.72rem;color:var(--dim);letter-spacing:.04em;}
+.g2-dot{width:9px;height:9px;border-radius:50%;background:var(--c4);box-shadow:0 0 8px var(--c4);}
+.g2-cell.alert{background:rgba(255,62,90,.16);border-color:#ff3e5a;}
+.g2-cell.alert .g2-dot{background:#ff3e5a;box-shadow:0 0 12px #ff3e5a;}
+.g2-cell.alert .g2-cell-nm{color:#ff8a9a;}
+.g2-cell.down{background:rgba(120,120,140,.12);border-color:rgba(120,120,140,.4);opacity:.55;}
+.g2-cell.down .g2-dot{background:#6b7280;box-shadow:none;}
+.g2-cell.resolved{background:rgba(0,255,150,.16);border-color:var(--c4);}
+.g2-cell.resolved .g2-dot{background:var(--c4);box-shadow:0 0 10px var(--c4);}
+.g2-cell-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:rgba(255,255,255,.06);}
+.g2-cell-bar>i{display:block;height:100%;width:100%;background:#ff3e5a;transform-origin:left;transform:scaleX(0);transition:transform .1s linear;}
+.g2-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,8,15,.82);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border-radius:10px;text-align:center;transition:opacity .25s;}
+.g2-overlay.hidden{opacity:0;pointer-events:none;}
+.g2-ov-inner{padding:1.5rem;}
+.g2-ov-title{font-size:1.5rem;font-weight:800;color:var(--w);margin-bottom:.4rem;}
+.g2-ov-sub{font-size:.85rem;color:var(--dim);line-height:1.5;margin-bottom:1.1rem;max-width:340px;margin-left:auto;margin-right:auto;}
+.g2-btn{font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;padding:.6rem 1.4rem;border-radius:9px;border:1px solid var(--c1);background:var(--c1);color:#04080f;cursor:pointer;transition:filter .15s;}
+.g2-btn:hover{filter:brightness(1.08);}
+
 @media(max-width:720px){.noc-grid{grid-template-columns:1fr;}}
 
 @media(max-width:600px){.story-vs{grid-template-columns:1fr;}.modal-box{padding:1.6rem 1.3rem 1.8rem;}}

@@ -1396,6 +1396,9 @@ window.toast=toast;
     {g:'Run',     ic:ic('i-spark'),  label:'Play reflex game',desc:'Jump to the mini-game',tag:'',fn:()=>{goTo(1);close();}},
     {g:'Run',     ic:ic('i-uptime'), label:'Uptime / ROI calculator',desc:'SLA nines & cost of downtime',tag:'',fn:()=>{close();if(window.openModal)window.openModal('calc-modal');}},
     {g:'Run',     ic:ic('i-erp'),    label:'ERP configurator',desc:'Scope a rollout: platform · phases · timeline',tag:'',fn:()=>{close();if(window.openModal)window.openModal('erp-modal');}},
+    {g:'Run',     ic:ic('i-server'), label:'Operations center (NOC)',desc:'Live service health, latency & incidents',tag:'',fn:()=>{close();if(window.openModal)window.openModal('noc-modal');}},
+    {g:'Run',     ic:ic('i-bolt'),   label:'CI/CD pipeline',desc:'Watch a deploy: build · test · ship',tag:'',fn:()=>{close();if(window.openModal)window.openModal('cicd-modal');}},
+    {g:'Run',     ic:ic('i-link'),   label:'GitHub activity',desc:'Live public feed from github.com/yasief',tag:'',fn:()=>{close();if(window.openModal)window.openModal('gh-modal');}},
   ];
   const backdrop=document.getElementById('cmd-backdrop');
   const input=document.getElementById('cmd-input');
@@ -1818,4 +1821,179 @@ window.toast=toast;
   if(cta)cta.addEventListener('click',()=>window.open(ctaHref(),'_blank','noopener'));
 
   syncChips(); recompute();
+})();
+
+/* ═══ Shared helper: run code when a modal opens / closes ═══ */
+function onModalToggle(id,onOpen,onClose){
+  const el=document.getElementById(id); if(!el) return;
+  let was=el.classList.contains('open');
+  new MutationObserver(()=>{
+    const is=el.classList.contains('open');
+    if(is&&!was) onOpen&&onOpen();
+    else if(!is&&was) onClose&&onClose();
+    was=is;
+  }).observe(el,{attributes:true,attributeFilter:['class']});
+}
+
+/* ═══ NOC — live monitoring (idea #38 + perf #48) · simulated telemetry ═══ */
+(function(){
+  const modal=document.getElementById('noc-modal'); if(!modal) return;
+  const SVCS=[
+    {nm:'PROD-01',base:24},{nm:'DB-SERVER',base:38},{nm:'BACKUP-SRV',base:60},
+    {nm:'LOCKER-IOT',base:85},{nm:'APP-API',base:30},{nm:'CDN-EDGE',base:18},{nm:'MAIL-GW',base:45}
+  ];
+  const svcEl=document.getElementById('noc-services');
+  const feedEl=document.getElementById('noc-feed');
+  const line=document.getElementById('noc-spark-line');
+  const state=SVCS.map(s=>({nm:s.nm,base:s.base,lat:s.base,status:'ok'}));
+  let hist=[], timer=null, incidents=0;
+
+  const now=()=>new Date().toTimeString().slice(0,8);
+  const statusOf=l=>l>140?'down':l>95?'warn':'ok';
+  function renderSvcs(){
+    svcEl.innerHTML='';
+    state.forEach(s=>{
+      const st=s.status, pct=Math.max(6,Math.min(100,120-s.lat));
+      const row=document.createElement('div'); row.className='noc-srv';
+      row.innerHTML='<span class="noc-dot '+(st==='ok'?'':st)+'"></span>'+
+        '<span class="noc-srv-nm">'+s.nm+'</span>'+
+        '<span class="noc-srv-bar"><i style="width:'+pct+'%"></i></span>'+
+        '<span class="noc-srv-lat">'+Math.round(s.lat)+' ms</span>'+
+        '<span class="noc-srv-st">'+(st==='ok'?'OK':st==='warn'?'WARN':'DOWN')+'</span>';
+      svcEl.appendChild(row);
+    });
+  }
+  function feed(cls,msg){
+    const div=document.createElement('div'); div.className='nf';
+    div.innerHTML='<span class="nf-t">'+now()+'</span><span class="'+cls+'">'+msg+'</span>';
+    feedEl.insertBefore(div,feedEl.firstChild);
+    while(feedEl.children.length>30) feedEl.removeChild(feedEl.lastChild);
+  }
+  function tick(){
+    let total=0, up=0;
+    state.forEach(s=>{
+      s.lat+=(s.base-s.lat)*0.2+(Math.random()-0.5)*18;
+      if(Math.random()<0.02) s.lat+=60+Math.random()*80;
+      s.lat=Math.max(6,s.lat);
+      const prev=s.status; s.status=statusOf(s.lat);
+      total+=s.lat; if(s.status!=='down') up++;
+      if(prev!=='down'&&s.status==='down'){ incidents++; feed('nf-down','⚠ '+s.nm+' unreachable ('+Math.round(s.lat)+'ms) — paging on-call'); }
+      else if(prev==='down'&&s.status!=='down') feed('nf-ok','✔ '+s.nm+' recovered ('+Math.round(s.lat)+'ms)');
+      else if(prev==='ok'&&s.status==='warn') feed('nf-warn','● '+s.nm+' latency elevated ('+Math.round(s.lat)+'ms)');
+    });
+    const avg=total/state.length;
+    document.getElementById('noc-lat').textContent=Math.round(avg)+' ms';
+    document.getElementById('noc-up').textContent=up+'/'+state.length;
+    document.getElementById('noc-rps').textContent=(1.2+Math.random()*0.6).toFixed(1)+'k';
+    document.getElementById('noc-inc').textContent=incidents;
+    hist.push(avg); if(hist.length>40) hist.shift();
+    const max=Math.max(120,...hist), min=Math.min(...hist,0);
+    line.setAttribute('points',hist.map((v,i)=>{
+      const x=(i/Math.max(1,hist.length-1))*200, y=48-((v-min)/((max-min)||1))*44-2;
+      return x.toFixed(1)+','+y.toFixed(1);
+    }).join(' '));
+    renderSvcs();
+  }
+  function start(){
+    if(timer) return;
+    state.forEach(s=>{s.lat=s.base;s.status='ok';}); hist=[]; incidents=0; feedEl.innerHTML='';
+    renderSvcs();
+    feed('nf-ok','✔ Monitoring session started — '+state.length+' services under watch');
+    tick(); timer=setInterval(tick,1600);
+  }
+  function stop(){ if(timer){clearInterval(timer);timer=null;} }
+  onModalToggle('noc-modal',start,stop);
+})();
+
+/* ═══ CI/CD pipeline (idea #44) — simulated deploy ═══ */
+(function(){
+  const modal=document.getElementById('cicd-modal'); if(!modal) return;
+  const STAGES=[
+    {nm:'Checkout',log:['git clone yasief/Portfolio','HEAD detached at main']},
+    {nm:'Install',log:['restoring dependency cache','deps up to date']},
+    {nm:'Lint',log:['eslint . --max-warnings 0','0 problems']},
+    {nm:'Test',log:['running 42 unit tests','42 passed, 0 failed']},
+    {nm:'Build',log:['minify + fingerprint assets','bundle 1.2 MB gzipped']},
+    {nm:'Deploy',log:['publishing to GitHub Pages','live → yasief.github.io']}
+  ];
+  const stagesEl=document.getElementById('cicd-stages');
+  const logEl=document.getElementById('cicd-log');
+  const runBtn=document.getElementById('cicd-run');
+  let running=false, timers=[];
+  function build(){
+    stagesEl.innerHTML='';
+    STAGES.forEach((s,i)=>{
+      const d=document.createElement('div'); d.className='cicd-stage'; d.dataset.i=i;
+      d.innerHTML='<span class="cicd-ic"></span><span class="cicd-nm">'+s.nm+'</span><span class="cicd-dur"></span>';
+      stagesEl.appendChild(d);
+    });
+  }
+  function reset(){ timers.forEach(clearTimeout); timers=[]; running=false; build(); logEl.innerHTML=''; runBtn.disabled=false; runBtn.innerHTML='&#9654; Run pipeline'; }
+  function log(msg,ok){ const l=document.createElement('div'); if(ok)l.className='cl-ok'; l.textContent=(ok?'✔ ':'$ ')+msg; logEl.appendChild(l); logEl.scrollTop=logEl.scrollHeight; }
+  function run(){
+    if(running) return; reset(); running=true; runBtn.disabled=true; runBtn.innerHTML='● Running…';
+    let delay=0;
+    STAGES.forEach((s,i)=>{
+      const sel=()=>stagesEl.querySelector('.cicd-stage[data-i="'+i+'"]');
+      timers.push(setTimeout(()=>{ const e=sel(); if(e){e.classList.add('running'); s.log.forEach(l=>log(l,false));} },delay));
+      const dur=600+Math.random()*700; delay+=dur;
+      timers.push(setTimeout(()=>{
+        const e=sel(); if(!e) return;
+        e.classList.remove('running'); e.classList.add('passed');
+        e.querySelector('.cicd-ic').innerHTML='✓';
+        e.querySelector('.cicd-dur').textContent=(dur/1000).toFixed(1)+'s';
+        log(s.nm+' passed',true);
+        if(i===STAGES.length-1){ running=false; runBtn.disabled=false; runBtn.innerHTML='&#9654; Run again'; log('Pipeline succeeded ✨',true); }
+      },delay));
+    });
+  }
+  runBtn.addEventListener('click',run);
+  onModalToggle('cicd-modal',()=>setTimeout(run,300),reset);
+})();
+
+/* ═══ GitHub activity (idea #52) — live public feed ═══ */
+(function(){
+  const modal=document.getElementById('gh-modal'); if(!modal) return;
+  const feed=document.getElementById('gh-feed');
+  let loaded=false, loading=false;
+  function when(iso){
+    const diff=(Date.now()-new Date(iso).getTime())/1000;
+    if(diff<3600) return Math.max(1,Math.floor(diff/60))+'m ago';
+    if(diff<86400) return Math.floor(diff/3600)+'h ago';
+    return Math.floor(diff/86400)+'d ago';
+  }
+  const ICON={PushEvent:'⬆',CreateEvent:'✦',WatchEvent:'★',ForkEvent:'⑂',PullRequestEvent:'⇄',IssuesEvent:'◉',ReleaseEvent:'⚑',IssueCommentEvent:'💬'};
+  function describe(e){
+    const r='<span class="gh-repo">'+(e.repo?e.repo.name:'')+'</span>';
+    const p=e.payload||{};
+    switch(e.type){
+      case 'PushEvent':{ const n=(p.commits?p.commits.length:p.size)||1; return 'Pushed <b>'+n+'</b> commit'+(n>1?'s':'')+' to '+r; }
+      case 'CreateEvent': return 'Created '+(p.ref_type||'repo')+' in '+r;
+      case 'WatchEvent': return 'Starred '+r;
+      case 'ForkEvent': return 'Forked '+r;
+      case 'PullRequestEvent': return (p.action||'updated')+' a pull request in '+r;
+      case 'IssuesEvent': return (p.action||'updated')+' an issue in '+r;
+      case 'ReleaseEvent': return 'Published a release in '+r;
+      default: return e.type.replace('Event','')+' · '+r;
+    }
+  }
+  async function load(){
+    if(loaded||loading) return; loading=true;
+    try{
+      const res=await fetch('https://api.github.com/users/yasief/events/public?per_page=12',{headers:{'Accept':'application/vnd.github+json'}});
+      if(!res.ok) throw new Error('http '+res.status);
+      const data=await res.json();
+      if(!Array.isArray(data)||!data.length){ feed.innerHTML='<div class="gh-msg">No recent public activity to show right now.<br>See the full profile below.</div>'; loaded=true; return; }
+      feed.innerHTML='';
+      data.slice(0,12).forEach(e=>{
+        const ev=document.createElement('div'); ev.className='gh-ev';
+        ev.innerHTML='<span class="gh-ic">'+(ICON[e.type]||'•')+'</span><span class="gh-tx">'+describe(e)+'</span><span class="gh-when">'+when(e.created_at)+'</span>';
+        feed.appendChild(ev);
+      });
+      loaded=true;
+    }catch(err){
+      feed.innerHTML='<div class="gh-msg">Couldn’t load live activity (GitHub may be rate-limiting).<br>Open the full profile below.</div>';
+    }finally{ loading=false; }
+  }
+  onModalToggle('gh-modal',load);
 })();

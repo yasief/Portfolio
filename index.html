@@ -782,37 +782,44 @@
           .ab-sub{fill:#8b98b4;font:400 10.5px 'JetBrains Mono',monospace;}
           .ab-tier{fill:#00d2ff;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.16em;}
           .ab-arr{stroke:rgba(0,210,255,.5);stroke-width:1.6;fill:none;}
+          .ab-lbl,.ab-sub{pointer-events:none;}
+          .ab-node{cursor:pointer;transition:fill .15s,stroke .15s;}
+          .ab-node:hover,.ab-node:focus-visible,.ab-node.sel{fill:rgba(0,210,255,.16);stroke:rgba(0,210,255,.8);outline:none;}
+          .ab-node.ab-sec:hover,.ab-node.ab-sec:focus-visible,.ab-node.ab-sec.sel{fill:rgba(255,62,138,.16);stroke:rgba(255,62,138,.8);}
         </style>
         <defs>
           <marker id="ab-ah" markerWidth="9" markerHeight="9" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(0,210,255,.7)"/></marker>
         </defs>
         <!-- EDGE -->
         <text class="ab-tier" x="40" y="40">EDGE · DEVICES</text>
-        <rect class="ab-box" x="40" y="52" width="220" height="72" rx="10"/><text class="ab-lbl" x="56" y="82">Smart Lockers</text><text class="ab-sub" x="56" y="104">100+ · firmware · 24/7 sync</text>
-        <rect class="ab-box" x="300" y="52" width="200" height="72" rx="10"/><text class="ab-lbl" x="316" y="82">CCTV</text><text class="ab-sub" x="316" y="104">cameras · remote monitor</text>
-        <rect class="ab-box" x="540" y="52" width="240" height="72" rx="10"/><text class="ab-lbl" x="556" y="82">Yeastar PABX</text><text class="ab-sub" x="556" y="104">IP telephony · support</text>
+        <rect class="ab-box ab-node" data-node="lockers" tabindex="0" role="button" aria-label="Smart Lockers details" x="40" y="52" width="220" height="72" rx="10"/><text class="ab-lbl" x="56" y="82">Smart Lockers</text><text class="ab-sub" x="56" y="104">100+ · firmware · 24/7 sync</text>
+        <rect class="ab-box ab-node" data-node="cctv" tabindex="0" role="button" aria-label="CCTV details" x="300" y="52" width="200" height="72" rx="10"/><text class="ab-lbl" x="316" y="82">CCTV</text><text class="ab-sub" x="316" y="104">cameras · remote monitor</text>
+        <rect class="ab-box ab-node" data-node="pabx" tabindex="0" role="button" aria-label="Yeastar PABX details" x="540" y="52" width="240" height="72" rx="10"/><text class="ab-lbl" x="556" y="82">Yeastar PABX</text><text class="ab-sub" x="556" y="104">IP telephony · support</text>
         <!-- CONNECTIVITY -->
         <text class="ab-tier" x="40" y="164">CONNECTIVITY</text>
-        <rect class="ab-box" x="40" y="176" width="350" height="72" rx="10"/><text class="ab-lbl" x="56" y="206">IoT Gateway</text><text class="ab-sub" x="56" y="228">secure device connectivity</text>
-        <rect class="ab-box" x="430" y="176" width="350" height="72" rx="10"/><text class="ab-lbl" x="446" y="206">Tracksolid</text><text class="ab-sub" x="446" y="228">hardware tracking &amp; monitoring</text>
+        <rect class="ab-box ab-node" data-node="gateway" tabindex="0" role="button" aria-label="IoT Gateway details" x="40" y="176" width="350" height="72" rx="10"/><text class="ab-lbl" x="56" y="206">IoT Gateway</text><text class="ab-sub" x="56" y="228">secure device connectivity</text>
+        <rect class="ab-box ab-node" data-node="tracksolid" tabindex="0" role="button" aria-label="Tracksolid details" x="430" y="176" width="350" height="72" rx="10"/><text class="ab-lbl" x="446" y="206">Tracksolid</text><text class="ab-sub" x="446" y="228">hardware tracking &amp; monitoring</text>
         <!-- CLOUD -->
         <text class="ab-tier" x="40" y="288">CLOUD BACKEND</text>
-        <rect class="ab-box" x="40" y="300" width="380" height="72" rx="10"/><text class="ab-lbl" x="56" y="330">Locker Management Backend</text><text class="ab-sub" x="56" y="352">custom · user-app integration</text>
-        <rect class="ab-box ab-cloud" x="460" y="300" width="320" height="72" rx="10"/><text class="ab-lbl" x="476" y="330">AWS · Azure · Firebase</text><text class="ab-sub" x="476" y="352">compute · storage · realtime DB</text>
+        <rect class="ab-box ab-node" data-node="backend" tabindex="0" role="button" aria-label="Locker Management Backend details" x="40" y="300" width="380" height="72" rx="10"/><text class="ab-lbl" x="56" y="330">Locker Management Backend</text><text class="ab-sub" x="56" y="352">custom · user-app integration</text>
+        <rect class="ab-box ab-cloud ab-node" data-node="cloud" tabindex="0" role="button" aria-label="Cloud platform details" x="460" y="300" width="320" height="72" rx="10"/><text class="ab-lbl" x="476" y="330">AWS · Azure · Firebase</text><text class="ab-sub" x="476" y="352">compute · storage · realtime DB</text>
         <!-- INTERFACES -->
         <text class="ab-tier" x="40" y="412">CUSTOMER INTERFACES</text>
-        <rect class="ab-box" x="40" y="424" width="220" height="72" rx="10"/><text class="ab-lbl" x="56" y="454">Customer App</text><text class="ab-sub" x="56" y="476">bookings · payments</text>
-        <rect class="ab-box" x="300" y="424" width="240" height="72" rx="10"/><text class="ab-lbl" x="316" y="454">WhatsApp Bot</text><text class="ab-sub" x="316" y="476">DoubleTick + Meta Flow</text>
-        <rect class="ab-box" x="580" y="424" width="200" height="72" rx="10"/><text class="ab-lbl" x="596" y="454">QuickBill</text><text class="ab-sub" x="596" y="476">billing · ERP</text>
+        <rect class="ab-box ab-node" data-node="app" tabindex="0" role="button" aria-label="Customer App details" x="40" y="424" width="220" height="72" rx="10"/><text class="ab-lbl" x="56" y="454">Customer App</text><text class="ab-sub" x="56" y="476">bookings · payments</text>
+        <rect class="ab-box ab-node" data-node="whatsapp" tabindex="0" role="button" aria-label="WhatsApp Bot details" x="300" y="424" width="240" height="72" rx="10"/><text class="ab-lbl" x="316" y="454">WhatsApp Bot</text><text class="ab-sub" x="316" y="476">DoubleTick + Meta Flow</text>
+        <rect class="ab-box ab-node" data-node="quickbill" tabindex="0" role="button" aria-label="QuickBill details" x="580" y="424" width="200" height="72" rx="10"/><text class="ab-lbl" x="596" y="454">QuickBill</text><text class="ab-sub" x="596" y="476">billing · ERP</text>
         <!-- flow arrows (central spine) -->
         <path class="ab-arr" d="M410,124 L410,174" marker-end="url(#ab-ah)"/>
         <path class="ab-arr" d="M410,248 L410,298" marker-end="url(#ab-ah)"/>
         <path class="ab-arr" d="M410,372 L410,422" marker-end="url(#ab-ah)"/>
         <!-- SECURITY band -->
-        <rect class="ab-box ab-sec" x="40" y="540" width="740" height="64" rx="10"/>
+        <rect class="ab-box ab-sec ab-node" data-node="security" tabindex="0" role="button" aria-label="IoT Security details" x="40" y="540" width="740" height="64" rx="10"/>
         <text class="ab-lbl" x="56" y="570" style="fill:#ff3e8a">IoT Security</text>
         <text class="ab-sub" x="56" y="590">spans every layer — encryption · access control · threat detection · zero breaches</text>
       </svg>
+    </div>
+    <div class="arch-detail" id="arch-detail" aria-live="polite">
+      <span class="arch-detail-hint">Tap any component above for details.</span>
     </div>
   </div>
 </div>
@@ -1054,6 +1061,31 @@
     <p class="arch-intro">Public activity from github.com/yasief, fetched live when you open this.</p>
     <div class="gh-feed" id="gh-feed" aria-live="polite"><div class="gh-msg">Loading…</div></div>
     <a class="gh-link" href="https://github.com/yasief" target="_blank" rel="noopener">View full profile on GitHub &#8594;</a>
+  </div>
+</div>
+
+<!-- Exit-intent lead capture (ideas #23/#27/#28) -->
+<div id="exit-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="exit-modal-title" hidden>
+  <div class="modal-box modal-box-narrow" role="document">
+    <button class="modal-close" type="button" aria-label="Close">&#10005;</button>
+    <div class="modal-eyebrow">// Before you go</div>
+    <h2 id="exit-modal-title" class="modal-title">Let’s not lose touch</h2>
+    <p class="arch-intro">If anything here resonated, here’s the fast path — grab the résumé or reach out directly. I reply quickly.</p>
+    <div class="exit-actions">
+      <a class="exit-btn exit-primary" href="Mohamed_Yasief_IT_Administrator_Resume.pdf" download>
+        <svg width="15" height="15" aria-hidden="true"><use href="#i-download"/></svg> Download résumé (PDF)
+      </a>
+      <a class="exit-btn" href="https://wa.me/971503593856?text=Hi%20Mohamed%20%E2%80%94%20I%20saw%20your%20portfolio%20and%20I%27d%20like%20to%20talk." target="_blank" rel="noopener">
+        <svg width="15" height="15" aria-hidden="true"><use href="#i-phone"/></svg> Message on WhatsApp
+      </a>
+      <button class="exit-btn" type="button" data-copy="mohamedyasief@gmail.com" data-copy-msg="Email copied">
+        <svg width="15" height="15" aria-hidden="true"><use href="#i-mail"/></svg> Copy email address
+      </button>
+      <a class="exit-btn" href="https://linkedin.com/in/yasief" target="_blank" rel="noopener">
+        <svg width="15" height="15" aria-hidden="true"><use href="#i-linkedin"/></svg> Connect on LinkedIn
+      </a>
+    </div>
+    <button class="exit-dismiss" type="button" id="exit-dismiss">No thanks, keep browsing</button>
   </div>
 </div>
 

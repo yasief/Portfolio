@@ -698,7 +698,7 @@ const desktopKeydownHandler = e => {
     // otherwise the caret moves AND the page jumps to another panel.
     if(document.body.classList.contains('cmd-open')) return;
     const t = e.target;
-    if(t && (t.matches('input, textarea, [contenteditable]') || t.isContentEditable)) return;
+    if(t && t.matches && (t.matches('input, textarea, [contenteditable]') || t.isContentEditable)) return;
     if(e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(cur_p + 1, true);
     if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(cur_p - 1, true);
 };
@@ -1510,7 +1510,7 @@ window.toast=toast;
    '/' focuses command palette search. '?' shows it as well. */
 (function(){
   document.addEventListener('keydown',e=>{
-    if(e.target.matches('input,textarea'))return;
+    if(e.target&&e.target.matches&&e.target.matches('input,textarea'))return;
     if(e.key==='/'||e.key==='?'){
       const cmd=document.getElementById('cmd-backdrop');
       if(cmd && !cmd.classList.contains('open') && typeof window.openCmdPalette==='function'){
@@ -1540,7 +1540,7 @@ window.toast=toast;
   document.addEventListener('keydown',e=>{
     if(!isDesktop) return;
     if(document.body.classList.contains('cmd-open')) return;
-    const t=e.target; if(t&&(t.matches('input,textarea,[contenteditable]')||t.isContentEditable)) return;
+    const t=e.target; if(t&&t.matches&&(t.matches('input,textarea,[contenteditable]')||t.isContentEditable)) return;
     if(e.key>='1' && e.key<='9'){
       const idx=parseInt(e.key,10)-1;
       if(idx<dotEls.length){ e.preventDefault(); goTo(idx,true); }
@@ -1996,4 +1996,62 @@ function onModalToggle(id,onOpen,onClose){
     }finally{ loading=false; }
   }
   onModalToggle('gh-modal',load);
+})();
+
+/* ═══ Clickable topology (idea #39) — architecture node details ═══ */
+(function(){
+  const modal=document.getElementById('arch-modal'); if(!modal) return;
+  const detail=document.getElementById('arch-detail'); if(!detail) return;
+  const NODES={
+    lockers:['Smart Lockers','100+ IoT locker units across Dubai residential buildings — firmware managed centrally, 24/7 cloud sync, tamper detection on every door.'],
+    cctv:['CCTV','Remote-monitored cameras at each site: security coverage and fast dispute resolution when an order is questioned.'],
+    pabx:['Yeastar PABX','IP telephony powering the support line — call routing, IVR and extension management for the operations team.'],
+    gateway:['IoT Gateway','The secure, encrypted bridge between edge hardware and the cloud — the single controlled path in and out of the device fleet.'],
+    tracksolid:['Tracksolid','Hardware tracking and health monitoring across the fleet — location, connectivity and status at a glance.'],
+    backend:['Locker Management Backend','The custom brain of the platform: assigns lockers, drives the customer app and orchestrates the whole order lifecycle.'],
+    cloud:['AWS · Azure · Firebase','Compute, object storage and a realtime database — the elastic backbone that keeps everything online and in sync.'],
+    app:['Customer App','Bookings, payments and locker access in the customer’s hand — the primary self-service channel.'],
+    whatsapp:['WhatsApp Bot','24/7 automated support and bookings on DoubleTick + Meta Flow — built from real user behaviour, not a template.'],
+    quickbill:['QuickBill','Billing and ERP — closing the loop from service delivered to invoice raised, with no manual re-entry.'],
+    security:['IoT Security','Not a layer, a spine: encryption in transit and at rest, least-privilege access control and threat detection across every tier. Zero breaches to date.']
+  };
+  function show(key,el){
+    const n=NODES[key]; if(!n) return;
+    modal.querySelectorAll('.ab-node.sel').forEach(x=>x.classList.remove('sel'));
+    if(el) el.classList.add('sel');
+    detail.innerHTML='<strong class="arch-detail-t">'+n[0]+'</strong><span class="arch-detail-d">'+n[1]+'</span>';
+  }
+  function reset(){ detail.innerHTML='<span class="arch-detail-hint">Tap any component above for details.</span>'; modal.querySelectorAll('.ab-node.sel').forEach(x=>x.classList.remove('sel')); }
+  modal.addEventListener('click',e=>{ const node=e.target.closest('.ab-node'); if(node) show(node.getAttribute('data-node'),node); });
+  modal.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ') return;
+    const node=e.target.closest&&e.target.closest('.ab-node'); if(!node) return;
+    e.preventDefault(); show(node.getAttribute('data-node'),node);
+  });
+  onModalToggle('arch-modal',null,reset);
+})();
+
+/* ═══ Exit-intent lead capture (ideas #23/#27/#28) ═══ */
+(function(){
+  const dismiss=document.getElementById('exit-dismiss');
+  if(dismiss) dismiss.addEventListener('click',()=>{ if(window.closeModal) window.closeModal('exit-modal'); });
+  try{ if(localStorage.getItem('yasiefExitShown')==='1') return; }catch(e){}
+  let armed=false, fired=false;
+  setTimeout(()=>{ armed=true; },15000); // only after ~15s of genuine engagement
+  function overlayOpen(){
+    return document.body.classList.contains('modal-open') ||
+           document.body.classList.contains('cmd-open') ||
+           !!document.querySelector('#chatbot-widget.open');
+  }
+  function fire(){
+    if(fired||!armed||overlayOpen()) return;
+    fired=true;
+    try{ localStorage.setItem('yasiefExitShown','1'); }catch(e){}
+    if(window.openModal) window.openModal('exit-modal');
+  }
+  if(window.matchMedia('(pointer:fine)').matches){
+    document.addEventListener('mouseout',e=>{ if(e.clientY<=0 && !e.relatedTarget) fire(); });
+  } else {
+    setTimeout(fire,45000); // mobile has no reliable exit signal — gentle timed fallback
+  }
 })();

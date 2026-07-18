@@ -138,6 +138,50 @@ function cleanQuery(q) {
     .trim();
 }
 
+// ── Semantic fallback (idea #56) ──────────────────────────────────────────────
+// When no intent's regex matches, score every intent by lexical overlap between
+// the (synonym-expanded) query tokens and that intent's keyword bag, and use the
+// best if it clears a small threshold. Only ever runs AFTER regex matching fails,
+// so it can only improve results, never regress them.
+const SEM_STOP = new Set(('a an the is are was were be been being do does did to of for in on at with by from as and or but if then so not no yes he she it they his her him you your yours my me mine our we us about tell what how who where when why which can could would should will do you have has had get got know want need please just really very more most any some this that these those into over under out up down off can u ur pls').split(' '));
+const SEM_SYN = {
+  salary: ['pay','compensation','package','money','wage','ctc','rate'],
+  remote: ['wfh','hybrid','onsite','relocation','relocate','onsite'],
+  hire: ['recruit','recruiting','available','availability','join','joining','vacancy','position','opening','notice','hiring'],
+  skills: ['skill','stack','tech','technology','technologies','tools','expertise','proficiency','abilities'],
+  contact: ['reach','email','phone','call','connect','number','whatsapp','linkedin','mobile'],
+  experience: ['background','history','career','worked','tenure','years'],
+  education: ['study','studied','degree','qualification','college','university','graduated','academic'],
+  resume: ['cv','profile','portfolio'],
+  project: ['projects','built','build','delivered','deployment','implementation'],
+  security: ['cyber','cybersecurity','firewall','vpn','breach','threat','encryption','protection','protect','protected','attack','attacks','hack','hacker','hackers','safe','safety','endpoint','vulnerability','defence','defense'],
+  erp: ['odoo','zoho','tally','quickbill','cleancloud','implementation'],
+  cloud: ['aws','azure','devops','server','hosting','infrastructure','infra'],
+  language: ['languages','speak','arabic','english','tamil','malayalam','bilingual']
+};
+function semTokenize(q) {
+  return cleanQuery(q).replace(/[^\w\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !SEM_STOP.has(w));
+}
+function semanticBest(query) {
+  const toks = semTokenize(query);
+  if (!toks.length) return null;
+  const expanded = new Set(toks);
+  toks.forEach(t => {
+    for (const k in SEM_SYN) {
+      if (k === t || SEM_SYN[k].includes(t)) { expanded.add(k); SEM_SYN[k].forEach(s => expanded.add(s)); }
+    }
+  });
+  let best = null, bestScore = 0;
+  for (const intent of INTENTS) {
+    const kws = intent.keywords || [];
+    if (!kws.length) continue;
+    let score = 0;
+    expanded.forEach(t => { if (kws.some(kw => kw.includes(t) || t.includes(kw))) score++; });
+    if (score > bestScore) { bestScore = score; best = intent; }
+  }
+  return bestScore >= 2 ? best : null; // need at least two token hits to trust it
+}
+
 // Detect user type from query patterns
 function detectUserType(q) {
   if (/\b(hiring|hire|recruit|position|role|vacancy|job opening|opportunity)\b/.test(q)) return 'recruiter';
@@ -558,6 +602,9 @@ function buildWidget() {
           <div class="chat-header-name">Mohamed's AI</div>
           <div class="chat-header-status">● Online · Ask me anything</div>
         </div>
+        <button class="chat-tts-btn" id="chat-tts-btn" type="button" aria-label="Read replies aloud" aria-pressed="false" title="Read replies aloud" hidden>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        </button>
         <button class="chat-close-btn" type="button" aria-label="Close chat">✕</button>
       </div>
 
@@ -571,6 +618,9 @@ function buildWidget() {
           autocomplete="off" spellcheck="false" maxlength="300"
           aria-label="Type your question"
         >
+        <button id="chat-mic-btn" type="button" aria-label="Speak your question" title="Speak your question" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/></svg>
+        </button>
         <button id="chat-send-btn" type="button" aria-label="Send">Send</button>
       </div>
     </div>
@@ -629,6 +679,7 @@ function showTypingThen(text, suggestions, delay) {
     el.remove();
     isTyping = false;
     addBotMsg(text, suggestions);
+    speak(text);
   }, delay);
 }
 
@@ -711,9 +762,10 @@ async function sendMessage(rawText) {
     }
   }
 
-  // Only respond if confidence > 40%, otherwise use fallback
+  // Only respond if confidence > 40%, otherwise try a semantic match before
+  // dropping to the generic fallback (idea #56).
   if (!bestMatch || bestConfidence < 40) {
-    bestMatch = INTENTS[INTENTS.length - 1]; // Use fallback
+    bestMatch = semanticBest(text) || INTENTS[INTENTS.length - 1];
   }
 
   // Get context-aware suggestions
@@ -744,6 +796,60 @@ function closePanel() {
   document.getElementById('chatbot-widget').classList.remove('open');
 }
 
+// ─── Voice (idea #51): speech-to-text input + text-to-speech replies ──────────
+let ttsOn = false;
+function speak(text) {
+  if (!ttsOn || !('speechSynthesis' in window)) return;
+  const clean = String(text)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')      // links -> label
+    .replace(/[*_`#>~]/g, '')                       // markdown marks
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{2B00}-\u{2BFF}️]/gu, '') // emoji/symbols
+    .replace(/\s+/g, ' ').trim();
+  if (!clean) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(clean);
+    u.rate = 1.02; u.pitch = 1; u.lang = 'en-US';
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function setupVoice() {
+  // Voice input (Web Speech API) — feature-detected
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('chat-mic-btn');
+  const input = () => document.getElementById('chat-input');
+  if (SR && micBtn) {
+    micBtn.hidden = false;
+    let rec = null, listening = false;
+    micBtn.addEventListener('click', () => {
+      if (listening && rec) { try { rec.stop(); } catch (e) {} return; }
+      rec = new SR();
+      rec.lang = 'en-US'; rec.interimResults = false; rec.maxAlternatives = 1; rec.continuous = false;
+      rec.onstart = () => { listening = true; micBtn.classList.add('listening'); const i = input(); if (i) i.placeholder = 'Listening…'; };
+      rec.onend = () => { listening = false; micBtn.classList.remove('listening'); const i = input(); if (i) i.placeholder = 'Ask about Mohamed…'; };
+      rec.onerror = () => { listening = false; micBtn.classList.remove('listening'); };
+      rec.onresult = (e) => {
+        const t = e.results[0][0].transcript;
+        const i = input(); if (i) i.value = t;
+        if (t && t.trim()) sendMessage(t);
+      };
+      try { rec.start(); } catch (e) {}
+    });
+  }
+  // Voice output (SpeechSynthesis) toggle — feature-detected
+  const ttsBtn = document.getElementById('chat-tts-btn');
+  if ('speechSynthesis' in window && ttsBtn) {
+    ttsBtn.hidden = false;
+    ttsBtn.addEventListener('click', () => {
+      ttsOn = !ttsOn;
+      ttsBtn.classList.toggle('on', ttsOn);
+      ttsBtn.setAttribute('aria-pressed', ttsOn ? 'true' : 'false');
+      if (!ttsOn) window.speechSynthesis.cancel();
+      if (typeof window.toast === 'function') window.toast(ttsOn ? 'Voice replies on 🔊' : 'Voice replies off');
+    });
+  }
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init() {
   const widget = buildWidget();
@@ -756,6 +862,7 @@ function init() {
   document.getElementById('chat-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(e.target.value); }
   });
+  setupVoice();
 
   // Prevent wheel events inside the open panel from triggering page navigation
   widget.querySelector('#chat-panel').addEventListener('wheel', e => {

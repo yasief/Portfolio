@@ -395,6 +395,45 @@
   transform: scale(1.04);
 }
 
+/* ── Voice: mic input + TTS toggle (idea #51) ── */
+#chat-mic-btn {
+  flex-shrink: 0;
+  width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--dim2);
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background .18s;
+}
+#chat-mic-btn:hover { color: var(--c1); border-color: rgba(var(--c1-rgb), 0.42); }
+#chat-mic-btn.listening {
+  color: #fff; background: #ff4d5e; border-color: #ff4d5e;
+  animation: chatMicPulse 1s ease-in-out infinite;
+}
+@keyframes chatMicPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 94, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 77, 94, 0); }
+}
+.chat-tts-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: color .18s, background .18s;
+}
+.chat-tts-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+.chat-tts-btn.on { color: var(--c1); background: rgba(var(--c1-rgb), 0.14); }
+
 /* ── Mobile ─────────────────────────────────── */
 @media (max-width: 480px) {
   #chatbot-widget {

@@ -1679,6 +1679,15 @@ body.modal-open{overflow:hidden;}
 .exit-dismiss{display:block;margin:.2rem auto 0;background:none;border:none;color:var(--dim);font-size:.8rem;cursor:pointer;padding:.4rem;font-family:'Outfit',sans-serif;transition:color .15s;}
 .exit-dismiss:hover{color:var(--w);}
 
+/* ── Intro video (idea #50) ─── */
+.vid-wrap{position:relative;margin-top:1.2rem;width:100%;aspect-ratio:16/9;background:#04080f;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.vid-wrap video{width:100%;height:100%;display:block;object-fit:cover;background:#04080f;}
+.vid-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;text-align:center;padding:1.5rem;background:linear-gradient(160deg,rgba(var(--c1-rgb),.07),rgba(0,0,0,.35));}
+.vid-fb-ic{width:54px;height:54px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--c1);margin-bottom:.3rem;}
+.vid-fb-t{font-size:1.05rem;font-weight:700;color:var(--w);}
+.vid-fb-s{font-size:.84rem;color:var(--dim);line-height:1.5;max-width:340px;}
+.vid-fb-cta{margin-top:.7rem;}
+
 /* ── NOC Defender mini-game (idea #45) ─── */
 .g2-hud{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1.2rem;text-align:center;}
 .g2-stat{background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:8px;padding:.5rem .3rem;}
@@ -1825,6 +1834,7 @@ body[data-theme='daylight'] .terminal{box-shadow:0 14px 32px rgba(15,23,42,.18);
   .h-ctas{flex-direction:row!important;flex-wrap:wrap!important;align-items:stretch;gap:.3rem!important;}
   .h-ctas .cta-fill{flex:1 1 100%!important;justify-content:center;text-align:center;}
   .h-ctas .cta-ghost{flex:1 1 0!important;min-width:0!important;justify-content:center!important;text-align:center!important;font-size:.5rem!important;padding:.4rem .5rem!important;}
+  .h-ctas .cta-arrow{display:none!important;}   /* decorative — no room once Intro joins the row */
 
   /* Better mobile badge grid */
   .h-badges{padding:.4rem .8rem!important;gap:.4rem!important;}

@@ -1380,6 +1380,7 @@ window.toast=toast;
     {g:'Navigate',ic:ic('i-users'), label:'My Story',desc:'Education, journey & how I work',tag:'',fn:()=>{close();if(window.openModal)window.openModal('story-modal');}},
     {g:'Navigate',ic:ic('i-network'),label:'System Architecture',desc:'Real LaundryBox stack diagram',tag:'',fn:()=>{close();if(window.openModal)window.openModal('arch-modal');}},
     {g:'Navigate',ic:ic('i-search'), label:'FAQ',desc:'Straight answers to common questions',tag:'',fn:()=>{close();if(window.openModal)window.openModal('faq-modal');}},
+    {g:'Navigate',ic:ic('i-spark'),  label:'Watch my intro',desc:'45-second video introduction',tag:'',fn:()=>{close();if(window.openModal)window.openModal('video-modal');}},
     {g:'Actions', ic:ic('i-mail'),  label:'Copy Email',desc:'mohamedyasief@gmail.com',tag:'',fn:()=>copy('mohamedyasief@gmail.com','Email copied!')},
     {g:'Actions', ic:ic('i-phone'), label:'Copy Phone',desc:'+971 50 359 3856',tag:'',fn:()=>copy('+971503593856','Phone copied!')},
     {g:'Actions', ic:ic('i-linkedin'),label:'LinkedIn',desc:'linkedin.com/in/yasief',tag:'',fn:()=>window.open('https://linkedin.com/in/yasief','_blank','noopener')},
@@ -2055,6 +2056,69 @@ function onModalToggle(id,onOpen,onClose){
   } else {
     setTimeout(fire,45000); // mobile has no reliable exit signal — gentle timed fallback
   }
+})();
+
+/* ═══ Intro video (idea #50) ═══
+   ── HOW TO PUBLISH YOUR VIDEO ────────────────────────────────────────────
+   Local file : drop intro.mp4 in the repo root. Nothing else to change.
+   YouTube    : set VIDEO_YOUTUBE_ID below to the video id and leave
+                VIDEO_SRC as ''. (Uses youtube-nocookie, no tracking.)
+   Captions   : add intro.vtt to the repo, then set VIDEO_CAPTIONS below.
+                (Left empty by default so we don't 404 on a file you may
+                 not have yet.)
+   Until a source exists, the modal shows a tidy fallback instead of a
+   broken player. Nothing is fetched until the modal is actually opened. */
+(function(){
+  // ⬇⬇ FLIP THIS TO true ONCE THE VIDEO IS UPLOADED ⬇⬇
+  // While false, the hero "Intro" button stays hidden so visitors never hit a
+  // dead "coming soon". Everything else is already wired.
+  const VIDEO_READY = false;
+
+  const VIDEO_SRC = 'intro.mp4';
+  const VIDEO_YOUTUBE_ID = '';
+  const VIDEO_CAPTIONS = '';
+
+  const modal=document.getElementById('video-modal'); if(!modal) return;
+  const vid=document.getElementById('intro-video');
+  const wrap=document.getElementById('vid-wrap');
+  const fb=document.getElementById('vid-fallback');
+  let loaded=false;
+
+  function showFallback(){ if(vid) vid.hidden=true; if(fb) fb.hidden=false; }
+  function load(){
+    if(loaded) return; loaded=true;
+    if(VIDEO_YOUTUBE_ID){
+      const f=document.createElement('iframe');
+      f.src='https://www.youtube-nocookie.com/embed/'+VIDEO_YOUTUBE_ID+'?rel=0';
+      f.title='Introduction video by Mohamed Yasief';
+      f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture';
+      f.allowFullscreen=true; f.style.cssText='width:100%;height:100%;border:0;display:block;';
+      if(vid) vid.remove();
+      wrap.insertBefore(f,fb);
+      return;
+    }
+    if(!VIDEO_SRC){ showFallback(); return; }
+    if(VIDEO_CAPTIONS){
+      const t=document.createElement('track');
+      t.kind='captions'; t.src=VIDEO_CAPTIONS; t.srclang='en'; t.label='English'; t.default=true;
+      vid.appendChild(t);
+    }
+    // A failed <source> doesn't reliably bubble to <video>, so listen on both.
+    vid.addEventListener('error',showFallback,{once:true});
+    const s=document.createElement('source');
+    s.src=VIDEO_SRC; s.type='video/mp4';
+    s.addEventListener('error',showFallback,{once:true});
+    vid.appendChild(s);
+    vid.load();
+  }
+  function stop(){ try{ if(vid && !vid.paused) vid.pause(); }catch(e){} }
+  onModalToggle('video-modal',load,stop);
+
+  // Hide the hero entry point until there's actually something to play.
+  if(!VIDEO_READY){
+    document.querySelectorAll('.cta[data-modal="video-modal"]').forEach(b=>{ b.hidden=true; });
+  }
+  window.__videoReady = VIDEO_READY;
 })();
 
 /* ═══ NOC Defender mini-game (idea #45) ═══ */

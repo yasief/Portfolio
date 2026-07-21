@@ -1967,3 +1967,50 @@ body[data-theme='daylight'] .terminal{box-shadow:0 14px 32px rgba(15,23,42,.18);
 #coachTour{background:transparent;color:var(--w);border:1px solid var(--border);border-radius:6px;padding:.4rem .85rem;font-size:.7rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:border-color .15s,color .15s;}
 #coachTour:hover{border-color:var(--c1);color:var(--c1);}
 @media(prefers-reduced-motion:reduce){.tour-spot,.tour-pop{transition:none;}}
+
+/* ══ Arabic / RTL support (idea #69) ══════════════════════════════════════
+   The horizontal slider stays LTR on purpose: #track keeps direction:ltr so
+   the flex order and translateX(-i * 100vw) math are completely unaffected,
+   while the content inside each panel flips to RTL. This gives proper Arabic
+   text direction without touching the navigation mechanics. */
+#lang-toggle{
+  appearance:none;
+  border:1px solid var(--border);
+  background:rgba(var(--card-rgb),.7);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  color:var(--w);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;font-weight:700;line-height:1;
+  border-radius:8px;padding:.42rem .6rem;min-width:32px;
+  cursor:pointer;transition:border-color .2s,color .2s,background-color .3s;
+}
+#lang-toggle:hover{border-color:var(--c1);color:var(--c1);}
+#lang-toggle[aria-pressed="true"]{border-color:var(--c1);color:var(--c1);}
+
+body.ar{font-family:'Cairo','Outfit',sans-serif;}
+/* Display headings hard-code 'Outfit' (no Arabic glyphs) — give them Cairo. */
+body.ar .h-name,body.ar h1,body.ar h2,body.ar h3,body.ar .d-title,body.ar .modal-title,
+body.ar .a-h,body.ar .sec-t,body.ar .ex-hd-t,body.ar .sk-ht,body.ar .pj-ht,
+body.ar .ac-big,body.ar .ct-big,body.ar .pc-nm,body.ar .a-hl,body.ar .sn,
+body.ar .cta{font-family:'Cairo','Outfit',sans-serif;}
+/* Uppercase + wide tracking are meaningless/harmful for Arabic script */
+body.ar .cta,body.ar .sec-t,body.ar .ex-hd-s{text-transform:none;}
+
+/* Section counters like "// 02 of 07" are mixed-direction — pin them LTR */
+body.ar .ex-hd-s,body.ar .d-hd .ex-hd-s{direction:ltr;unicode-bidi:isolate;}
+
+/* RTL is scoped to content containers — never <html>/<body>/#track — because
+   the slider positions panels with translateX inside a max-content flex track,
+   and flipping the document origin would move them off-screen. */
+body.ar .panel,body.ar #nav,body.ar .modal-box,body.ar #chat-panel{direction:rtl;}
+
+/* Latin/technical content must stay LTR to render correctly inside RTL text */
+body.ar .h-ticker,body.ar .terminal,body.ar .term-body,
+body.ar .cb-val,body.ar code,body.ar .noc-feed,
+body.ar .cicd-log,body.ar .noc-srv,body.ar .gh-feed,
+body.ar .srv-list,body.ar .log-w,body.ar .g2-grid,
+body.ar .arch-svg-wrap,body.ar #cmd-backdrop,body.ar .h-scroll{direction:ltr;}
+
+/* Arabic renders taller than Latin — give headings a little more breathing room */
+body.ar .h-name{line-height:1.35;}
+body.ar .badge,body.ar .cta{letter-spacing:0;}
